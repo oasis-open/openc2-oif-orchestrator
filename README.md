@@ -19,7 +19,7 @@
 
 <p>Statement of Purpose for this OASIS Open Repository (openc2-iacd) as <a href="https://drive.google.com/open?id=0B-FunCZrr-vtdEJJQWZJM0dqWGM">proposed</a> and <a href="https://www.oasis-open.org/committees/ballot.php?id=3115">approved</a> [<a href="https://issues.oasis-open.org/browse/TCADMIN-2757">bis</a>] by the TC:</p>
 
-<p>The purpose of the openc2-iacd GitHub repository is to: (a) provide demonstrating of a Java implementation of OpenC2, and (b) provision Java libraries to enable other prototype development efforts.</p>
+<p>The purpose of the openc2-iacd GitHub repository is to: (a) provide demonstration of a Java implementation of OpenC2, and (b) provision Java libraries to enable other prototype development efforts.</p>
 
 <p>This OpenC2 Java prototype illustrates implementation of fifteen OpenC2 actions issued to nine actuators.</p>
 
