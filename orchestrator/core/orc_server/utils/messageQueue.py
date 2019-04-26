@@ -46,15 +46,14 @@ class MessageQueue(object):
         """
         Publish a message to the specified que and transport
         :param msg: message to be published
-        :param header: header information for the message being sent
+        :param headers: header information for the message being sent
         :param exchange: exchange name
         :param routing_key: routing key name
+        :return: None
         """
         if routing_key is None:
-            print('Sending Message')
             raise ValueError('Routing Key cannot be None')
         else:
-            print('Sending Message')
             self.producer.publish(
                 message=msg,
                 headers=headers,
@@ -66,6 +65,7 @@ class MessageQueue(object):
         """
         Register a function for when a message is received from the message queue
         :param fun: function to register
+        :return: None
         """
         self.consumer.add_callback(fun)
 
@@ -75,4 +75,3 @@ class MessageQueue(object):
         """
         self.consumer.shutdown()
         self.consumer.join()
-        print('MessageQueue Shutdown')

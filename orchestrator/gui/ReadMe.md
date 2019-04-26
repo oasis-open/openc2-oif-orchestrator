@@ -12,7 +12,6 @@
 - Server - Django based
     - Django REST Framework
     - User/Pass via JWT Token
-    - REST API & WebSockets
 
 - Client - React Based
 	- User/Pass via JWT

@@ -3,7 +3,13 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader
+} from 'reactstrap'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -14,7 +20,6 @@ import { withGUIAuth } from '../../../actions/util'
 class Transport extends Component {
     constructor(props, context) {
         super(props, context)
-
         this.checkboxChange = this.checkboxChange.bind(this)
         this.transportRemove = this.transportRemove.bind(this)
         this.transportChange = this.transportChange.bind(this)
@@ -50,12 +55,11 @@ class Transport extends Component {
     checkboxChange(e) {
         const name = e.target.name
         const item = e.target.id.replace('checkbox_', '')
-        const isChecked = e.target.checked
 
         let tmpVal = this.state[name]
         let index = tmpVal.indexOf(item)
 
-        if (isChecked) {
+        if (e.target.checked) {
             if (index === -1) { tmpVal.push(item) }
         } else {
             if (index >= 0 && tmpVal.length > 1) { tmpVal.splice(index, 1) }
@@ -78,9 +82,7 @@ class Transport extends Component {
         if (reset) {
             tmpState = e
         } else {
-            const name = e.target.name
-            const value = e.target.value
-            tmpState[name] = value
+            tmpState[e.target.name] = e.target.value
         }
 
         this.setState(
@@ -154,20 +156,12 @@ Transport.defaultProps = {
     remove: (i) => {}
 };
 
-function mapStateToProps(state) {
-    return {
-        orchestrator: {
-            // ...state.Orcs.selected,
-            protocols: state.Util.protocols,
-            serializations: state.Util.serializations,
-        }
+const mapStateToProps = (state) => ({
+    orchestrator: {
+        // ...state.Orcs.selected,
+        protocols: state.Util.protocols,
+        serializations: state.Util.serializations,
     }
-}
+})
 
-
-function mapDispatchToProps(dispatch) {
-    return {
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Transport)
+export default connect(mapStateToProps)(Transport)

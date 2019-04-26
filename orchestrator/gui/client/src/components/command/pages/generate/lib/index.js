@@ -1,10 +1,20 @@
+import JADN_Field from './jadn_field'
+import JSON_Field from './json_field'
+
 import {
-    isOptional
+    isOptional_jadn,
+    isOptional_json,
+    keys,
+    opts2arr,
+    zip
 } from './utils'
 
-import Field from './field'
-
 export {
-    Field,
-    isOptional
+    JADN_Field,
+    JSON_Field,
+    isOptional_jadn,
+    isOptional_json,
+    keys,
+    opts2arr,
+    zip
 }

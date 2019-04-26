@@ -1,4 +1,4 @@
-from oif/base:alpine-python3
+FROM oif/base:alpine-python3_utils
 
 MAINTAINER Screaming_Bunny
 
@@ -8,32 +8,55 @@ license="BSD" \
 version="2.0" \
 description="This is the Orchestrator Core container"
 
+# Add files to container
 ADD requirements.txt /tmp/requirements.txt
-ADD modules/ /tmp/modules
-ADD orc_server/ /opt/orchestrator/orc_server
-ADD docker_start.sh /opt/orchestrator/start.sh
-ADD docker_dev_start.sh /opt/orchestrator/dev_start.sh
+ADD orc_server /opt/orc_server
+ADD docker-entrypoint.sh /docker-entrypoint.sh
+
+# Set environment vars
+# DJANGO Settings
+ENV DJANGO_SETTINGS_MODULE=orchestrator.settings \
+    DJANGO_ENV="prod"
 
 # Requirements install
-RUN pip3 install -r /tmp/requirements.txt && \
-cd /tmp/modules/utils && \
-python3 setup.py install && \
+# System packages
+RUN apk add --no-cache --virtual .build-deps \
+    gcc \
+    make \
+    libc-dev \
+    musl-dev \
+    python3-dev \
+    pcre-dev \
+    openssl-dev \
+    linux-headers \
+    pcre-dev && \
+apk add --no-cache pcre mailcap && \
+# python/pip packages
+pip3 install -r /tmp/requirements.txt && \
+#
+# Collect Static Filesz
+cd /opt/orc_server && \
+python3 manage.py collectstatic --noinput && \
 cd && \
 #
-# Mod Startup Scripts
-chmod +x /opt/orchestrator/dev_start.sh && \
-chmod +x /opt/orchestrator/start.sh && \
-dos2unix /opt/orchestrator/start.sh && \
-dos2unix /opt/orchestrator/dev_start.sh && \
+# Mod Entrypoint Script
+chmod +x /docker-entrypoint.sh && \
+chmod +x /opt/orc_server/dev_start.sh && \
+dos2unix /docker-entrypoint.sh && \
+dos2unix /opt/orc_server/dev_start.sh&& \
 #
 # Cleanup
+apk del .build-deps && \
 rm -rf /var/cache/apk/* *.tar.gz* /usr/src /root/.gnupg /tmp/*
 
 # Ports
 EXPOSE 8080/tcp
 
 # Orchestrator Core Working Directory
-WORKDIR /opt/orchestrator/
+WORKDIR /opt/orc_server
+
+# entrypoint Command
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Startup Command
-CMD ["./start.sh"]
+CMD ["/usr/bin/uwsgi", "--ini", "/opt/orc_server/uwsgi.ini"]

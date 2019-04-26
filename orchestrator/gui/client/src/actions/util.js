@@ -6,24 +6,9 @@ const str_fmt = require('string-format')
 export const withGUIAuth = (headers={}) => {
     return (state) => ({
         ...headers,
-        'Authorization': str_fmt('JWT {token}', {token: state.Auth.access.token || ''})
+        'Authorization': str_fmt('JWT {token}', {token: state.Auth.access.token || ''}),
+        'Content-Type': 'application/json'
     })
-}
-
-export const withOrcAuth = (headers={}) => {
-    return (state) => ({
-        ...headers,
-        'Authorization': str_fmt('Token {token}', {token: state.Orcs.auth[state.Orcs.selected.orc_id] || ''})
-    })
-}
-
-export const withOrcURL = (endpoint='') => {
-    return (state) => {
-        return str_fmt('{proto}://{host}:{port}{endpoint}', {
-            ...state.Orcs.selected,
-            endpoint: endpoint
-        })
-  }
 }
 
 // API Calls
@@ -40,6 +25,3 @@ export const info = () => ({
         ]
     }
 })
-
-// Orchestrator API
-// GET - /api/ - get basic orchestrator info

@@ -9,13 +9,17 @@ from tracking import log
 from .models import SentHistory, ResponseHistory
 
 from orchestrator.models import Protocol
-
 from utils import decode_msg, get_or_none, safe_cast
 
 
 def command_response(body, message):
+    """
+    Process a command received from an actuator
+    :param body: command body
+    :param message: complete message (headers, meta, ...)
+    :return: None
+    """
     log.info(msg=f'Message response received: {body}')
-    print(f'Message response received: {body}')
     headers = getattr(message, "headers", {})
     actuator = None
 
@@ -23,7 +27,6 @@ def command_response(body, message):
         correlation_ID = headers['source'].get('correlationID', '')
         command = get_or_none(SentHistory, command_id=correlation_ID)
         log.error(msg=f'Message Failure: cmd - {command.command_id}, {body}')
-        print(f'Message Failure: cmd - {command.command_id}, {body}')
 
         response = {
             'error': body
@@ -47,7 +50,7 @@ def command_response(body, message):
         )
 
         if hasattr(actuator, '__iter__'):
-            print('Multiple actuators match for query')
+            log.warning(msg=f'Multiple actuators match for command response - {command.command_id}')
             actuator = random.choice(actuator)
 
     try:
@@ -55,4 +58,3 @@ def command_response(body, message):
         cmd_rsp.save()
     except Exception as e:
         log.error(msg=f'Message response failed to save: {e}')
-        print(f'Message response failed to save: {e}')

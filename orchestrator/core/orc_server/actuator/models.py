@@ -3,54 +3,66 @@ from __future__ import unicode_literals
 
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
-
-from jsonfield import JSONField
-
-from rest_framework import serializers, validators
 from drf_queryfields import QueryFieldsMixin
+from jsonfield import JSONField
+from rest_framework import serializers, validators
 
 from device.models import Device
-from orchestrator.models import Protocol, Serialization
-
 from utils import get_or_none, prefixUUID
 
 
 def defaultName():
+    """
+    Unique name generation
+    :return: 30 character
+    """
     return prefixUUID('Actuator', 30)
 
 
 class Actuator(models.Model):
-    actuator_id = models.UUIDField(default=uuid.uuid4, unique=True)
-    name = models.CharField(max_length=30, default=defaultName, unique=True)
-    '''
-    host = models.CharField(max_length=60, default='127.0.0.1')
-    port = models.IntegerField(default=0)
-    protocol = models.ForeignKey(
-        Protocol,
-        on_delete=models.CASCADE
+    """
+    Actuator instance base
+    """
+    actuator_id = models.UUIDField(
+        default=uuid.uuid4,
+        help_text="Unique UUID of the actuator",
+        unique=True
     )
-    serialization = models.ForeignKey(
-        Serialization,
-        on_delete=models.CASCADE
+    name = models.CharField(
+        default=defaultName,
+        help_text="Unique display name of the actuator",
+        max_length=30,
+        unique=True
     )
-    '''
     device = models.ForeignKey(
         Device,
-        on_delete=models.CASCADE,
         blank=True,
+        default=None,
+        help_text="Device the actuator is located on",
         null=True,
-        default=None
+        on_delete=models.CASCADE
     )
     schema = JSONField(
         blank=True,
+        help_text="Schema of the actuator",
         null=True
     )
-    profile = models.CharField(max_length=60, default='N/A')
+    schema_format = models.CharField(
+        choices=((f.lower(), f.upper()) for f in settings.SCHEMA_FORMATS),
+        default='jadn',
+        help_text=f"Format of the schema ({'|'.join(f.upper() for f in settings.SCHEMA_FORMATS)}), set from the schema",
+        max_length=4
+    )
+    profile = models.CharField(
+        default='N/A',
+        help_text="Profile of the actuator, set from the schema",
+        max_length=60
+    )
 
     @property
     def url_name(self):
@@ -61,7 +73,14 @@ class Actuator(models.Model):
 
 
 class AbstractGroup(models.Model):
-    name = models.CharField(_('name'), max_length=80, unique=True)
+    """
+    Actuator Group base model
+    """
+    name = models.CharField(
+        max_length=80,
+        help_text="Unique name of the group",
+        unique=True
+    )
 
     class Meta:
         abstract = True
@@ -70,49 +89,79 @@ class AbstractGroup(models.Model):
         return self.name
 
     def natural_key(self):
-        return (self.name, )
+        return self.name,
 
 
 class ActuatorGroup(AbstractGroup):
+    """
+    Actuator Group instance base
+    """
     users = models.ManyToManyField(
         User,
-        blank=True
+        blank=True,
+        help_text="Users in the group"
     )
 
-    actuator = models.ForeignKey(
+    actuators = models.ManyToManyField(
         Actuator,
-        on_delete=models.CASCADE
+        blank=True,
+        help_text="Actuators available to users in the group"
     )
 
     class Meta:
-        verbose_name = _('group')
-        verbose_name_plural = _('groups')
+        verbose_name = 'group'
+        verbose_name_plural = 'groups'
 
 
 class ActuatorProfile(AbstractGroup):
+    """
+    Actuator Profile instance base
+    """
     actuators = models.ManyToManyField(
         Actuator,
-        blank=True
+        blank=True,
+        help_text="Actuators of the groups profile"
     )
 
     class Meta:
-        verbose_name = _('profile')
-        verbose_name_plural = _('profiles')
+        verbose_name = 'profile'
+        verbose_name_plural = 'profiles'
 
 
 @receiver(pre_save, sender=Actuator)
 def actuator_pre_save(sender, instance=None, **kwargs):
+    """
+    Set the profile name base on the actuators schema
+    :param sender: model "sending" the action - Actuator
+    :param instance: SENDER instance
+    :param kwargs: key/value args
+    :return: None
+    """
     profile = 'None'
+    schema_keys = set(instance.schema.keys())
 
-    if type(instance.schema) is dict:
-        profile = instance.schema.get('meta', {}).get('title', '').replace(' ', '_')
-        profile = 'None' if profile == '' else profile
+    if isinstance(instance.schema, dict):
+        if len(schema_keys - {"meta", "types"}) == 0:  # JADN
+            instance.schema_format = 'jadn'
+            profile = instance.schema.get('meta', {}).get('title', '').replace(' ', '_')
+            profile = 'None' if profile in ('', ' ', None) else profile
+        else:  # JSON
+            instance.schema_format = 'json'
+            profile = instance.schema.get('title', '').replace(' ', '_')
+            profile = 'None' if profile in ('', ' ', None) else profile
 
     instance.profile = profile
 
 
 @receiver(post_save, sender=Actuator)
 def actuator_post_save(sender, instance=None, **kwargs):
+    """
+    Set the profile group based on the saved schema
+    :param sender: model "sending" the action - Actuator
+    :param instance: SENDER instance
+    :param kwargs: key/value args
+    :return: None
+    """
     if instance is not None:
         profile_name = instance.profile.replace('_', ' ')
 
@@ -135,6 +184,9 @@ def actuator_post_save(sender, instance=None, **kwargs):
 
 
 class ActuatorSerializer(QueryFieldsMixin, serializers.ModelSerializer):
+    """
+    Actuator API Serializer
+    """
     actuator_id = serializers.UUIDField(format='hex_verbose')
     device = serializers.SlugRelatedField(
         queryset=Device.objects.all(),
@@ -145,4 +197,24 @@ class ActuatorSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Actuator
         fields = ('actuator_id', 'name', 'device', 'profile', 'schema')
+        read_only_fields = ('profile',)
+
+
+class ActuatorGroupSerializer(QueryFieldsMixin, serializers.ModelSerializer):
+    """
+    Actuator Group API Serializer
+    """
+    name = serializers.CharField(max_length=80)
+    users = serializers.SlugRelatedField(
+        queryset=User.objects.all(),
+        slug_field='username'
+    )
+    actuators = serializers.SlugRelatedField(
+        queryset=Actuator.objects.all(),
+        slug_field='name'
+    )
+
+    class Meta:
+        model = ActuatorGroup
+        fields = ('name', 'users', 'actuators')
         read_only_fields = ('profile',)

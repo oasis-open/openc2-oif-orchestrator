@@ -24,11 +24,9 @@ class PrivateRoute extends Route {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        authErrors: state.Auth.errors,
-        isAuthenticated: AuthActions.isAuthenticated(state.Auth)
-    }
-}
+const mapStateToProps = (state) => ({
+    authErrors: state.Auth.errors,
+    isAuthenticated: AuthActions.isAuthenticated(state.Auth)
+})
 
 export default connect(mapStateToProps)(PrivateRoute)

@@ -21,7 +21,8 @@ export const undefinedEndpointErrorMessage = (action) => {
     middleware instance.`
 }
 
-// Socket Functions
+// Socket Calls
+// Setup Socket - opens connection and sets function calls for WebSocket events
 export const SOCKET_SETUP = '@@socket/SOCKET_SETUP'
 const NULLS = [null, '', ' ']
 export const setupSocket = (dispatch, endpoint, protocols, options) => {
@@ -36,18 +37,14 @@ export const setupSocket = (dispatch, endpoint, protocols, options) => {
         minReconnectionDelay: 1500,
         reconnectionDelayGrowFactor: 1.3,
         connectionTimeout: 1000,
-        maxRetries: 5,
+        maxRetries: 10,
         debug: false,
         ...options
     }
     connection.socket.connect(endpoint, protocols, options)
-
     connection.socket.socket.onopen = () => dispatch(createConnectionAction(endpoint))
-
     connection.socket.socket.onclose = () => dispatch(createDisconnectionAction(endpoint))
-
     connection.socket.socket.onerror = error => dispatch(createErrorAction(endpoint, error))
-
     connection.socket.socket.onmessage = data => dispatch(createMessageAction(endpoint, data))
 
     return {
@@ -57,6 +54,7 @@ export const setupSocket = (dispatch, endpoint, protocols, options) => {
     }
 }
 
+// Socket Connected - WebSocket is connected and open
 export const SOCKET_CONNECTED = '@@socket/SOCKET_CONNECTED'
 export const createConnectionAction = (endpoint) => ({
     type: SOCKET_CONNECTED,
@@ -68,6 +66,7 @@ export const createConnectionAction = (endpoint) => ({
     }
 })
 
+// Socket Disconnected - WebSocket disconnected
 export const SOCKET_DISCONNECTED = '@@socket/SOCKET_DISCONNECTED'
 export const createDisconnectionAction = (endpoint) => ({
     type: SOCKET_DISCONNECTED,
@@ -79,6 +78,7 @@ export const createDisconnectionAction = (endpoint) => ({
     }
 })
 
+// Socket Error - WebSocket error has occurred
 export const SOCKET_ERROR = '@@socket/SOCKET_ERROR'
 export const createErrorAction = (endpoint, error) => ({
     type: SOCKET_ERROR,
@@ -89,6 +89,7 @@ export const createErrorAction = (endpoint, error) => ({
     }
 })
 
+// Socket Message - WebSocket has received data, triggers appropriate store call
 export const RECEIVED_SOCKET_DATA = 'socket/RECEIVED_SOCKET_DATA'
 export const createMessageAction = (endpoint, data) => ({
     type: RECEIVED_SOCKET_DATA,

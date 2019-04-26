@@ -21,7 +21,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
 
     queryset = Actuator.objects.order_by('name')
     filter_backends = (filters.OrderingFilter,)
-    ordering_fields = ('name', 'host', 'port', 'protocol', 'serialization', 'type')
+    ordering_fields = ('actuator_id', 'name', 'profile', 'type')
 
     permissions = {
         'create':  (permissions.IsAdminUser,),
@@ -87,9 +87,9 @@ class ActuatorViewSet(viewsets.ModelViewSet):
                 refresh = 'info'
 
             # TODO: refresh actuator data
-            print('Valid instance')
+            # print('Valid instance')
 
-        print('refresh')
+        # print('refresh')
         return Response({
             'refresh': refresh
         })
@@ -101,7 +101,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         """
         actuator = self.get_object()
 
-        if not request.user.is_staff:
+        if not request.user.is_staff:  # Standard User
             actuator_groups = [g.name for g in ActuatorGroup.objects.filter(actuator=actuator).filter(users__in=[request.user])]
 
             if len(actuator_groups) == 0:
@@ -120,7 +120,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         """
         actuator = self.get_object()
 
-        if not request.user.is_staff:
+        if not request.user.is_staff:  # Standard User
             actuator_groups = [g.name for g in ActuatorGroup.objects.filter(actuator=actuator).filter(users__in=[request.user])]
 
             if len(actuator_groups) == 0:

@@ -2,7 +2,13 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader
+} from 'reactstrap'
 
 import JSONInput from '../../utils/jadn-editor'
 import locale from '../../utils/jadn-editor/locale/en'
@@ -30,10 +36,8 @@ class ActuatorModal extends Component {
         this.textareaChange = this.textareaChange.bind(this)
 
         this.register = this.props.register == true
-
         this.schemaUpload = null
-
-        this.defaultParent = {} //this.props.data ? this.props.data.device : null
+        this.defaultParent = {}
 
         this.defaultActuator = {
             name: 'Actuator',
@@ -89,22 +93,22 @@ class ActuatorModal extends Component {
     }
 
     genUUID() {
-        this.setState({
+        this.setState(prevState => ({
             actuator: {
-                ...this.state.actuator,
+                ...prevState.actuator,
                 actuator_id: generateUUID4()
             }
-        })
+        }))
     }
 
     toggleModal() {
-        this.setState({
-            modal: !this.state.modal,
+        this.setState(prevState => ({
+            modal: !prevState.modal,
             actuator: {
                 ...this.defaultActuator,
                 ...(this.register ? {} : this.props.data)
             }
-        })
+        }))
     }
 
     changeParent(e) {
@@ -180,7 +184,6 @@ class ActuatorModal extends Component {
                 }))
             } catch(e) {
                 toast(<p>Schema cannot be loaded</p>, {type: toast.TYPE.WARNING})
-                console.log(e)
                 return
             }
     	}
@@ -199,7 +202,6 @@ class ActuatorModal extends Component {
             }))
         } catch (e) {
             toast(<p>Schema is not valid</p>, {type: toast.TYPE.WARNING})
-            console.log(e)
         }
 	}
 
@@ -254,23 +256,6 @@ class ActuatorModal extends Component {
                                     value={ FormatJADN(this.state.actuator.schema) }
                                     onChange={ this.textAreaChange }
                                 />
-
-                                {/*
-                                <JSONInput
-                                    id='actuator_schema'
-                                    placeholder={ this.state.actuator.schema }
-                                    onChange={ (val) => {
-                                        if (val.jsObject) {
-                                            this.setState({ actuator: {...this.state.actuator, schema: val.jsObject }})
-                                        }
-                                    }}
-                                    theme='light_mitsuketa_tribute'
-                                    locale={ locale }
-                                    reset={ false }
-                                    height='100%'
-                                    width='100%'
-                                />
-                                */}
                             </div>
                             <div className='clearfix' >
                                     <Button color='info' size='sm' className='float-right' onClick={ () => this.schemaUpload.click() }>Upload Schema</Button>
@@ -294,28 +279,23 @@ class ActuatorModal extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        orchestrator: {
-            // ...state.Orcs.selected,
-            protocols: state.Util.protocols,
-            serializations: state.Util.serializations,
-        },
-        errors: state.Actuator.errors,
-
-        admin: state.Auth.access.admin,
-        devices: state.Device.devices
-    }
-}
+const mapStateToProps = (state) => ({
+    orchestrator: {
+        // ...state.Orcs.selected,
+        protocols: state.Util.protocols,
+        serializations: state.Util.serializations,
+    },
+    errors: state.Actuator.errors,
+    admin: state.Auth.access.admin,
+    devices: state.Device.devices
+})
 
 
-function mapDispatchToProps(dispatch) {
-    return {
-        createActuator: (act) => dispatch(ActuatorActions.createActuator(act)),
-        updateActuator: (actUUID, act) => dispatch(ActuatorActions.updateActuator(actUUID, act)),
-        getDevice: (devUUID) => dispatch(DeviceActions.getDevice(devUUID)),
-        getDevices: () => dispatch(DeviceActions.getDevices())
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    createActuator: (act) => dispatch(ActuatorActions.createActuator(act)),
+    updateActuator: (actUUID, act) => dispatch(ActuatorActions.updateActuator(actUUID, act)),
+    getDevice: (devUUID) => dispatch(DeviceActions.getDevice(devUUID)),
+    getDevices: () => dispatch(DeviceActions.getDevices())
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActuatorModal)

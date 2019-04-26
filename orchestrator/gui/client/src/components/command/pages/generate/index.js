@@ -1,13 +1,24 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
-
 import JSONPretty from 'react-json-pretty'
 
-import { Button, ButtonGroup, Form, FormGroup, Label, Input, FormText, Tooltip } from 'reactstrap';
+import {
+    Button,
+    ButtonGroup,
+    Form,
+    FormGroup,
+    FormText,
+    Input,
+    Label,
+    Tooltip
+} from 'reactstrap'
 
 import {
-    Field,
+    JADN_Field,
+    JSON_Field,
+    keys,
+    zip
 } from './lib'
 
 import {
@@ -19,13 +30,15 @@ import {
     hexify,
     loadURL,
     minify,
+    safeGet,
     setMultiKey,
     validateUUID4,
     validURL
 } from '../../../utils'
 
-import JSONInput from '../../../utils/jadn-editor'
-import locale from '../../../utils/jadn-editor/locale/en'
+import JADNInput from '../../../utils/jadn-editor'
+import JSONInput from 'react-json-editor-ajrm'
+import locale from 'react-json-editor-ajrm/locale/en'
 
 import * as UtilActions from '../../../../actions/util'
 import * as GenerateActions from '../../../../actions/generate'
@@ -38,6 +51,11 @@ class GenerateCommands extends Component {
     constructor(props, context) {
         super(props, context)
 
+        this.optChange = this.optChange.bind(this)
+		this.selectChange = this.selectChange.bind(this)
+		this.sendCommand = this.sendCommand.bind(this)
+        this.jadn_keys = ["meta", "types"]
+
 		this.state = {
 		    command_record: '',
 		    channel: {
@@ -48,17 +66,11 @@ class GenerateCommands extends Component {
 				schema: {},
 				selected: 'empty',
 				type: '',
-				decodeTypes: {
-				    all: [],
-				    exports: []
-				}
+				jadn_fmt: false,
+				exports: []
 			},
 		    message: {}
 		}
-
-		this.optChange = this.optChange.bind(this)
-		this.selectChange = this.selectChange.bind(this)
-		this.sendCommand = this.sendCommand.bind(this)
 
 		this.props.actuatorInfo()
 		this.props.deviceInfo()
@@ -71,50 +83,72 @@ class GenerateCommands extends Component {
         if (this.state.schema.schema != nextState.schema.schema) {
             this.props.setSchema(nextState.schema.schema)
             nextState.message = {}
+
+            let schema_keys = Object.keys(nextState.schema.schema)
+            nextState.schema.jadn_fmt = (schema_keys.length === this.jadn_keys.length && schema_keys.every(v => this.jadn_keys.indexOf(v) !== -1))
+
+            if (nextState.schema.jadn_fmt) {
+                nextState.schema.exports = nextState.schema.schema.meta.exports
+            } else {
+                nextState.schema.exports = nextState.schema.schema.oneOf.map(exp => exp['$ref'].replace(/^#\/definitions\//, ''))
+            }
         }
 
         return props_update || state_update
     }
 
     makeID() {
-        this.setState({
+        this.setState(prevState => ({
             message: {
-                ...this.state.message,
+                ...prevState.message,
                 id: generateUUID4()
             }
-        })
+        }))
     }
 
     sendCommand() {
+        if (this.state.schema.type == 'actuator') {
+            if (this.state.channel.protocol == '') {
+                toast(<div><p>Error:</p><p>Actuator protocol not set</p></div>, {type: toast.TYPE.WARNING})
+                return
+            }
+
+            if (this.state.channel.serialization == '') {
+                toast(<div><p>Error:</p><p>Actuator serialization not set</p></div>, {type: toast.TYPE.WARNING})
+                return
+            }
+        }
+
         let actuator = str_fmt('{type}/{selected}', {
             type: this.state.schema.type,
             selected: this.state.schema.selected
         })
 
         Promise.resolve(this.props.sendCommand(this.state.message, actuator, this.state.channel)).then(() => {
-            let errs = this.props.errors[CommandActions.SEND_COMMAND_FAILURE] || {}
+            let errs = safeGet(this.props.errors, CommandActions.SEND_COMMAND_FAILURE, {})
+
             if (Object.keys(errs).length !== 0) {
-                console.log(errs)
                 if (errs.hasOwnProperty('non_field_errors')) {
-                    Object.values(errs).forEach(err => {
+                    Object.values(errs).forEach((err) => {
                         toast(<p>Error: { err }</p>, {type: toast.TYPE.WARNING})
                     })
                 } else {
-                    Object.keys(errs).forEach(err => {
-                       toast(<div><p>Error { err }:</p><p>{ errs[err] }</p></div>, {type: toast.TYPE.WARNING})
+                    Object.keys(errs).forEach((err) => {
+                        toast(<div><p>Error { err }:</p><p>{ errs[err] }</p></div>, {type: toast.TYPE.WARNING})
                     })
                 }
             } else {
-                console.log('show responses...')
+                // TODO: Process responses ??
             }
         })
     }
 
     optChange(k, v) {
-        // console.log(k, v)
-        this.setState((prevState) => {
+        this.setState(prevState => {
             let msg = prevState.message || {}
             let keys = k.split('.')
+            keys = this.state.schema.exports.indexOf(keys[0]) == -1 ? keys : keys.slice(1)
+
             if (keys.length > 1 && msg[keys[0]] && !msg[keys[0]][keys[1]]) {
                 delMultiKey(msg, keys[0])
             }
@@ -145,7 +179,7 @@ class GenerateCommands extends Component {
             let act_profile = this.props.actuators.filter((act) => act.profile == selected)
 
             if (act_profile.length == 0) {
-                toast(<p>Not a valid profile</p>, {type: toast.TYPE.WARNING})
+                toast(<p>Something happened, invalid profile</p>, {type: toast.TYPE.WARNING})
                 return
             } else {
                 act_profile = act_profile[Math.floor(Math.random()*act_profile.length)]
@@ -153,10 +187,10 @@ class GenerateCommands extends Component {
             schema_act = act_profile.actuator_id
 
         } else if (field == 'actuator') {
-            let act_name = this.props.actuators.filter((act) => act.name == selected)
+            let act_name = this.props.actuators.filter((act) => act.actuator_id == selected)
 
             if (act_name.length == 0 || act_name.length > 1) {
-                toast(<p>Not a valid actuator</p>, {type: toast.TYPE.WARNING})
+                toast(<p>Something happened, invalid actuator</p>, {type: toast.TYPE.WARNING})
                 return
             } else {
                 act_name = act_name[0]
@@ -164,32 +198,28 @@ class GenerateCommands extends Component {
             schema_act = act_name.actuator_id
         }
 
-		this.setState((prevState) => {
-            return {
-                'command_record': '',
-                message: {},
-                schema: {
-			        ...prevState.schema,
-		            selected: selected,
-		            type: field
-			    }
-            }
-		}, () => {
-		    console.log(schema_act, field)
+		this.setState(prevState => ({
+            command_record: '',
+            message: {},
+            schema: {
+                ...prevState.schema,
+		        selected: selected,
+		        type: field
+			}
+		}), () => {
 		    Promise.resolve(this.props.actuatorSelect(schema_act, field)).then(() => {
 		        if (Object.keys(this.props.selected.schema).length === 0) {
                     toast(<p>No schema defined</p>, {type: toast.TYPE.INFO})
 		        }
 
-		        this.setState((prevState) => {
-                    return {
-                        schema: {
-                            ...prevState.schema,
-                            schema: this.props.selected.schema,
-                            profile: this.props.selected.profile
-                        }
+		        this.setState(prevState => ({
+                    schema: {
+                        ...prevState.schema,
+                        schema: this.props.selected.schema,
+                        profile: this.props.selected.profile
+
                     }
-                })
+                }))
 		    })
 		})
 	}
@@ -198,17 +228,18 @@ class GenerateCommands extends Component {
         let profile_schemas = []
         let actuator_schemas = []
 
+        let Editor = this.state.schema.jadn_fmt ? JADNInput : JSONInput
+
         this.props.actuators.forEach((act, i) => {
             let dev = this.props.devices.filter(d => d.device_id == act.device)
             dev = dev.length == 1 ? dev[0] : {}
-            actuator_schemas.push(<option key={ i } value={ act.name } field='actuator' >{ dev ? dev.name + ' - ' : '' }{ act.name }</option>)
+            actuator_schemas.push(<option key={ i } value={ act.actuator_id } field='actuator' >{ dev ? dev.name + ' - ' : '' }{ act.name }</option>)
             if (profile_schemas.indexOf(act.profile) === -1) {
                 profile_schemas.push(act.profile)
             }
         })
 
         profile_schemas = profile_schemas.map((p, i) => <option key={ i } value={ p } field='profile' >{ p }</option>)
-
         return (
             <div className='col-md-6'>
                 <div id="schema-card" className="tab-pane fade active show">
@@ -230,12 +261,17 @@ class GenerateCommands extends Component {
 						</div>
 
                         <div className="form-control border card-body p-0" style={{ height: maxHeight+'px' }}>
-                            <JSONInput
+                            <Editor
                                 id='jadn_schema'
                                 placeholder={ this.state.schema.schema }
                                 onChange={ (val) => {
                                     if (val.jsObject) {
-                                        this.setState({ schema: {...this.state.schema, schema: val.jsObject }})
+                                        this.setState(prevState => ({
+                                            schema: {
+                                                ...prevState.schema,
+                                                schema: val.jsObject
+                                            }
+                                        }))
                                     }
                                 }}
                                 theme='light_mitsuketa_tribute'
@@ -251,16 +287,39 @@ class GenerateCommands extends Component {
         )
     }
 
-    cmdCreator(maxHeight) {
-        let export_records = []
+    jadn_cmdCreator(maxHeight) {
+        let export_records = this.state.schema.exports.map((rec, i) => <option key={ i } value={ rec }>{ rec }</option>)
         let record_def = []
+        let act_protos = []
+        let act_serials = []
 
         if (this.props.selected.schema) {
-            export_records = this.props.selected.schema.meta ? this.props.selected.schema.meta.exports : []
-            export_records = export_records.map((rec, i) => <option key={ i } value={ rec }>{ rec }</option>)
-
             record_def = this.props.selected.schema.hasOwnProperty('types') ? this.props.selected.schema.types.filter(type => type[0] == this.state.command_record) : []
-            record_def = (record_def.length == 1 ? record_def[0] : [])
+            record_def = zip(keys.Structure, record_def.length == 1 ? record_def[0] : [])
+        }
+
+
+        if (this.state.schema.type === 'actuator') {
+            let act = this.props.actuators.filter(act => act.actuator_id === this.state.schema.selected)
+            act = act.length == 1 ? act[0] : {}
+            let dev = this.props.devices.filter(dev => dev.device_id === act.device)
+            dev = dev.length == 1 ? dev[0] : {}
+
+            act_protos = dev.transport.map((trans, i) => {
+                if (trans.protocol == this.state.channel.protocol) {
+                    act_serials = trans.serialization.map((serial, i) => <option key={ i } value={ serial }>{ serial }</option>)
+
+                    if (trans.serialization.indexOf(this.state.channel.serialization) == -1 && this.state.channel.serialization !== '') {
+                        this.setState(prevState => ({
+                            channel: {
+                                ...prevState.channel,
+                                serialization: ''
+                            }
+                        }))
+                    }
+                }
+                return (<option key={ i } value={ trans.protocol }>{ trans.protocol }</option>)
+            })
         }
 
         return (
@@ -269,7 +328,236 @@ class GenerateCommands extends Component {
 			        <li className='nav-item'>
 				        <a className='nav-link active show' data-toggle='tab' href='#tab-creator'>Creator</a>
   			        </li>
+  			        <li id='msg-tab' className='nav-item' >
+    			        <a className='nav-link' data-toggle='tab' href='#tab-message'>Message</a>
+  			        </li>
+		        </ul>
 
+		        <div className='tab-content'>
+		            <div className='tab-pane fade active show' id='tab-creator'>
+                        <div className='card col-12 p-0 mx-auto'>
+                            <div className='card-header'>
+                                <FormGroup className='col-md-6 p-0 m-0 float-left'>
+                                    <Input type='select' className='form-control' value={ this.state.command_record } onChange={ (e) => { this.setState({command_record: e.target.value, message: {}}) }}>
+                                        <option value=''>Command Type</option>
+                                        <optgroup label="Exports">
+						                    { export_records }
+                                        </optgroup>
+                                    </Input>
+                                </FormGroup>
+
+                                <Button color='primary' className='float-right' onClick={ () => this.makeID() }>Generate ID</Button>
+                            </div>
+
+                            <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
+                                <div id="fieldDefs">
+                                    {
+                                         Object.keys(record_def).length == 0 ?
+                                            <FormText color="muted">Command Fields will appear here after selecting a type</FormText>
+                                        :
+                                            <JADN_Field def={ record_def } optChange={ this.optChange } />
+                                    }
+                                </div>
+                            </Form>
+                        </div>
+                    </div>
+
+                    <div className='tab-pane fade' id='tab-message'>
+                        <div className='card col-12 p-0 mx-auto'>
+                            <div className='card-header'>
+                                <Button color='primary' className='float-right' onClick={ () => this.sendCommand() }>Send</Button>
+                                <div className={ 'col-10 p-0 ' + (this.state.schema.type === 'actuator' ? '' : ' d-none') }>
+                                    <FormGroup className='col-md-6 p-0 m-0 float-left'>
+                                        <Input type='select' className='form-control' value={ this.state.channel.protocol } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, protocol: e.target.value }}) }}>
+                                            <option value=''>Protocol</option>
+                                            { act_protos }
+                                        </Input>
+                                    </FormGroup>
+                                    <FormGroup className='col-md-6 p-0 m-0 float-left'>
+                                        <Input type='select' className='form-control' value={ this.state.channel.serialization } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, serialization: e.target.value }}) }}>
+                                             <option value=''>Serialization</option>
+                                            { act_serials }
+                                        </Input>
+                                    </FormGroup>
+                                </div>
+                            </div>
+
+                            <div className='card-body p-1 position-relative' style={{ height: maxHeight-25+'px', overflowY: 'scroll' }}>
+                                <JSONPretty
+                                    id='message'
+                                    className='scroll-xl'
+                                    style={{ minHeight: 2.5+'em' }}
+                                    json={ this.state.message }
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    json_cmdCreator(maxHeight) {
+        let export_records = this.state.schema.exports.map((rec, i) => <option key={ i } value={ rec }>{ rec }</option>)
+        let record_def = {}
+        let act_protos = []
+        let act_serials = []
+
+        if (this.props.selected.schema) {
+            if (this.props.selected.schema.definitions) {
+                if (this.props.selected.schema.definitions.hasOwnProperty(this.state.command_record)) {
+                    record_def = this.props.selected.schema.definitions[this.state.command_record]
+                }
+            }
+        }
+
+        if (this.state.schema.type === 'actuator') {
+            let act = this.props.actuators.filter(act => act.actuator_id === this.state.schema.selected)
+            act = act.length == 1 ? act[0] : {}
+            let dev = this.props.devices.filter(dev => dev.device_id === act.device)
+            dev = dev.length == 1 ? dev[0] : {}
+
+            act_protos = dev.transport.map((trans, i) => {
+                if (trans.protocol == this.state.channel.protocol) {
+                    act_serials = trans.serialization.map((serial, i) => <option key={ i } value={ serial }>{ serial }</option>)
+
+                    if (trans.serialization.indexOf(this.state.channel.serialization) == -1 && this.state.channel.serialization !== '') {
+                        this.setState(prevState => ({
+                            channel: {
+                                ...prevState.channel,
+                                serialization: ''
+                            }
+                        }))
+                    }
+                }
+                return (<option key={ i } value={ trans.protocol }>{ trans.protocol }</option>)
+            })
+        }
+
+        return (
+            <div className='col-md-6'>
+                 <ul className='nav nav-tabs'>
+			        <li className='nav-item'>
+				        <a className='nav-link active show' data-toggle='tab' href='#tab-creator'>Creator</a>
+  			        </li>
+  			        <li id='msg-tab' className='nav-item' >
+    			        <a className='nav-link' data-toggle='tab' href='#tab-message'>Message</a>
+  			        </li>
+		        </ul>
+
+		        <div className='tab-content'>
+		            <div className='tab-pane fade active show' id='tab-creator'>
+                        <div className='card col-12 p-0 mx-auto'>
+                            <div className='card-header'>
+                                <FormGroup className='col-md-6 p-0 m-0 float-left'>
+                                    <Input type='select' className='form-control' value={ this.state.command_record } onChange={ (e) => { this.setState({command_record: e.target.value, message: {}}) }}>
+                                        <option value=''>Command Type</option>
+                                        <optgroup label="Exports">
+						                    { export_records }
+                                        </optgroup>
+                                    </Input>
+                                </FormGroup>
+
+                                <Button color='primary' className='float-right' onClick={ () => this.makeID() }>Generate ID</Button>
+                            </div>
+
+                            <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
+                                <div id="fieldDefs">
+                                    {
+                                        Object.keys(record_def).length == 0 ?
+                                            <FormText color="muted">Command Fields will appear here after selecting a type</FormText>
+                                        :
+                                            <JSON_Field name={ this.state.command_record } def={ record_def } required optChange={ this.optChange } />
+                                    }
+                                </div>
+                            </Form>
+                        </div>
+                    </div>
+
+                    <div className='tab-pane fade' id='tab-message'>
+                        <div className='card col-12 p-0 mx-auto'>
+                            <div className='card-header'>
+                                <Button color='primary' className='float-right' onClick={ () => this.sendCommand() }>Send</Button>
+                                <div className={ 'col-10 p-0 ' + (this.state.schema.type === 'actuator' ? '' : ' d-none') }>
+                                    <FormGroup className='col-md-6 p-0 m-0 float-left'>
+                                        <Input type='select' className='form-control' value={ this.state.channel.protocol } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, protocol: e.target.value }}) }}>
+                                            <option value=''>Protocol</option>
+                                            { act_protos }
+                                        </Input>
+                                    </FormGroup>
+                                    <FormGroup className='col-md-6 p-0 m-0 float-left'>
+                                        <Input type='select' className='form-control' value={ this.state.channel.serialization } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, serialization: e.target.value }}) }}>
+                                             <option value=''>Serialization</option>
+                                            { act_serials }
+                                        </Input>
+                                    </FormGroup>
+                                </div>
+                            </div>
+
+                            <div className='card-body p-1 position-relative' style={{ height: maxHeight-25+'px', overflowY: 'scroll' }}>
+                                <JSONPretty
+                                    id='message'
+                                    className='scroll-xl'
+                                    style={{ minHeight: 2.5+'em' }}
+                                    json={ this.state.message }
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    cmdCreator(maxHeight) {
+        let export_records = this.state.schema.exports.map((rec, i) => <option key={ i } value={ rec }>{ rec }</option>)
+        let Record_Def = ""
+        let act_protos = []
+        let act_serials = []
+
+        if (this.props.selected.schema) {
+            let record_def = {}
+            if (this.state.schema.jadn_fmt) {
+                record_def = this.props.selected.schema.hasOwnProperty('types') ? this.props.selected.schema.types.filter(type => type[0] == this.state.command_record) : []
+                record_def = zip(keys.Structure, record_def.length == 1 ? record_def[0] : [])
+                Record_Def = <JADN_Field def={ record_def } optChange={ this.optChange } />
+            } else {
+                if (this.props.selected.schema.definitions && this.props.selected.schema.definitions.hasOwnProperty(this.state.command_record)) {
+                    record_def = this.props.selected.schema.definitions[this.state.command_record]
+                    Record_Def = <JSON_Field name={ this.state.command_record } def={ record_def } required optChange={ this.optChange } />
+                }
+            }
+        }
+
+        if (this.state.schema.type === 'actuator') {
+            let act = this.props.actuators.filter(act => act.actuator_id === this.state.schema.selected)
+            act = act.length == 1 ? act[0] : {}
+            let dev = this.props.devices.filter(dev => dev.device_id === act.device)
+            dev = dev.length == 1 ? dev[0] : {}
+
+            act_protos = dev.transport.map((trans, i) => {
+                if (trans.protocol == this.state.channel.protocol) {
+                    act_serials = trans.serialization.map((serial, i) => <option key={ i } value={ serial }>{ serial }</option>)
+
+                    if (trans.serialization.indexOf(this.state.channel.serialization) == -1 && this.state.channel.serialization !== '') {
+                        this.setState(prevState => ({
+                            channel: {
+                                ...prevState.channel,
+                                serialization: ''
+                            }
+                        }))
+                    }
+                }
+                return (<option key={ i } value={ trans.protocol }>{ trans.protocol }</option>)
+            })
+        }
+
+        return (
+            <div className='col-md-6'>
+                 <ul className='nav nav-tabs'>
+			        <li className='nav-item'>
+				        <a className='nav-link active show' data-toggle='tab' href='#tab-creator'>Creator</a>
+  			        </li>
   			        <li id='msg-tab' className='nav-item' >
     			        <a className='nav-link' data-toggle='tab' href='#tab-message'>Message</a>
   			        </li>
@@ -292,15 +580,12 @@ class GenerateCommands extends Component {
                             </div>
 
                             <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
-                                {
-                                    (record_def.length > 1 && record_def[record_def.length - 2].length > 0) ?
-                                    <FormText color="muted"><b>Comment: </b>{ record_def[record_def.length - 2] }</FormText> : ''
-                                }
                                 <div id="fieldDefs">
                                     {
-                                        record_def[record_def.length - 1] == undefined ?
-                                            <FormText color="muted">Command Fields will appear here after selecting a type { this.state.command_record }</FormText>
-                                        : record_def[record_def.length - 1].map((def, i) => <Field key={ i } def={ def } optChange={ this.optChange } />)
+                                        this.state.command_record == "" ?
+                                            <FormText color="muted">Command Fields will appear here after selecting a type</FormText>
+                                        :
+                                            Record_Def
                                     }
                                 </div>
                             </Form>
@@ -315,13 +600,13 @@ class GenerateCommands extends Component {
                                     <FormGroup className='col-md-6 p-0 m-0 float-left'>
                                         <Input type='select' className='form-control' value={ this.state.channel.protocol } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, protocol: e.target.value }}) }}>
                                             <option value=''>Protocol</option>
-                                            {/* TODO: Add Actuator Protocols */}
+                                            { act_protos }
                                         </Input>
                                     </FormGroup>
                                     <FormGroup className='col-md-6 p-0 m-0 float-left'>
                                         <Input type='select' className='form-control' value={ this.state.channel.serialization } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, serialization: e.target.value }}) }}>
                                              <option value=''>Serialization</option>
-                                             {/* TODO: Add Actuator serializations */}
+                                            { act_serials }
                                         </Input>
                                     </FormGroup>
                                 </div>
@@ -382,27 +667,21 @@ class GenerateCommands extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        actuators: state.Generate.actuators || [],
-        devices: state.Generate.devices || [],
-        // loadedSchemas: state.Util.loaded.schemas || {},
-        selected: state.Generate.selected || {},
-
-        message: state.Generate.message,
-        errors: state.Command.errors
-    }
-}
+const mapStateToProps = (state) => ({
+    actuators: state.Generate.actuators || [],
+    devices: state.Generate.devices || [],
+    selected: state.Generate.selected || {},
+    message: state.Generate.message,
+    errors: state.Command.errors
+})
 
 
-function mapDispatchToProps(dispatch) {
-    return {
-        setSchema: (schema) => dispatch(GenerateActions.setSchema(schema)),
-        actuatorInfo: () => dispatch(GenerateActions.actuatorInfo()),
-        actuatorSelect: (act, t) => dispatch(GenerateActions.actuatorSelect(act, t)),
-        deviceInfo: () => dispatch(GenerateActions.deviceInfo()),
-        sendCommand: (cmd, act, chan) => dispatch(CommandActions.sendCommand(cmd, act, chan))
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    setSchema: (schema) => dispatch(GenerateActions.setSchema(schema)),
+    actuatorInfo: () => dispatch(GenerateActions.actuatorInfo()),
+    actuatorSelect: (act, t) => dispatch(GenerateActions.actuatorSelect(act, t)),
+    deviceInfo: () => dispatch(GenerateActions.deviceInfo()),
+    sendCommand: (cmd, act, chan) => dispatch(CommandActions.sendCommand(cmd, act, chan))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(GenerateCommands)

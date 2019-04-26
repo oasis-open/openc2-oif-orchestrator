@@ -161,4 +161,8 @@ fabric.properties
 # Custom Ignore
 .idea/
 *.sqlite3
-migrations/
+migrations/*
+
+# Add known good migrations
+!/orc_server/*/migrations/__init__.py
+!/orc_server/*/migrations/0001_initial.py

@@ -45,16 +45,6 @@ export default (state=initialState, action=null) => {
                 refresh: false
             }
 
-        case auth.TOKEN_VALIDATED:
-            return {
-                ...state,
-                access: {
-                    token: action.payload.token,
-                    ...jwtDecode(action.payload.token)
-                },
-                errors: {}
-            }
-
         case auth.LOGIN_FAILURE:
         case auth.LOGOUT_FAILURE:
         case auth.TOKEN_FAILURE:

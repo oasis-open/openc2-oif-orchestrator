@@ -13,38 +13,48 @@ from .models import RequestLog
 
 class LoggingMiddleware(MiddlewareMixin):
     """
-    Adapted from DRF-Tracking - Breaking with Django2 and Python3
+    Adapted from DRF-Tracking - drf-tracking.readthedocs.io
+    Applied as middleware to catch all API requests rather than per view/apiview
     """
-    CLEANED_SUBSTITUTE = '********************'
-    SENSITIVE_FIELDS = ['api', 'token', 'key', 'secret', 'password', 'password1', 'password2', 'signature']
+    _CLEANED_SUBSTITUTE = "********************"
+    _SENSITIVE_FIELDS = {"api", "token", "key", "secret", "password", "password1", "password2", "signature"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.log = {}
 
-        for field in TRACKING.get('SENSITIVE_FIELDS', []):
-            if field not in self.SENSITIVE_FIELDS:
-                self.SENSITIVE_FIELDS.append(field.lower())
+        self._SENSITIVE_FIELDS.update({f.lower() for f in TRACKING.get("SENSITIVE_FIELDS", [])})
 
-    def process_request(self, request, *args, **kwargs):
+    def process_request(self, request):
+        """
+        Begin processing request, make initial log key/values
+        :param request: request instance
+        :return: None
+        """
         self.log = dict(
             requested_at=now(),
+            method=request.method,
+            path=request.path,
+            host=request.get_host(),
             data=self._clean_data(getattr(request, request.method, request.body))
         )
 
-    def process_response(self, request, response, *args, **kwargs):
+    def process_response(self, request, response):
+        """
+        Finish processing request, make final log key/values and save log to database
+        :param request: request instance
+        :param response: response instance
+        :return: None
+        """
         if self._should_log(request, response):
             self.log.update(dict(
                 remote_addr=self._get_ip_address(request),
                 view=self._get_view_name(request),
                 view_method=self._get_view_method(request),
-                path=request.path,
-                host=request.get_host(),
-                method=request.method,
-                query_params=self._clean_data(getattr(request, 'query_params', {})),
+                query_params=self._clean_data(getattr(request, "query_params", {})),
                 user=self._get_user(request),
                 response_ms=self._get_response_ms(),
-                response=response.rendered_content if hasattr(response, 'rendered_content') else response.getvalue(),
+                response=response.rendered_content if hasattr(response, "rendered_content") else response.getvalue(),
                 status_code=response.status_code
             ))
 
@@ -53,14 +63,24 @@ class LoggingMiddleware(MiddlewareMixin):
         return response
 
     def process_exception(self, request, exception):
-        print(f'Tracking Exception - {exception.__class__.__name__} - {exception}')
+        """
+        Gracefully process the exception that was raised
+        :param request: request instance
+        :param exception: exception raised
+        :return:
+        """
+        print(f"Tracking Exception - {exception.__class__.__name__} - {exception}")
         return None
 
     def _should_log(self, request, response):
-        """ Check if the request should be logged"""
+        """
+        Check if the request should be logged
+        :param request: request instance
+        :param response: response instance
+        """
 
-        log_prefixes = TRACKING['URL_PREFIXES']
-        log_levels = TRACKING['REQUEST_LEVELS']
+        log_prefixes = TRACKING["URL_PREFIXES"]
+        log_levels = TRACKING["REQUEST_LEVELS"]
 
         return (
             any(re.compile(prefix).match(request.path) for prefix in log_prefixes)
@@ -69,66 +89,73 @@ class LoggingMiddleware(MiddlewareMixin):
         )
 
     def _get_user(self, request):
-        """Get user."""
+        """
+        Get requesting user, if authenticated
+        :param request: request instance
+        :return: user of the request or None
+        """
         user = request.user
-        if user.is_anonymous:
-            return None
-        return user
+        return None if user.is_anonymous else user
 
     def _get_ip_address(self, request):
-        """Get the remote ip address the request was generated from. """
+        """
+        Get the remote ip address the request was generated from
+        :param request: request instance
+        :return: remote IP Address
+        """
         ipaddr = request.META.get("HTTP_X_FORWARDED_FOR", None)
-        if ipaddr:  # X_FORWARDED_FOR returns client1, proxy1, proxy2,...
-            return ipaddr.split(",")[0].strip()
-        return request.META.get("REMOTE_ADDR", "")
+        # X_FORWARDED_FOR returns client1, proxy1, proxy2,...
+        return ipaddr.split(",")[0].strip() if ipaddr else request.META.get("REMOTE_ADDR", "")
 
     def _get_view_method(self, request):
-        """Get view method."""
-        if hasattr(self, 'action'):
-            return self.action if self.action else None
-        return request.method.lower()
+        """
+        Get view method
+        :param request: request instance
+        :return: method of the request
+        """
+        return getattr(self, "action", request.method).lower()
 
     def _get_view_name(self, request):
-        """Get view name."""
-        try:
-            return request.resolver_match.view_name
-        except AttributeError:
-            return None
+        """
+        Get view name
+        :param request: request instance
+        :return: function name that was called
+        """
+        return getattr(request.resolver_match, 'view_name', None)
 
     def _get_response_ms(self):
         """
-        Get the duration of the request response cycle is milliseconds.
-        In case of negative duration 0 is returned.
+        Get the duration of the request response cycle is milliseconds, 0 if a negative
+        :return: duration of the response in milliseconds
         """
-        response_timedelta = now() - self.log['requested_at']
+        response_timedelta = now() - self.log["requested_at"]
         response_ms = int(response_timedelta.total_seconds() * 1000)
         return max(response_ms, 0)
 
     def _clean_data(self, data):
         """
         Clean a dictionary of data of potentially sensitive info before sending to the database
-        Function based on the "_clean_credentials" function of django
-        (https://github.com/django/django/blob/stable/1.11.x/django/contrib/auth/__init__.py#L50)
-        Fields defined by django are by default cleaned with this function
-        You can define your own sensitive fields in your view by defining a set
-        eg: sensitive_fields = {'field1', 'field2'}
+        :param data: dictionary to clean
+        :return: cleaned dictionary
         """
         if isinstance(data, list):
             return [self._clean_data(d) for d in data]
 
         if isinstance(data, dict):
-            data = dict(data)
+            clean_data = dict(data)
 
-            for key, value in data.items():
+            for key, value in clean_data.items():
                 try:
                     value = ast.literal_eval(value)
                 except (ValueError, SyntaxError):
                     pass
 
-                if isinstance(value, list) or isinstance(value, dict):
-                    data[key] = self._clean_data(value)
+                if isinstance(value, (dict, list)):
+                    clean_data[key] = self._clean_data(value)
 
-                if key.lower() in self.SENSITIVE_FIELDS:
-                    data[key] = self.CLEANED_SUBSTITUTE
+                if key.lower() in self._SENSITIVE_FIELDS:
+                    clean_data[key] = self._CLEANED_SUBSTITUTE
+
+            return clean_data
 
         return data

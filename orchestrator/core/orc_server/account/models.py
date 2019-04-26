@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
-
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
@@ -12,7 +11,7 @@ from device.models import DeviceGroup
 
 class UserSerializer(serializers.ModelSerializer):
     """
-    Model Serializer for Users
+    Users API Serializer
     """
     auth_groups = serializers.SerializerMethodField()
     actuator_groups = serializers.SerializerMethodField()
@@ -57,13 +56,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PasswordSerializer(serializers.Serializer):
     """
-    Serializer for password change endpoint.
+    Serializer for password change endpoint
     """
     old_password = serializers.CharField(required=True)
     new_password_1 = serializers.CharField(required=True)
     new_password_2 = serializers.CharField(required=True)
 
     def validate(self, data):
+        """
+        Validate the old password given is correct adn the two new passwords match
+        :param data: data to validate
+        :return: data/exception
+        """
         if data['new_password_1'] != data['new_password_2']:
             raise serializers.ValidationError("New Passwords do not match")
         return data

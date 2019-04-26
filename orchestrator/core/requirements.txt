@@ -1,5 +1,4 @@
 bleach
-cherrypy
 django
 django-cors-headers
 django-dynamic-preferences
@@ -8,5 +7,7 @@ djangorestframework-datatables
 djangorestframework-jwt
 djangorestframework-queryfields
 django-rest-swagger
+drf-writable-nested
 jsonfield
 mysql-connector-python
+uwsgi

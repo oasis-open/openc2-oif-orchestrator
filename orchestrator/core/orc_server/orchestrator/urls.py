@@ -24,9 +24,6 @@ handler403 = views.permission_denied
 handler404 = views.page_not_found
 handler500 = views.server_error
 
-# groupRouter = routers.DefaultRouter()
-# groupRouter.register(r'', views.GroupViewSet)
-
 # preferenceRouter = routers.SimpleRouter()
 # preferenceRouter.register('', GlobalPreferencesViewSet, base_name='global')
 
@@ -46,14 +43,11 @@ api_patterns = [
     # Device App
     path('device/', include('device.urls')),
 
-    # Groups Routers
-    # path('groups/', include(groupRouter.urls)),
-
     # Preferences Routers
     # path('preferences/', include(preferenceRouter.urls)),
 
     # Groups Routers
-    path('log/', include('tracking.urls')),
+    path('log/', include('tracking.urls.api')),
 
     # Schema
     path('schema/', include([
@@ -63,6 +57,9 @@ api_patterns = [
 ]
 
 gui_patterns = [
+    # No GUI - Redirect to API
+    path('', views.gui_redirect),
+
     # Account URLs - Needed for schema views by user permissions
     path('account/', include('django.contrib.auth.urls')),
 ]

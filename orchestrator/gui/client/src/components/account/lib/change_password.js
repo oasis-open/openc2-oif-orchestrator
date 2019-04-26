@@ -2,10 +2,15 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DocumentMeta from 'react-document-meta'
 import qs from 'query-string'
-
 import { toast } from 'react-toastify'
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader
+} from 'reactstrap'
 
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
@@ -18,6 +23,8 @@ const str_fmt = require('string-format')
 class ChangePassword extends Component {
     constructor(props, context) {
         super(props, context)
+
+        this.submitForm = this.submitForm.bind(this)
 
         this.meta = {
             title: str_fmt('{base} | {page}', {base: this.props.siteTitle, page: 'Account - Change Password'}),
@@ -32,13 +39,10 @@ class ChangePassword extends Component {
             errors: {},
             status: ''
         }
-
-        this.submitForm = this.submitForm.bind(this)
     }
 
     submitForm(e) {
         e.preventDefault()
-        console.log('submit form')
         Promise.resolve(this.props.changePassword(this.props.username, ...Object.values(this.state.password))).then(rsp => {
             this.setState({
                 errors: this.props.errors[AccountActions.CHANGE_USER_PASSWORD_FAILURE],
@@ -59,7 +63,6 @@ class ChangePassword extends Component {
                                 <p className="form-text text-info">{ this.state.status }</p>
                             ) : ''
                         }
-
                         <div className='form-group col-md-8'>
                             <label htmlFor='old_password'>Old Password</label>
                             <input
@@ -126,19 +129,14 @@ class ChangePassword extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        username: state.Auth.access == undefined ? 'User' : state.Auth.access.username,
-        errors: state.Account.errors,
-        status: state.Account.status
-    }
-}
+const mapStateToProps = (state) => ({
+    username: state.Auth.access == undefined ? 'User' : state.Auth.access.username,
+    errors: state.Account.errors,
+    status: state.Account.status
+})
 
-
-function mapDispatchToProps(dispatch) {
-    return {
-        changePassword: (usrn, op, np1, np2) => dispatch(AccountActions.changeUserPassword(usrn, op, np1, np2))
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    changePassword: (usrn, op, np1, np2) => dispatch(AccountActions.changeUserPassword(usrn, op, np1, np2))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangePassword)

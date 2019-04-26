@@ -1,3 +1,7 @@
+/*
+Array utility functions
+*/
+
 export const mergeByProperty = (arr1, arr2, prop) => {
     let tmp = [ ...(arr1 || []) ]
 

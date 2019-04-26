@@ -9,8 +9,7 @@ import utils
 from django.contrib.auth.models import Group, User
 
 from rest_framework import permissions
-from rest_framework.decorators import schema
-from rest_framework.exceptions import PermissionDenied, ParseError
+from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -23,32 +22,42 @@ class ActuatorAccess(APIView):
     """
     permission_classes = (permissions.IsAdminUser, )
 
-    def get(self, request, username, *args, **kwargs):
-        """
-        API endpoint that lists the actuators a users can access.
-        """
-        username = bleach.clean(username)
-        rtn = [g.name for g in ActuatorGroup.objects.filter(users__in=[User.objects.get(username=username)])]
-
-        return Response(rtn)
-
-    @schema(utils.OrcSchema(
+    schema = utils.OrcSchema(
         manual_fields=[
+            coreapi.Field(
+                "username",
+                required=True,
+                location="path",
+                schema=coreschema.String(
+                    description='Username to list the accessible actuators'
+                )
+            )
+        ],
+        put_fields=[
             coreapi.Field(
                 "actuators",
                 required=True,
-                location="form",
+                location="body",
                 schema=coreschema.Array(
-                    items=coreschema.Ref('SimpleTypes'),
+                    items=coreschema.String(),
                     min_items=1,
                     unique_items=True
                 )
             )
         ]
-    ))
+    )
+
+    def get(self, request, username, *args, **kwargs):
+        """
+        API endpoint that lists the actuators a users can access
+        """
+        username = bleach.clean(username)
+        rtn = [g.name for g in ActuatorGroup.objects.filter(users__in=[User.objects.get(username=username)])]
+        return Response(rtn)
+
     def put(self, request, username, *args, **kwargs):
         """
-        API endpoint that adds actuators to a users access.
+        API endpoint that adds actuators to a users access
         """
         username = bleach.clean(username)
         user = User.objects.get(username=username)
@@ -60,7 +69,7 @@ class ActuatorAccess(APIView):
             actuator = bleach.clean(actuator)
 
             group = Group.objects.exclude(actuatorgroup__isnull=True).filter(name=actuator).first()
-            if group is not None:
+            if group:
                 rtn.append(group.name)
                 user.groups.add(group)
 
