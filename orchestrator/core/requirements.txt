@@ -1,0 +1,12 @@
+bleach
+cherrypy
+django
+django-cors-headers
+django-dynamic-preferences
+djangorestframework
+djangorestframework-datatables
+djangorestframework-jwt
+djangorestframework-queryfields
+django-rest-swagger
+jsonfield
+mysql-connector-python

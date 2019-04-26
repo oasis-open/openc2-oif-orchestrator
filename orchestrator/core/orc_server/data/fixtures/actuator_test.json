@@ -1,0 +1,211 @@
+[
+   {
+    "model": "actuator.actuator",
+    "pk": "1",
+    "fields": {
+      "actuator_id": "a0fc78b0-c4a5-484d-b5f5-067a307e0698",
+      "name": "Actuator-91af51685cd74f",
+      "host": "127.0.0.1",
+      "port": 8080,
+      "protocol": 1,
+      "serialization": 1,
+      "device": 1,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "2",
+    "fields": {
+      "actuator_id": "6ecdc481-445b-4344-8afd-1d470ad3ff06",
+      "name": "Actuator-4824d0ab75294b",
+      "host": "127.0.0.1",
+      "port": 8081,
+      "protocol": 1,
+      "serialization": 2,
+      "device": 2,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "3",
+    "fields": {
+      "actuator_id": "7637c5a4-931f-47bd-b500-74f54b038ded",
+      "name": "Actuator-edff49f184a34c",
+      "host": "127.0.0.1",
+      "port": 8082,
+      "protocol": 1,
+      "serialization": 3,
+      "device": 3,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "4",
+    "fields": {
+      "actuator_id": "7a25782f-a8a3-4b2c-b33d-b003aca46ad8",
+      "name": "Actuator-0a983fc2409647",
+      "host": "127.0.0.1",
+      "port": 8083,
+      "protocol": 1,
+      "serialization": 4,
+      "device": 4,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "5",
+    "fields": {
+      "actuator_id": "8ec09375-cad1-49c1-b919-2e0e5d26dc85",
+      "name": "Actuator-37612f8524604c",
+      "host": "127.0.0.1",
+      "port": 8084,
+      "protocol": 2,
+      "serialization": 1,
+      "device": 5,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "6",
+    "fields": {
+      "actuator_id": "b908f17b-abb1-4bbb-9328-a7c8cb3a2814",
+      "name": "Actuator-053431fa181f46",
+      "host": "127.0.0.1",
+      "port": 8085,
+      "protocol": 2,
+      "serialization": 2,
+      "device": 6,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "7",
+    "fields": {
+      "actuator_id": "1469a33f-bf0a-422d-8110-5c5c121b3082",
+      "name": "Actuator-18c8ef7d6b8346",
+      "host": "127.0.0.1",
+      "port": 8086,
+      "protocol": 2,
+      "serialization": 3,
+      "device": 7,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "8",
+    "fields": {
+      "actuator_id": "c01b0eb9-ea2f-4408-ad00-172d3f26e62f",
+      "name": "Actuator-884fa6f596b44d",
+      "host": "127.0.0.1",
+      "port": 8087,
+      "protocol": 2,
+      "serialization": 4,
+      "device": 7,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "9",
+    "fields": {
+      "actuator_id": "6f95e239-e31f-4777-8122-5e58773819eb",
+      "name": "Actuator-4a766a94ece541",
+      "host": "127.0.0.1",
+      "port": 8089,
+      "protocol": 1,
+      "serialization": 1,
+      "device": 9,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "10",
+    "fields": {
+      "actuator_id": "b95948b0-c04a-42cb-92f8-3d1351a286a5",
+      "name": "Actuator-820a4a7695134a",
+      "host": "127.0.0.1",
+      "port": 8090,
+      "protocol": 1,
+      "serialization": 2,
+      "device": 10,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": 11,
+    "fields": {
+      "actuator_id": "0cbb3c50-3505-44ed-8556-58abb379158f",
+      "name": "Actuator-6ab177882cec41",
+      "host": "127.0.0.1",
+      "port": 8091,
+      "protocol": 1,
+      "serialization": 3,
+      "device": 11,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "12",
+    "fields": {
+      "actuator_id": "cd3ac941-f8ba-4726-911d-691df9ccbc0b",
+      "name": "Actuator-8d4b9b1bddc246",
+      "host": "127.0.0.1",
+      "port": 8092,
+      "protocol": 1,
+      "serialization": 4,
+      "device": 12,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "13",
+    "fields": {
+      "actuator_id": "0ca4ea42-c165-409a-8b18-94f60fdf8cbd",
+      "name": "Actuator-049af8ce1b7848",
+      "host": "127.0.0.1",
+      "port": 8093,
+      "protocol": 2,
+      "serialization": 1,
+      "device": 13,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "14",
+    "fields": {
+      "actuator_id": "86c03d0e-2c70-4764-aa1e-1535f2a52f92",
+      "name": "Actuator-4766958100b94b",
+      "host": "127.0.0.1",
+      "port": 8094,
+      "protocol": 2,
+      "serialization": 2,
+      "device": 14,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "15",
+    "fields": {
+      "actuator_id": "969b1bff-f03e-49f3-bf27-89ea3886167d",
+      "name": "Actuator-e13895540b1d4c",
+      "host": "127.0.0.1",
+      "port": 8095,
+      "protocol": 2,
+      "serialization": 3,
+      "device": 15,
+      "schema": {}
+    }
+  },{
+    "model": "actuator.actuator",
+    "pk": "16",
+    "fields": {
+      "actuator_id": "e44b9b5c-840a-4a4a-846c-d724b511b30e",
+      "name": "Actuator-5929a1fc270841",
+      "host": "127.0.0.1",
+      "port": 8096,
+      "protocol": 2,
+      "serialization": 4,
+      "device": 16,
+      "schema": {}
+    }
+  }
+]
