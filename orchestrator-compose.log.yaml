@@ -1,0 +1,123 @@
+version: '3'
+# This in not a valid docker-compose file by itself!!
+# Use this with the orchestrator-compose
+# Ex) 'docker-compose ... -f orchestrator-compose.yaml -f orchestrator-compose.yaml ...'
+
+volumes:
+  logger:
+    labels:
+      com.screaming_bunny.container: 'ES Logger'
+      com.screaming_bunny.description: 'Persistent Log Data Volume'
+
+services:
+  core:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "core"
+
+  core-gui:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "core-gui"
+
+  transport-mqtt:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "transport-mqtt"
+
+  transport-https:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "transport-https"
+
+  queue:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "buffer"
+
+  database:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "database"
+
+  logger_server:
+    hostname: logger_server
+    image: oif/logger:server
+    build:
+      context: ./logger/server
+      dockerfile: Dockerfile
+    environment:
+      ES_HOST: es_logger
+      ES_PORT: 9200
+      LOG_PREFIX: 'orchestrator'
+      HOST_PORT: ${LOG_PORT:-514}
+    ports:
+      - 127.0.0.1:${LOG_PORT:-514}:514/udp
+    volumes:
+      - ./logs:/var/log/syslog
+    external_links:
+      - es_logger
+    restart: on-failure:5
+
+  logger_gui:
+    hostname: logger_gui
+    image: oif/logger:gui
+    build:
+      context: ./logger/gui
+      dockerfile: Dockerfile
+    environment:
+      ES_HOST: es_logger
+      ES_PORT: 9200
+    ports:
+      - 8081:80
+    external_links:
+      - es_logger
+    depends_on:
+      - logger_server
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "logger-gui"
+    restart: on-failure:5
+
+  es_logger:
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.0
+    env_file:
+      - ./environment/es_logger.env
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - logger:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    depends_on:
+      - logger_server
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "logger-es"

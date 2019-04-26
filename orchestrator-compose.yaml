@@ -1,0 +1,122 @@
+version: '3'
+
+volumes:
+  database:
+    labels:
+      com.screaming_bunny.container: 'MariaDB'
+      com.screaming_bunny.description: 'Persistent MariaDB Volume'
+
+  queue:
+    labels:
+      com.screaming_bunny.container: 'RabbitMQ'
+      com.screaming_bunny.description: 'Persistent RabbitMQ Volume'
+
+services:
+  core:
+    hostname: core
+    image: oif/orchestrator:core
+    build:
+      context: ./orchestrator/core
+      dockerfile: Dockerfile
+    env_file:
+      - ./environment/database.connect.env
+      - ./environment/queue.connect.env
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    external_links:
+      - database
+      - queue
+    depends_on:
+      - queue
+      - database
+    restart: on-failure:5
+
+  core-gui:
+    hostname: core-gui
+    image: oif/orchestrator:gui
+    build:
+      context: ./orchestrator/gui/client
+      dockerfile: Dockerfile
+    environment:
+      ORC_HOST: core
+      ORC_PORT: 8080
+    ports:
+      - '8080:80'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    external_links:
+      - core
+    depends_on:
+      - core
+    restart: on-failure:5
+
+  transport-mqtt:
+    hostname: transport-mqtt
+    image: oif/transport:orchestrator-mqtt
+    build:
+      context: ./orchestrator/transport/mqtt
+      dockerfile: Dockerfile
+    working_dir: /opt/transport/MQTT
+    env_file:
+      - ./environment/queue.connect.env
+      - ./environment/mqtt_transport.env
+    external_links:
+      - queue
+    depends_on:
+      - queue
+    entrypoint:
+      - sh
+      - dev_start.sh
+
+  transport-https:
+    hostname: transport-https
+    image: oif/transport:orchestrator-https
+    build:
+      context: ./orchestrator/transport/https
+      dockerfile: Dockerfile
+    working_dir: /opt/transport
+    env_file:
+      - ./environment/queue.connect.env
+    external_links:
+      - queue
+    ports:
+      - 5000:5000
+    depends_on:
+      - queue
+    entrypoint:
+      - sh
+      - dev_start.sh
+
+  queue:
+    hostname: rabbit
+    image: rabbitmq:management-alpine
+    ports:
+      - '15672:15672'
+    volumes:
+      - queue:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:15672']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: on-failure:5
+
+  database:
+    hostname: database
+    image: mariadb
+    env_file:
+      - ./environment/database.env
+    volumes:
+      - database:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', '/usr/bin/mysql/install/bin/mysql', '--protocol=tcp', '-h', 'mysql', '-u', 'root', '-p$MYSQL_ROOT_PASSWORD', '-e', '"show databases;"', '||', 'exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure:5
