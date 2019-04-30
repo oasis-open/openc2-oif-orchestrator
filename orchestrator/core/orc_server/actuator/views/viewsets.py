@@ -46,9 +46,12 @@ class ActuatorViewSet(viewsets.ModelViewSet):
 
         queryset = self.filter_queryset(self.get_queryset())
 
+        # TODO: set permissions
+        '''
         if not request.user.is_staff:  # Standard User
-            actuator_groups = list(g.name for g in request.user.groups.exclude(actuatorgroup__isnull=True))
-            queryset = queryset.filter(name__in=actuator_groups)
+            user_actuators = list(g.actuators.values_list('name', flat=True) for g in ActuatorGroup.objects.filter(users__in=[request.user]))
+            queryset = queryset.filter(name__in=user_actuators)
+        '''
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -64,11 +67,14 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         """
         actuator = self.get_object()
 
+        # TODO: set permissions
+        '''
         if not request.user.is_staff:  # Standard User
-            actuator_groups = list(g.name for g in request.user.groups.exclude(actuatorgroup__isnull=True))
+            user_actuators = list(g.actuators.values_list('name', flat=True) for g in ActuatorGroup.objects.filter(users__in=[request.user]))
 
-            if actuator is not None and actuator.name not in actuator_groups:
+            if actuator is not None and actuator.name not in user_actuators:
                 raise PermissionDenied(detail='User not authorised to access actuator', code=401)
+        '''
 
         serializer = self.get_serializer(actuator)
         return Response(serializer.data)

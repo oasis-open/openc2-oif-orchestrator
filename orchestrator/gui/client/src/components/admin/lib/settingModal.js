@@ -23,7 +23,7 @@ import * as ActuatorActions from '../../../actions/actuator'
 import * as DeviceActions from '../../../actions/device'
 import { withGUIAuth } from '../../../actions/util'
 
-class ActuatorModal extends Component {
+class UserModal extends Component {
     constructor(props, context) {
         super(props, context)
 
@@ -213,7 +213,7 @@ class ActuatorModal extends Component {
                 <Button color='primary' size='sm' onClick={ this.toggleModal } >{ this.register ? 'Register' : 'Edit' }</Button>
 
                 <Modal isOpen={ this.state.modal } toggle={ this.toggleModal } size='lg' >
-                    <ModalHeader toggle={ this.toggleModal }>{ this.register ? 'Register' : 'Edit' } Actuator</ModalHeader>
+                    <ModalHeader toggle={ this.toggleModal }>{ this.register ? 'Register' : 'Edit' }  Actuator</ModalHeader>
                     <ModalBody>
                         <form onSubmit={ () => false }>
                             <div className="form-row">
@@ -298,4 +298,4 @@ const mapDispatchToProps = (dispatch) => ({
     getDevices: () => dispatch(DeviceActions.getDevices())
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(ActuatorModal)
+export default connect(mapStateToProps, mapDispatchToProps)(UserModal)

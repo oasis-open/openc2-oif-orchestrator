@@ -68,7 +68,7 @@ class Actuators extends Component {
             <DocumentMeta { ...this.meta } extend >
                 <div className="row mx-auto">
                     <div className="col-12">
-                         <div className="col-12">
+                        <div className="col-12">
                             { this.props.admin ? <ActuatorModal register className="float-right" /> : '' }
                             <h1>{ this.props.orchestrator.name } Actuators</h1>
                         </div>

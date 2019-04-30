@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DocumentMeta from 'react-document-meta'
-import qs from 'query-string'
 import { toast } from 'react-toastify'
 
 import {
@@ -33,6 +32,7 @@ class Account extends Component {
             canonical: str_fmt('{origin}{path}', {origin: window.location.origin, path: window.location.pathname})
         }
 
+        console.log(this.props.match.params.page)
         this.validPages = ['all', 'change_password']
         let page = this.props.match.params.page || 'all'
 

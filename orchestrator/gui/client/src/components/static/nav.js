@@ -111,7 +111,12 @@ class Nav extends Component {
                                 <ul className="dropdown-menu dropdown-menu-right">
                                     {
                                         this.props.admin ? (
-                                            <NavItem dropdown external href="/admin" text="Admin" target="_blank" active={ this.state.active } />
+                                            <NavItem dropdown external href="/django_admin" text="Super Admin" target="_blank" active={ this.state.active } />
+                                        ) : ''
+                                    }
+                                    {
+                                        this.props.admin ? (
+                                            <NavItem dropdown href="/admin" text="Admin" active={ this.state.active } click={ this.navigate }/>
                                         ) : ''
                                     }
                                     {/* <a className="dropdown-item" href="/preferences/" >Site Preferences</a> */}

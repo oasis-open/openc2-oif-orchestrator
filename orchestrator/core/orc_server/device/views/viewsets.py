@@ -9,7 +9,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from ..models import Device, DeviceSerializer
+from ..models import Device, DeviceGroup, DeviceSerializer
 
 
 class DeviceViewSet(viewsets.ModelViewSet):
@@ -45,9 +45,12 @@ class DeviceViewSet(viewsets.ModelViewSet):
         self.pagination_class.max_page_size = 100
         queryset = self.filter_queryset(self.get_queryset())
 
+        # TODO: set permissions
+        '''
         if not request.user.is_staff:  # Standard User
-            device_groups = list(g.name for g in request.user.groups.exclude(devicegroup__isnull=True))
-            queryset = queryset.filter(name__in=device_groups)
+            user_devices = list(g.devices.values_list('name', flat=True) for g in DeviceGroup.objects.filter(users__in=[request.user]))
+            queryset = queryset.filter(name__in=user_devices)  # | queryset.exclude(name__in=user_devices)
+        '''
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -63,11 +66,14 @@ class DeviceViewSet(viewsets.ModelViewSet):
         """
         device = self.get_object()
 
+        # TODO: set permissions
+        '''
         if not request.user.is_staff:  # Standard User
-            device_groups = list(g.name for g in request.user.groups.exclude(devicegroup__isnull=True))
+            user_devices = list(g.devices.values_list('name', flat=True) for g in DeviceGroup.objects.filter(users__in=[request.user]))
 
-            if device is not None and device.name not in device_groups:
+            if device is not None and device.name not in user_devices:
                 raise PermissionDenied(detail='User not authorised to access device', code=401)
+        '''
 
         serializer = self.get_serializer(device)
         return Response(serializer.data)

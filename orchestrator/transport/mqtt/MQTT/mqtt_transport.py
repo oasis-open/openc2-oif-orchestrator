@@ -1,8 +1,5 @@
 # mqtt_transport.py
 
-import paho.mqtt.client as mqtt
-import os
-import ssl
 from sb_utils import Consumer, safe_cast
 from callbacks import Callbacks
 

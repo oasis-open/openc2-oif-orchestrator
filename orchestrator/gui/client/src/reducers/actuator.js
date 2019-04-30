@@ -13,7 +13,6 @@ const initialState = {
 }
 
 export default (state=initialState, action=null) => {
-    let tmpState = {}
     let actuators = []
 
     switch(action.type) {

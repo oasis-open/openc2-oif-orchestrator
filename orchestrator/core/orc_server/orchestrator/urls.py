@@ -7,7 +7,7 @@ from rest_framework.schemas import get_schema_view
 
 from rest_framework_swagger.views import get_swagger_view
 
-# from dynamic_preferences.api.viewsets import GlobalPreferencesViewSet
+from dynamic_preferences.api.viewsets import GlobalPreferencesViewSet
 # GlobalPreferencesViewSet.pagination_class = None
 # from dynamic_preferences.users.viewsets import UserPreferencesViewSet
 
@@ -18,7 +18,6 @@ admin.site.site_header = 'OpenC2 Orchestrator Admin'
 admin.site.index_title = 'OpenC2 Orchestrator'
 
 # Catch all URL
-# urlpatterns.append(url(r'^(?P<url>.*)/?$', views.gui_catch_all, name='gui.catch_all'))
 handler400 = views.bad_request
 handler403 = views.permission_denied
 handler404 = views.page_not_found
