@@ -1,0 +1,37 @@
+[
+  {
+    "model": "orchestrator.protocol",
+    "pk": 1,
+    "fields": {
+      "name": "HTTPS"
+    }
+  },
+  {
+    "model": "orchestrator.protocol",
+    "pk": 2,
+    "fields": {
+      "name": "MQTT"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 1,
+    "fields": {
+      "name": "JSON"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 2,
+    "fields": {
+      "name": "XML"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 3,
+    "fields": {
+      "name": "CBOR"
+    }
+  }
+]

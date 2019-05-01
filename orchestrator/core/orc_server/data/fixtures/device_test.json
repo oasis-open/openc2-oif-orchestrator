@@ -1,0 +1,195 @@
+[
+   {
+    "model": "device.device",
+    "pk": "1",
+    "fields": {
+      "device_id": "a0fc78b0-c4a5-484d-b5f5-067a307e0698",
+      "name": "Device-91af51685cd74f",
+      "host": "127.0.0.1",
+      "port": 8080,
+      "protocol": 1,
+      "serialization": 1,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "2",
+    "fields": {
+      "device_id": "6ecdc481-445b-4344-8afd-1d470ad3ff06",
+      "name": "Device-4824d0ab75294b",
+      "host": "127.0.0.1",
+      "port": 8081,
+      "protocol": 1,
+      "serialization": 2,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "3",
+    "fields": {
+      "device_id": "7637c5a4-931f-47bd-b500-74f54b038ded",
+      "name": "Device-edff49f184a34c",
+      "host": "127.0.0.1",
+      "port": 8082,
+      "protocol": 1,
+      "serialization": 3,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "4",
+    "fields": {
+      "device_id": "7a25782f-a8a3-4b2c-b33d-b003aca46ad8",
+      "name": "Device-0a983fc2409647",
+      "host": "127.0.0.1",
+      "port": 8083,
+      "protocol": 1,
+      "serialization": 4,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "5",
+    "fields": {
+      "device_id": "8ec09375-cad1-49c1-b919-2e0e5d26dc85",
+      "name": "Device-37612f8524604c",
+      "host": "127.0.0.1",
+      "port": 8084,
+      "protocol": 2,
+      "serialization": 1,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "6",
+    "fields": {
+      "device_id": "b908f17b-abb1-4bbb-9328-a7c8cb3a2814",
+      "name": "Device-053431fa181f46",
+      "host": "127.0.0.1",
+      "port": 8085,
+      "protocol": 2,
+      "serialization": 2,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "7",
+    "fields": {
+      "device_id": "1469a33f-bf0a-422d-8110-5c5c121b3082",
+      "name": "Device-18c8ef7d6b8346",
+      "host": "127.0.0.1",
+      "port": 8086,
+      "protocol": 2,
+      "serialization": 3,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "8",
+    "fields": {
+      "device_id": "c01b0eb9-ea2f-4408-ad00-172d3f26e62f",
+      "name": "Device-884fa6f596b44d",
+      "host": "127.0.0.1",
+      "port": 8087,
+      "protocol": 2,
+      "serialization": 4,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "9",
+    "fields": {
+      "device_id": "6f95e239-e31f-4777-8122-5e58773819eb",
+      "name": "Device-4a766a94ece541",
+      "host": "127.0.0.1",
+      "port": 8089,
+      "protocol": 1,
+      "serialization": 1,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "10",
+    "fields": {
+      "device_id": "b95948b0-c04a-42cb-92f8-3d1351a286a5",
+      "name": "Device-820a4a7695134a",
+      "host": "127.0.0.1",
+      "port": 8090,
+      "protocol": 1,
+      "serialization": 2,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": 11,
+    "fields": {
+      "device_id": "0cbb3c50-3505-44ed-8556-58abb379158f",
+      "name": "Device-6ab177882cec41",
+      "host": "127.0.0.1",
+      "port": 8091,
+      "protocol": 1,
+      "serialization": 3,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "12",
+    "fields": {
+      "device_id": "cd3ac941-f8ba-4726-911d-691df9ccbc0b",
+      "name": "Device-8d4b9b1bddc246",
+      "host": "127.0.0.1",
+      "port": 8092,
+      "protocol": 1,
+      "serialization": 4,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "13",
+    "fields": {
+      "device_id": "0ca4ea42-c165-409a-8b18-94f60fdf8cbd",
+      "name": "Device-049af8ce1b7848",
+      "host": "127.0.0.1",
+      "port": 8093,
+      "protocol": 2,
+      "serialization": 1,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "14",
+    "fields": {
+      "device_id": "86c03d0e-2c70-4764-aa1e-1535f2a52f92",
+      "name": "Device-4766958100b94b",
+      "host": "127.0.0.1",
+      "port": 8094,
+      "protocol": 2,
+      "serialization": 2,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "15",
+    "fields": {
+      "device_id": "969b1bff-f03e-49f3-bf27-89ea3886167d",
+      "name": "Device-e13895540b1d4c",
+      "host": "127.0.0.1",
+      "port": 8095,
+      "protocol": 2,
+      "serialization": 3,
+      "type": "Test"
+    }
+  },{
+    "model": "device.device",
+    "pk": "16",
+    "fields": {
+      "device_id": "e44b9b5c-840a-4a4a-846c-d724b511b30e",
+      "name": "Device-5929a1fc270841",
+      "host": "127.0.0.1",
+      "port": 8096,
+      "protocol": 2,
+      "serialization": 4,
+      "type": "Test"
+    }
+  }
+]
