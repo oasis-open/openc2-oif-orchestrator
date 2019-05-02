@@ -33,12 +33,12 @@
 ## Configuration
 - Run `configure.py` with the desired options prior to starting the Orchestrator for the first time
 	- Options
-		- `-b` or `--build` -- Build base containers and GUIs
-		- `-h` or `--help` -- Shows the help and exits
-    	- `-l FILE` or `--log_file FILE` -- Enables logging to the designated file
-		- `-m` or `--modules` -- Copy module files
-    	- `-v` or `--verbose` -- Enables verbose output
-    	
+		- `-b` or `--build-image` -- Build base containers
+    	- `-f FILE` or `--log_file FILE` -- Enables logging to the designated file
+    	- `-h` or `--help` -- Shows the help and exits
+		- `-l` or `--log-gui` -- Build Logger GUI for use in container
+		- `-o` or `--orc-gui` -- Build Orchestrator GUI for use in container
+    	- `-v` or `--verbose` -- Enables verbose output    	
     ```bash
     python configure.py [OPTIONS]
     ```
