@@ -117,7 +117,7 @@ const config  = {
                     loader: 'babel-loader',
                     options: {
                         babelrc: false,
-                         presets: [
+                        presets: [
                             '@babel/preset-env',
                             '@babel/preset-react'
                         ],
