@@ -20,7 +20,7 @@ This particular repository contains the code required to set up an OpenC2 Orches
 
 The OIF Orchestrator was created with the intent of being an easy-to-configure OpenC2 producer that can be used in the creation of reference implemetations to control multiple devices. To that end it allows for the addition of multiple serializations and trasnportation types.
 
-To get started please reference [https://github.com/g2-inc/openc2-oif-orchestrator/blob/master/docs/Orchestrator.md](https://github.com/g2-inc/openc2-oif-orchestrator/blob/master/docs/Orchestrator.md)
+To get started please reference [https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/docs/Orchestrator.md](https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/docs/Orchestrator.md)
 
 **Additions to Statement of Purpose**
 
