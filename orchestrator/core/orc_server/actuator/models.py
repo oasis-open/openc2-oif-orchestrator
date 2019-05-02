@@ -82,14 +82,20 @@ class AbstractGroup(models.Model):
         unique=True
     )
 
-    class Meta:
-        abstract = True
+    @property
+    def actuator_count(self):
+        if hasattr(self, "actuators"):
+            return self.actuators.count()
+        return 0
 
     def __str__(self):
         return self.name
 
     def natural_key(self):
         return self.name,
+
+    class Meta:
+        abstract = True
 
 
 class ActuatorGroup(AbstractGroup):
@@ -107,6 +113,12 @@ class ActuatorGroup(AbstractGroup):
         blank=True,
         help_text="Actuators available to users in the group"
     )
+
+    @property
+    def user_count(self):
+        if hasattr(self, "users"):
+            return self.users.count()
+        return 0
 
     class Meta:
         verbose_name = 'group'

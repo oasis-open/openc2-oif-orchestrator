@@ -33,7 +33,8 @@ def action_send(usr=None, cmd={}, actuator=None, channel={}):
     :param channel: serialization & protocol to send the command
     :return: response dict
     """
-    print(cmd, actuator, channel)
+    # print(cmd, actuator, channel)
+
     if usr is None:
         log.error(msg="invalid user attempted to send a command")
         return dict(
@@ -72,16 +73,16 @@ def action_send(usr=None, cmd={}, actuator=None, channel={}):
                     ), 404
                 else:
                     # TODO: Validate channel - serialization/protocol
-                    print('check channel')
-                    print(actuators.device)
+                    # print('check channel')
+                    # print(actuators.device)
                     dev = get_or_none(Device, device_id=actuators.device.device_id)
-                    print(dev)
+                    # print(dev)
 
                     if 'serialization' in channel:
                         ser = get_or_none(Serialization, name=bleach.clean(str(channel['serialization'])))
-                        print(ser)
+                        # print(ser)
                     else:
-                        print('no serial')
+                        print('no serialization')
 
                 actuators = actuators if isinstance(actuators, list) else [actuators]
 
@@ -144,10 +145,17 @@ def action_send(usr=None, cmd={}, actuator=None, channel={}):
     processed_acts = []
     for proto in Protocol.objects.all():
         proto_acts = []
+        corr_id = str(com.command_id)
+
         for act in actuators:
             if act.name not in processed_acts and act.device.transport.filter(protocol__name=proto.name).exists():
                 processed_acts.append(act.name)
                 proto_acts.append(act)
+
+        if proto.name.lower() == "coap" and com.coap_id is None:
+            com.gen_coap_id()
+            com.save()
+            corr_id = com.coap_id.hex()
 
         if len(proto_acts) >= 1:
             orc_ip = global_preferences.get('orchestrator__host', '127.0.0.1')
@@ -159,7 +167,7 @@ def action_send(usr=None, cmd={}, actuator=None, channel={}):
                         # TODO: Change the socket to dynamic
                         socket=f'{orc_ip}:5000'
                     ),
-                    correlationID=com.command_id,
+                    correlationID=corr_id,
                     date=f'{com.received_on:%a, %d %b %Y %X %Z}'
                 ),
                 destination=[]

@@ -13,7 +13,7 @@ from rest_framework import serializers
 
 from tracking import log
 from actuator.models import Actuator, ActuatorSerializer
-from utils import get_or_none
+from utils import randBytes, get_or_none
 
 
 class SentHistory(models.Model):
@@ -25,6 +25,13 @@ class SentHistory(models.Model):
         editable=False,
         help_text="Unique UUID of the command",
         primary_key=True,
+    )
+    _coap_id = models.CharField(
+        blank=True,
+        help_text="Unique 16-bit hex ID for CoAP",
+        max_length=10,
+        null=True,
+        unique=True
     )
     user = models.ForeignKey(
         User,
@@ -55,6 +62,24 @@ class SentHistory(models.Model):
         :return: command responses
         """
         return ResponseSerializer(ResponseHistory.objects.filter(command=self), many=True).data
+
+    @property
+    def coap_id(self):
+        try:
+            return bytes.fromhex(self._coap_id) if self._coap_id else None
+        except ValueError:
+            return f"Invalid hex bytes: {self.coap_id}"
+
+    @coap_id.setter
+    def coap_id(self, val=None):
+        if val and isinstance(val, (bytes, bytearray, str)):
+            val = bytes.fromhex(val) if isinstance(val, str) else val
+            self._coap_id = val.hex()
+        else:
+            raise ValueError("invalid type for coap_id field")
+
+    def gen_coap_id(self):
+        self._coap_id = randBytes(2).hex()
 
     def __str__(self):
         return "Sent History: {} - {}".format(self.command_id, self.user)
@@ -102,7 +127,7 @@ def check_command_id(sender, instance=None, **kwargs):
     :return: None
     """
     if instance.command_id is None:
-        log.info(msg=f"Command submitted without id, id generated")
+        log.info(msg=f"Command submitted without command id, command id generated")
         instance.command_id = uuid.uuid4()
         instance.command.update({"id": str(instance.command_id)})
     else:
@@ -110,12 +135,12 @@ def check_command_id(sender, instance=None, **kwargs):
             val = uuid.UUID(str(instance.command_id), version=4)
         except ValueError:
             log.info(msg=f"Invalid command id received: {instance.command_id}")
-            raise ValueError("Invalid id")
+            raise ValueError("Invalid command id")
 
         tmp = get_or_none(sender, command_id=val)
-        if tmp is not None:
+        if val is None and tmp is not None:
             log.info(msg=f"Duplicate command id received: {instance.command_id}")
-            raise ValueError("id has been used")
+            raise ValueError("command id has been used")
 
 
 class ResponseSerializer(serializers.ModelSerializer):

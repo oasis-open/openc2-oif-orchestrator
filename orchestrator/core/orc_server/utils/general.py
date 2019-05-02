@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import random
+import string
 import sys
 import uuid
+
+valid_hex = set(string.hexdigits)
+valid_hex.add(" ")
 
 
 def prefixUUID(pre="PREFIX", max_length=30):
@@ -30,3 +35,15 @@ def to_str(s):
     return s.decode(sys.getdefaultencoding(), "backslashreplace") if hasattr(s, "decode") else str(s)
 
 
+def randBytes(b=2):
+    """
+    Get a random number of bytes
+    :param b: number of bytes generate
+    :return: random number of bytes requested
+    """
+    return bytes([random.getrandbits(8) for _ in range(b)])
+
+
+def isHex(val):
+    val = ''.join(val.split("0x"))
+    return len(set(val) - valid_hex) == 0

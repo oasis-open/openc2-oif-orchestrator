@@ -20,7 +20,7 @@ class ActuatorGroupAdmin(admin.ModelAdmin):
     """
     Actuator Group admin
     """
-    list_display = ('name', )
+    list_display = ('name', 'user_count', 'actuator_count')
     filter_horizontal = ('users', 'actuators')
 
 
@@ -28,7 +28,7 @@ class ActuatorProfileAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
     """
     Actuator Profile admin
     """
-    list_display = ('name', )
+    list_display = ('name', 'actuator_count')
     filter_horizontal = ('actuators', )
 
     def get_readonly_fields(self, request, obj=None):
