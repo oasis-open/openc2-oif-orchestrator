@@ -71,7 +71,7 @@ export default (state=initialState, action=null) => {
         case generate.ACTUATOR_INFO_FAILURE:
         case generate.ACTUATOR_SELECT_FAILURE:
         case generate.DEVICE_INFO_FAILURE:
-            console.log('Failure', action.type, action)
+            console.log('Generate Failure', action.type, action)
             return {
                 ...state,
                 errors: {

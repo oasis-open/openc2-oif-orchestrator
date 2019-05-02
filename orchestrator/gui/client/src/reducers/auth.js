@@ -48,7 +48,7 @@ export default (state=initialState, action=null) => {
         case auth.LOGIN_FAILURE:
         case auth.LOGOUT_FAILURE:
         case auth.TOKEN_FAILURE:
-            console.log('Failure', action.type, action.payload)
+            console.log('Auth Failure', action.type, action)
             return {
                 access: undefined,
                 errors: action.payload.response || {'non_field_errors': action.payload.statusText},

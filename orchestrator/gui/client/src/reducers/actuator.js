@@ -89,7 +89,7 @@ export default (state=initialState, action=null) => {
         case actuator.GET_ACTUATOR_FAILURE:
         case actuator.UPDATE_ACTUATOR_FAILURE:
         case actuator.DELETE_ACTUATOR_FAILURE:
-            console.log('Failure', action.type, action)
+            console.log('Actuator Failure', action.type, action)
             return {
                 ...state,
                 errors: {

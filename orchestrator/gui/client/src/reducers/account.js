@@ -89,7 +89,7 @@ export default (state=initialState, action=null) => {
         case account.UPDATE_ACCOUNT_FAILURE:
         case account.DELETE_ACCOUNT_FAILURE:
         case account.CHANGE_ACCOUNT_PASSWORD_FAILURE:
-            console.log('Failure', action.type, action.payload)
+            console.log('Account Failure', action.type, action)
             return {
                 ...state,
                 errors: {
