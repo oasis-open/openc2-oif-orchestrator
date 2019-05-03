@@ -9,6 +9,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import pathlib
 
 from datetime import datetime
 from optparse import OptionParser
@@ -297,7 +298,6 @@ def build_image(**kwargs):
 def build_gui(root_dir=()):
     def build_err(e):
         build_root = os.path.join(gui_root, 'build')
-
         def set_rw(operation, name, exc):
             os.chmod(name, stat.S_IWRITE)
             os.remove(name)
@@ -305,11 +305,12 @@ def build_gui(root_dir=()):
         if os.path.isdir(build_root):
             shutil.rmtree(build_root, onerror=set_rw)
 
-        mkdir_p(build_root)
-        with open(os.path.join(build_root, 'index.html'), 'w') as f:
+        pathlib.Path(build_root).mkdir(parents=True, exist_ok=True)
+        with open(os.path.join(build_root, 'index.html'), 'w+') as f:
             f.writelines([
                 f"<h1>{root_dir[0].capitalize()} GUI</h1>",
                 f"<h3>GUI placeholder, built error - {e}</h3>"
+                f"<h3>This is a common issue when building the images on Windows. Further Windows support is in process.</h3>"
             ])
 
     npm_cmds = (
