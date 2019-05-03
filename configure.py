@@ -6,6 +6,7 @@ import importlib
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 
@@ -275,7 +276,7 @@ def build_image(**kwargs):
     try:
         img = system.images.build(**kwargs)
     except docker.errors.ImageNotFound as e:
-        Stylize.error(f'Cannot build image, from image not found: {e}')
+        Stylize.error(f'Cannot build image, base image not found: {e}')
         exit(1)
     except docker.errors.APIError as e:
         Stylize.error(f'Docker API error: {e}')
@@ -293,20 +294,38 @@ def build_image(**kwargs):
     return img
 
 
-def build_gui(gui_root=()):
+def build_gui(root_dir=()):
+    def build_err(e):
+        build_root = os.path.join(gui_root, 'build')
+
+        def set_rw(operation, name, exc):
+            os.chmod(name, stat.S_IWRITE)
+            os.remove(name)
+
+        if os.path.isdir(build_root):
+            shutil.rmtree(build_root, onerror=set_rw)
+
+        mkdir_p(build_root)
+        with open(os.path.join(build_root, 'index.html'), 'w') as f:
+            f.writelines([
+                f"<h1>{root_dir[0].capitalize()} GUI</h1>",
+                f"<h3>GUI placeholder, built error - {e}</h3>"
+            ])
+
     npm_cmds = (
         "npm install",
-        # "find ./node_modules/babel-runtime -type f -exec sed -i \"\" -e 's/core-js\/library\/fn\//core-js\/features\//g' {} \;",
+        "find ./node_modules/babel-runtime -type f -exec sed -i -e 's/core-js\/library\/fn\//core-js\/features\//g' {} \;",
         "npm run init",
         "npm run build"
     )
+    gui_root = os.path.join(CONFIG.WorkDir, *root_dir)
 
     try:
         gui_build = system.containers.run(
             image='node:10-alpine',
             command=f"sh -c \"cd /project; {' && '.join(npm_cmds)}\"",
             volumes={
-                os.path.join(CONFIG.WorkDir, *gui_root): {
+                gui_root: {
                     'bind': '/project',
                     'mode': 'rw'
                 }
@@ -316,16 +335,23 @@ def build_gui(gui_root=()):
         Stylize.verbose('default', gui_build)
     except docker.errors.ContainerError as e:
         Stylize.error(f'Docker Container error: {e}')
-        exit(1)
+        build_err(e)
+        return e
+
     except docker.errors.ImageNotFound as e:
         Stylize.error('Cannot build core gui webapp, node:10-alpine image not found')
-        exit(1)
+        build_err(e)
+        return e
+
     except docker.errors.APIError as e:
         Stylize.error(f'Docker API error: {e}')
-        exit(1)
-    except KeyboardInterrupt:
+        build_err(e)
+        return e
+
+    except KeyboardInterrupt as e:
         Stylize.error('Keyboard Interrupt')
-        exit(1)
+        build_err(e)
+        return e
 
 
 def mkdir_p(path='', rem=[]):
@@ -359,7 +385,6 @@ def get_count():
 
 if __name__ == '__main__':
     os.chdir(CONFIG.WorkDir)
-
     print('Installing Requirements')
 
     for PKG in CONFIG.Requirements:
@@ -382,24 +407,14 @@ if __name__ == '__main__':
     # -------------------- Build Orchestrator GUIs -------------------- #
     if (not options.build_image and not options.orc_gui and not options.log_gui) or options.orc_gui:
         Stylize.h1(f"[Step {get_count()}]: Build Orchestrator GUI ...")
-        build_gui(CONFIG.GUIS.Orchestrator)
-    else:
-        build_root = os.path.join(CONFIG.WorkDir, *CONFIG.GUIS.Orchestrator, 'build')
-        if not os.path.isdir(build_root):
-            mkdir_p(build_root)
-            with open(os.path.join(build_root, 'index.html'), 'w') as f:
-                f.write('<h1>Orchestrator GUI</h1><h3>GUI placeholder, not built</h3>')
+        if build_gui(CONFIG.GUIS.Orchestrator):
+            Stylize.error("Build Orchestrator GUI Failed, API only available")
 
     # -------------------- Build Logger GUIs -------------------- #
     if (not options.build_image and not options.orc_gui and not options.log_gui) or options.log_gui:
         Stylize.h1(f"[Step {get_count()}]: Build Logger GUI ...")
-        build_gui(CONFIG.GUIS.Logger)
-    else:
-        build_root = os.path.join(CONFIG.WorkDir, *CONFIG.GUIS.Logger, 'build')
-        if not os.path.isdir(build_root):
-            mkdir_p(build_root)
-            with open(os.path.join(build_root, 'index.html'), 'w') as f:
-                f.write('<h1>Logger GUI</h1><h3>GUI placeholder, not built</h3>')
+        if build_gui(CONFIG.GUIS.Logger):
+            Stylize.error("Build Logger GUI Failed, logs will be centralized but not available")
 
     # -------------------- Build Images -------------------- #
     if (not options.build_image and not options.orc_gui and not options.log_gui) or options.build_image:
