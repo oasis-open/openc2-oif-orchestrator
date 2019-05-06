@@ -296,13 +296,15 @@ def build_image(**kwargs):
 
 
 def build_gui(root_dir=()):
+    gui_root = os.path.join(CONFIG.WorkDir, *root_dir)
+    build_root = os.path.join(gui_root, 'build')
+    node_modules = os.path.join(gui_root, "node_modules")
+
     def set_rw(operation, name, exc):
             os.chmod(name, stat.S_IWRITE)
             os.remove(name)
 
     def build_err(e):
-        build_root = os.path.join(gui_root, 'build')
-
         if os.path.isdir(build_root):
             shutil.rmtree(build_root, onerror=set_rw)
 
@@ -316,24 +318,26 @@ def build_gui(root_dir=()):
         return e
 
     npm_cmds = (
-        "cd /project",
-        "nvm install $(cat .node-version)",
+        "cp -r /project /tmp/project",
+        "cd /tmp/project",
         "rm -f package-lock.json",
         "npm install",
-        "find ./node_modules/babel-runtime -type f -exec \"sed -i -e 's/core-js\/library\/fn\//core-js\/features\//g' \{} \;\"",
+        "find ./node_modules/babel-runtime -type f -exec sed -i -e 's/core-js\/library\/fn\//core-js\/features\//g' {} \;",
         "npm run init",
-        "npm run build"
+        "npm run build",
+        "cp -r /tmp/project/build /project/build"
     )
-    gui_root = os.path.join(CONFIG.WorkDir, *root_dir)
-    node_modules = os.path.join(gui_root, "node_modules")
 
     if os.path.isdir(node_modules):
         shutil.rmtree(node_modules, onerror=set_rw)
 
+    if os.path.isdir(build_root):
+        shutil.rmtree(build_root, onerror=set_rw)
+
     try:
         gui_build = system.containers.run(
-            image=f'{CONFIG.ImagePrefix}/base:debian-nvm',
-            command=' && '.join(npm_cmds),
+            image='node:10-alpine',
+            command=f"sh -c \"{' && '.join(npm_cmds)}\"",
             volumes={
                 gui_root: {
                     'bind': '/project',
@@ -400,30 +404,12 @@ if __name__ == '__main__':
     # -------------------- Build Orchestrator GUIs -------------------- #
     if (not options.build_image and not options.orc_gui and not options.log_gui) or options.orc_gui:
         Stylize.h1(f"[Step {get_count()}]: Build Orchestrator GUI ...")
-
-        Stylize.info("Building base debian nvm")
-        build_image(
-            path='./base',
-            dockerfile='./Dockerfile_debian-nvm',
-            tag=f'{CONFIG.ImagePrefix}/base:debian-nvm',
-            rm=True
-        )
-
         if build_gui(CONFIG.GUIS.Orchestrator):
             Stylize.error("Build Orchestrator GUI Failed, API only available")
 
     # -------------------- Build Logger GUIs -------------------- #
     if (not options.build_image and not options.orc_gui and not options.log_gui) or options.log_gui:
         Stylize.h1(f"[Step {get_count()}]: Build Logger GUI ...")
-
-        Stylize.info("Building base debian nvm")
-        build_image(
-            path='./base',
-            dockerfile='./Dockerfile_debian-nvm',
-            tag=f'{CONFIG.ImagePrefix}/base:debian-nvm',
-            rm=True
-        )
-
         if build_gui(CONFIG.GUIS.Logger):
             Stylize.error("Build Logger GUI Failed, logs will be centralized but not available")
 
