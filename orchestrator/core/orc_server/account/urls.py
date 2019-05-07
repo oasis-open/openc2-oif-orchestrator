@@ -21,8 +21,6 @@ urlpatterns = [
     path('',  include(router.urls)),
 
     # Actuator Access
-    path('<str:username>/actuator/', include([
-        path('', views.ActuatorAccess.as_view()),
-        path('<str:actuator_id>/', views.actuatorDelete)
-    ]))
+    path('<str:username>/actuator/', views.ActuatorAccess.as_view()),
+    path('<str:username>/actuator/<str:actuator>/', views.actuatorDelete),
 ]

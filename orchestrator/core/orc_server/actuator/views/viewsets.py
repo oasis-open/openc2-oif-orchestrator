@@ -21,7 +21,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
 
     queryset = Actuator.objects.order_by('name')
     filter_backends = (filters.OrderingFilter,)
-    ordering_fields = ('actuator_id', 'name', 'profile', 'type')
+    ordering_fields = ('name', 'host', 'port', 'protocol', 'serialization', 'type')
 
     permissions = {
         'create':  (permissions.IsAdminUser,),
@@ -46,12 +46,9 @@ class ActuatorViewSet(viewsets.ModelViewSet):
 
         queryset = self.filter_queryset(self.get_queryset())
 
-        # TODO: set permissions
-        '''
         if not request.user.is_staff:  # Standard User
-            user_actuators = list(g.actuators.values_list('name', flat=True) for g in ActuatorGroup.objects.filter(users__in=[request.user]))
-            queryset = queryset.filter(name__in=user_actuators)
-        '''
+            actuator_groups = list(g.name for g in request.user.groups.exclude(actuatorgroup__isnull=True))
+            queryset = queryset.filter(name__in=actuator_groups)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -67,14 +64,11 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         """
         actuator = self.get_object()
 
-        # TODO: set permissions
-        '''
         if not request.user.is_staff:  # Standard User
-            user_actuators = list(g.actuators.values_list('name', flat=True) for g in ActuatorGroup.objects.filter(users__in=[request.user]))
+            actuator_groups = list(g.name for g in request.user.groups.exclude(actuatorgroup__isnull=True))
 
-            if actuator is not None and actuator.name not in user_actuators:
+            if actuator is not None and actuator.name not in actuator_groups:
                 raise PermissionDenied(detail='User not authorised to access actuator', code=401)
-        '''
 
         serializer = self.get_serializer(actuator)
         return Response(serializer.data)
@@ -93,9 +87,9 @@ class ActuatorViewSet(viewsets.ModelViewSet):
                 refresh = 'info'
 
             # TODO: refresh actuator data
-            # print('Valid instance')
+            print('Valid instance')
 
-        # print('refresh')
+        print('refresh')
         return Response({
             'refresh': refresh
         })
@@ -107,7 +101,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         """
         actuator = self.get_object()
 
-        if not request.user.is_staff:  # Standard User
+        if not request.user.is_staff:
             actuator_groups = [g.name for g in ActuatorGroup.objects.filter(actuator=actuator).filter(users__in=[request.user])]
 
             if len(actuator_groups) == 0:
@@ -126,7 +120,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         """
         actuator = self.get_object()
 
-        if not request.user.is_staff:  # Standard User
+        if not request.user.is_staff:
             actuator_groups = [g.name for g in ActuatorGroup.objects.filter(actuator=actuator).filter(users__in=[request.user])]
 
             if len(actuator_groups) == 0:

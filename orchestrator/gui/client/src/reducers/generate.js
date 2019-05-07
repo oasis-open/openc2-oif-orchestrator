@@ -25,10 +25,10 @@ export default (state=initialState, action=null) => {
     let tmpState = {}
 
     switch(action.type) {
-        case generate.SCHEMA_SUCCESS:
+        case generate.SCHEMA_DEFINE:
             return {
                 ...state,
-                selectedSchema: checkSchema(action.meta.schema)
+                selectedSchema: checkSchema(action.payload.schema)
             }
 
         case generate.ACTUATOR_INFO_SUCCESS:
@@ -70,8 +70,7 @@ export default (state=initialState, action=null) => {
         case generate.SCHEMA_FAILURE:
         case generate.ACTUATOR_INFO_FAILURE:
         case generate.ACTUATOR_SELECT_FAILURE:
-        case generate.DEVICE_INFO_FAILURE:
-            console.log('Generate Failure', action.type, action)
+            console.log('Failure', action.type, action)
             return {
                 ...state,
                 errors: {

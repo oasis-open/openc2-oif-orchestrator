@@ -8,83 +8,36 @@ from . import _DB_LEVELS
 
 
 class RequestLog(models.Model):
-    """
-    Logs Django requests
-    """
+    """ Logs Django requests """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
-        blank=True,
-        help_text="User that requested the page",
-        null=True
+        null=True,
+        blank=True
     )
-    requested_at = models.DateTimeField(
-        db_index=True,
-        default=timezone.now,
-        help_text="Time the initial request was received"
-    )
-    response_ms = models.PositiveIntegerField(
-        default=0,
-        help_text="Time it took to process the request in milliseconds"
-    )
-    path = models.CharField(
-        db_index=True,
-        help_text="URL path for the request",
-        max_length=200
-    )
+    requested_at = models.DateTimeField(db_index=True, default=timezone.now)
+    response_ms = models.PositiveIntegerField(default=0)
+    path = models.CharField(max_length=200, db_index=True)
     view = models.CharField(
-        db_index=True,
-        blank=True,
-        help_text="Method that was called to process the request",
         max_length=200,
-        null=True
+        null=True,
+        blank=True,
+        db_index=True
     )
     view_method = models.CharField(
-        db_index=True,
-        blank=True,
-        help_text="HTTP Method of the request",
         max_length=30,
         null=True,
-    )
-    remote_addr = models.GenericIPAddressField(
         blank=True,
-        help_text="Remote IP Address of the system that made the requested",
-        null=True,
+        db_index=True
     )
-    host = models.URLField(
-        blank=True,
-        help_text="Host of the system that received the request",
-        null=True,
-    )
-    method = models.CharField(
-        help_text="HTTP Method of the request",
-        max_length=10
-    )
-    query_params = models.TextField(
-        blank=True,
-        help_text="Data received in the URL as Query Parameters",
-        null=True
-    )
-    data = models.TextField(
-        blank=True,
-        help_text="Data received in the Body/JSON of the request",
-        null=True
-    )
-    response = models.TextField(
-        blank=True,
-        help_text="Data sent back to the remote system",
-        null=True
-    )
-    errors = models.TextField(
-        blank=True,
-        help_text="Errors raised in processing the request",
-        null=True
-    )
-    status_code = models.PositiveIntegerField(
-        blank=True,
-        help_text="HTTP response status code",
-        null=True
-    )
+    remote_addr = models.GenericIPAddressField(null=True, blank=True)
+    host = models.URLField(null=True, blank=True)
+    method = models.CharField(max_length=10)
+    query_params = models.TextField(null=True, blank=True)
+    data = models.TextField(null=True, blank=True)
+    response = models.TextField(null=True, blank=True)
+    errors = models.TextField(null=True, blank=True)
+    status_code = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Request Log'
@@ -94,30 +47,16 @@ class RequestLog(models.Model):
 
 
 class EventLog(models.Model):
-    """
-    Logs Specified Events
-    """
+    """ Logs Specified Events """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        blank=True,
-        help_text="User that caused the event",
+        on_delete=models.SET_NULL,
         null=True,
-        on_delete=models.SET_NULL
+        blank=True
     )
-    occurred_at = models.DateTimeField(
-        default=timezone.now,
-        help_text="Time the event occurred"
-    )
-    level = models.CharField(
-        choices=_DB_LEVELS,
-        help_text="Level of severity the event",
-        max_length=1
-    )
-    message = models.TextField(
-        blank=True,
-        help_text="Event message",
-        null=True
-    )
+    occurred_at = models.DateTimeField(default=timezone.now)
+    level = models.CharField(max_length=1, choices=_DB_LEVELS)
+    message = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Event Log'
@@ -149,7 +88,7 @@ class RequestLogSerializer(serializers.ModelSerializer):
 
 class EventLogSerializer(serializers.ModelSerializer):
     """
-    Model Serializer for Events
+    Model Serializer for Logs
     """
     user = serializers.SlugRelatedField(
         allow_null=True,

@@ -27,7 +27,7 @@ from rest_framework.response import Response
             )
         ),
         coreapi.Field(
-            "actuator_id",
+            "actuator",
             required=True,
             location="path",
             schema=coreschema.String(
@@ -36,7 +36,7 @@ from rest_framework.response import Response
         )
     ]
 ))
-def actuatorDelete(request, username, actuator_id, *args, **kwargs):
+def actuatorDelete(request, username, actuator, *args, **kwargs):
     """
     API endpoint that removes an actuator from a users access.
     """
@@ -45,7 +45,7 @@ def actuatorDelete(request, username, actuator_id, *args, **kwargs):
         return ParseError(detail='User cannot be found', code=404)
 
     rtn = []
-    actuator = bleach.clean(actuator_id)
+    actuator = bleach.clean(actuator)
 
     group = Group.objects.exclude(actuatorgroup__isnull=True).filter(name=actuator).first()
     if group is not None:

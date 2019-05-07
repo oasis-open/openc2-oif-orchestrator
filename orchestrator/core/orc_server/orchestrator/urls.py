@@ -7,7 +7,7 @@ from rest_framework.schemas import get_schema_view
 
 from rest_framework_swagger.views import get_swagger_view
 
-from dynamic_preferences.api.viewsets import GlobalPreferencesViewSet
+# from dynamic_preferences.api.viewsets import GlobalPreferencesViewSet
 # GlobalPreferencesViewSet.pagination_class = None
 # from dynamic_preferences.users.viewsets import UserPreferencesViewSet
 
@@ -18,10 +18,14 @@ admin.site.site_header = 'OpenC2 Orchestrator Admin'
 admin.site.index_title = 'OpenC2 Orchestrator'
 
 # Catch all URL
+# urlpatterns.append(url(r'^(?P<url>.*)/?$', views.gui_catch_all, name='gui.catch_all'))
 handler400 = views.bad_request
 handler403 = views.permission_denied
 handler404 = views.page_not_found
 handler500 = views.server_error
+
+# groupRouter = routers.DefaultRouter()
+# groupRouter.register(r'', views.GroupViewSet)
 
 # preferenceRouter = routers.SimpleRouter()
 # preferenceRouter.register('', GlobalPreferencesViewSet, base_name='global')
@@ -42,11 +46,14 @@ api_patterns = [
     # Device App
     path('device/', include('device.urls')),
 
+    # Groups Routers
+    # path('groups/', include(groupRouter.urls)),
+
     # Preferences Routers
     # path('preferences/', include(preferenceRouter.urls)),
 
     # Groups Routers
-    path('log/', include('tracking.urls.api')),
+    path('log/', include('tracking.urls')),
 
     # Schema
     path('schema/', include([
@@ -56,9 +63,6 @@ api_patterns = [
 ]
 
 gui_patterns = [
-    # No GUI - Redirect to API
-    path('', views.gui_redirect),
-
     # Account URLs - Needed for schema views by user permissions
     path('account/', include('django.contrib.auth.urls')),
 ]

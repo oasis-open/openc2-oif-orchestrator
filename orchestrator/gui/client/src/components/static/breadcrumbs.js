@@ -35,10 +35,9 @@ class Breadcrumbs extends Component {
     render() {
         if (this.props.isAuthenticated) {
             let crumbs = this.crumbs.map((crumb, i) => {
-                if (crumb == '') { return }
+                if (crumb == '') { return; }
                 let crumbName = crumb.split(/[\s-_]/g).map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ')
-                let crumbURL = this.crumbs.slice(0, i+1).join('/')
-                crumbURL = crumbURL.charAt(0) == '/' ? crumbURL : '/' + crumbURL
+                let crumbURL = '/' + this.crumbs.slice(0, i+1).join('/')
 
                 return (
                     <li
@@ -50,7 +49,9 @@ class Breadcrumbs extends Component {
                             i == this.crumbs.length-1 ?
                                 crumbName
                             :
-                                <a href={ crumbURL } onClick={ this.navigate.bind(this) } >{ crumbName }</a>
+                                <a href={ crumbURL } onClick={ this.navigate.bind(this) } >
+                                    { crumbName }
+                                </a>
                         }
                     </li>
                 )
@@ -77,9 +78,11 @@ class Breadcrumbs extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    history: state.Router || state.router,
-    isAuthenticated: AuthActions.isAuthenticated(state.Auth)
-})
+function mapStateToProps(state) {
+    return {
+        history: state.Router || state.router,
+        isAuthenticated: AuthActions.isAuthenticated(state.Auth),
+    }
+}
 
 export default connect(mapStateToProps)(Breadcrumbs)

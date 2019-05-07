@@ -84,11 +84,12 @@
     -e QUEUE_USER=guest \
     -e QUEUE_PASSWORD=guest \
     -p 8080:8080 \
-    -v $(PWD)/orc_server:/opt/orc_server \
+    -v $(PWD)/orc_server:/opt/orchestrator/orc_server \
 	--link queue \
 	--link database \
 	--rm \
-    gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/core
+    gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/core \
+    ./dev_start.sh
 	```
     
 - Production
@@ -119,18 +120,13 @@
     - [HTTP Status Codes](https://www.restapitutorial.com/httpstatuscodes.html)
 - Server
     - [Django](https://www.djangoproject.com/) - Core Framework
-        - [Cors Headers](https://pypi.org/project/django-cors-headers/) - Cross Origin Headers
         - [Django REST Framework](http://www.django-rest-framework.org/) - Core Framework REST
         - [DRF DataTables](https://django-rest-framework-datatables.readthedocs.io/en/latest/) - Server Side processing
-        - [DRF JWT](https://getblimp.github.io/django-rest-framework-jwt/) - JSON WebTokens
-        - [DRF QueryFields](https://djangorestframework-queryfields.readthedocs.io/en/latest/) - Dynamic fields in API
-        - [DRF Swagger](https://django-rest-swagger.readthedocs.io/en/latest/) - Dynamic API GUI
         - [DRF Tracking](https://drf-tracking.readthedocs.io/en/latest/) - Tracking app based from
-        - [DRF Writable Nested](https://pypi.org/project/drf-writable-nested/) - Writable Nested Serializer
         - [Dynamic Preferences](https://django-dynamic-preferences.readthedocs.io/en/latest/) - Dynamic config
         - [JSON Field](https://pypi.org/project/jsonfield/) - JSON in database
     - [Bleach](https://bleach.readthedocs.io/en/latest/index.html) - String Sanitization
-    - [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/) - Production Server
+    - [cherrypy](https://cherrypy.org/) - Production WSGI Server
     
 #### Interesting Modules
 - [Excel Response](https://pypi.org/project/django-excel-response/)

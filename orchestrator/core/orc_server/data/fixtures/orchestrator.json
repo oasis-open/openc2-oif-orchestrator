@@ -10,8 +10,7 @@
     "model": "orchestrator.protocol",
     "pk": 2,
     "fields": {
-      "name": "MQTT",
-      "pub_sub": true
+      "name": "MQTT"
     }
   },
   {

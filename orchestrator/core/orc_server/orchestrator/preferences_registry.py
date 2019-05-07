@@ -1,9 +1,11 @@
-import ipaddress
 import os
 import re
+import socket
 import uuid
-
 from django.forms import ValidationError
+
+
+from django.conf import settings
 
 from dynamic_preferences.admin import GlobalPreferenceAdmin, PerInstancePreferenceAdmin
 from dynamic_preferences.types import ChoicePreference, IntegerPreference, LongStringPreference, StringPreference
@@ -15,110 +17,78 @@ GlobalPreferenceAdmin.has_delete_permission = lambda *args, **kwargs: False
 PerInstancePreferenceAdmin.has_add_permission = lambda *args, **kwargs: False
 PerInstancePreferenceAdmin.has_delete_permission = lambda *args, **kwargs: False
 
-site = Section("site")
-orchestrator = Section("orchestrator")
+site = Section('site')
+orchestrator = Section('orchestrator')
 
 
 # Validation Functions
 def is_valid_hostname(hostname):
-    """
-    Validate a hostname
-    :param hostname: hostname to validate
-    :return: bool - valid hostname
-    """
     if len(hostname) > 255:
         return False
     if hostname[-1] == ".":
         hostname = hostname[:-1] # strip exactly one dot from the right, if present
-    allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in hostname.split("."))
 
 
 def is_valid_ipv4_address(address):
-    """
-    Validate an IPv4 Address
-    :param address: IP Address to validate
-    :return: bool - valid address
-    """
     try:
-        ipaddress.IPv4Address(address)
-    except Exception as e:  # not a valid address
+        socket.inet_pton(socket.AF_INET, address)
+    except AttributeError:  # no inet_pton here, sorry
+        try:
+            socket.inet_aton(address)
+        except socket.error:
+            return False
+        return address.count('.') == 3
+    except socket.error:  # not a valid address
         return False
+
     return True
 
 
 def is_valid_ipv6_address(address):
-    """
-    Validate an IPv6 Address
-    :param address: IP Address to validate
-    :return: bool - valid address
-    """
     try:
-        ipaddress.IPv6Address(address)
-    except Exception as e:  # not a valid address
+        socket.inet_pton(socket.AF_INET6, address)
+    except socket.error:  # not a valid address
         return False
     return True
 
 
 @global_registry.register
 class OrchestratorName(StringPreference):
-    """
-    Dynamic Preference for Orchestrator Name
-    """
     section = orchestrator
-    name = "name"
-    help_text = "The name of the orchestrator"
-    default = "Jazzy Ocelot"
+    name = 'name'
+    help_text = 'The name of the orchestrator'
+    default = 'Jazzy Ocelot'
 
 
 @global_registry.register
 class OrchestratorID(StringPreference):
-    """
-    Dynamic Preference for Orchestrator ID
-    """
     section = orchestrator
-    name = "id"
-    help_text = "The uuid of the orchestrator"
-    default = ""
+    name = 'id'
+    help_text = 'The uuid of the orchestrator'
+    default = ''
 
     def __init__(self, *args, **kwargs):
-        """
-        Initialize the ID of the orchestrator
-        :param args: positional args
-        :param kwargs: key/value args
-        """
         super(StringPreference, self).__init__(*args, **kwargs)
-        if self.default in ("", " ", None):
+        if self.default == '':
             self.default = str(uuid.uuid4())
 
     def validate(self, value):
-        """
-        Validate the ID when updated
-        :param value: new value to validate
-        :return: None/exception
-        """
         try:
             uuid.UUID(value, version=4)
         except Exception as e:
-            raise ValidationError(str(e))
+            raise e
 
 
 @global_registry.register
 class OrchestratorHost(StringPreference):
-    """
-    Dynamic Preference for Orchestrator Hostname/IP
-    """
     section = orchestrator
-    name = "host"
-    help_text = "The hostname/ip of the orchestrator"
-    _default = os.environ.get("ORC_IP", "127.0.0.1")
-    default = _default if any([is_valid_hostname(_default), is_valid_ipv4_address(_default), is_valid_ipv6_address(_default)]) else "127.0.0.1"
+    name = 'host'
+    help_text = 'The hostname/ip of the orchestrator'
+    _default = os.environ.get('ORC_IP', '127.0.0.1')
+    default = _default if any([is_valid_hostname(_default), is_valid_ipv4_address(_default), is_valid_ipv6_address(_default)]) else '127.0.0.1'
 
     def validate(self, value):
-        """
-        Validate the Hostnae/IP when updated
-        :param value: new value to validate
-        :return: None/exception
-        """
         if not any([is_valid_hostname(value), is_valid_ipv4_address(value), is_valid_ipv6_address(value)]):
-            raise ValidationError("The host is not a valid Hostname/IPv4/IPv6")
+            raise ValidationError('The host is not a valid IPv4/IPv6/Hostname')

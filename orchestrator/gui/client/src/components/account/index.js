@@ -1,15 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DocumentMeta from 'react-document-meta'
+import qs from 'query-string'
+
 import { toast } from 'react-toastify'
 
-import {
-    Button,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader
-} from 'reactstrap'
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
@@ -32,8 +28,10 @@ class Account extends Component {
             canonical: str_fmt('{origin}{path}', {origin: window.location.origin, path: window.location.pathname})
         }
 
-        console.log(this.props.match.params.page)
-        this.validPages = ['all', 'change_password']
+        this.validPages = [
+            'all',
+            'change_password'
+        ]
         let page = this.props.match.params.page || 'all'
 
         if (this.validPages.indexOf(page) ===  -1) {
@@ -79,8 +77,16 @@ class Account extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    errors: state.Account.errors
-})
+function mapStateToProps(state) {
+    return {
+        errors: state.Account.errors
+    }
+}
 
-export default connect(mapStateToProps)(Account)
+
+function mapDispatchToProps(dispatch) {
+    return {
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Account)

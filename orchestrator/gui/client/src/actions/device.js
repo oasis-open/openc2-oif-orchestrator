@@ -1,8 +1,10 @@
 import { RSAA } from 'redux-api-middleware'
 
-import { withGUIAuth } from './util'
-
 const str_fmt = require('string-format')
+
+// General Actions
+
+import { withGUIAuth, withOrcAuth, withOrcURL } from './util'
 
 // API Base URL
 const baseAPI = '/api/device'
@@ -10,6 +12,8 @@ const baseAPI = '/api/device'
 // Helper Functions
 
 // API Calls
+
+// Device API
 // GET - /api/device/ - all devices
 const GET_DEVICES_REQUEST = '@@device/GET_DEVICES_REQUEST'
 export const GET_DEVICES_SUCCESS = '@@device/GET_DEVICES_SUCCESS'
@@ -18,7 +22,7 @@ export const getDevices = ({page=1, count=10, sort='name', refresh=false}={}) =>
     [RSAA]: {
         endpoint: str_fmt('{base}?page={page}&length={count}&ordering={sort}', {base: baseAPI, page: page, count: count, sort: sort}),
         method: 'GET',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         types: [
             GET_DEVICES_REQUEST,
             {
@@ -41,7 +45,7 @@ export const createDevice = (device) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/', {base: baseAPI}),
         method: 'POST',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         body: JSON.stringify(device),
         types: [
             CREATE_DEVICE_REQUEST, CREATE_DEVICE_SUCCESS, CREATE_DEVICE_FAILURE
@@ -57,9 +61,22 @@ export const getDevice = (deviceUUID) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/{device}/', {base: baseAPI, device: deviceUUID}),
         method: 'GET',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         types: [
             GET_DEVICE_REQUEST, GET_DEVICE_SUCCESS, GET_DEVICE_FAILURE
+        ]
+    }
+})
+
+// PUT - /api/device/{name}/ - create device with specified info
+export const createDeviceUUID = (deviceUUID, device) => ({
+    [RSAA]: {
+        endpoint: str_fmt('{base}/{device}/', {base: baseAPI, device: deviceUUID}),
+        method: 'POST',
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
+        body: JSON.stringify(device),
+        types: [
+            CREATE_DEVICES_REQUEST, CREATE_DEVICE_SUCCESS, CREATE_DEVICE_FAILURE
         ]
     }
 })
@@ -72,7 +89,7 @@ export const updateDevice = (deviceUUID, device) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/{device}/', {base: baseAPI, device: deviceUUID}),
         method: 'PATCH',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         body: JSON.stringify(device),
         types: [
             UPDATE_DEVICE_REQUEST, UPDATE_DEVICE_SUCCESS, UPDATE_DEVICE_FAILURE
@@ -88,7 +105,7 @@ export const deleteDevice = (deviceUUID) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/{device}/', {base: baseAPI, device: deviceUUID}),
         method: 'DELETE',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         types: [
             DELETE_DEVICE_REQUEST, DELETE_DEVICE_SUCCESS, DELETE_DEVICE_FAILURE
         ]
@@ -103,7 +120,7 @@ export const getDeviceUsers = (deviceUUID) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/{device}/users', {base: baseAPI, device: deviceUUID}),
         method: 'GET',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         types: [
             GET_DEVICES_USER_REQUEST, GET_DEVICE_USERS_SUCCESS, GET_DEVICE_USERS_FAILURE
         ]

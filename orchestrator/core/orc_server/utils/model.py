@@ -1,15 +1,15 @@
 from django.contrib import admin
 
 
-def get_or_none(model, **kwargs):
-    """
-    Get filtered results from the given model
-    :param model: model to filter
-    :param kwargs: field/value to match
-    :return: matching row(s) from the model
-    """
-    tmp_qry = model.objects.filter(**kwargs)
-    return None if len(tmp_qry) == 0 else (tmp_qry.first() if len(tmp_qry) == 1 else tmp_qry)
+def get_or_none(model, *args, **kwargs):
+    tmp_qry = model.objects.filter(*args, **kwargs)
+
+    if len(tmp_qry) == 0:
+        return None
+    elif len(tmp_qry) == 1:
+        return tmp_qry.first()
+    else:
+        return tmp_qry
 
 
 class ReadOnlyModelAdmin(admin.ModelAdmin):

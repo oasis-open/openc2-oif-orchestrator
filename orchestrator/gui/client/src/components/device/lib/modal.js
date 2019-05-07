@@ -1,16 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
-import {
-    Button,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader
-} from 'reactstrap'
+
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+
+import * as DeviceActions from '../../../actions/device'
+import { withGUIAuth } from '../../../actions/util'
 
 import { Transport } from './'
 
@@ -19,12 +17,10 @@ import {
     validateUUID4
 } from '../../utils'
 
-import * as DeviceActions from '../../../actions/device'
-import { withGUIAuth } from '../../../actions/util'
-
 class DeviceModal extends Component {
     constructor(props, context) {
         super(props, context)
+
         this.toggleModal = this.toggleModal.bind(this)
         this.genUUID = this.genUUID.bind(this)
         this.registerDevice = this.registerDevice.bind(this)
@@ -68,12 +64,12 @@ class DeviceModal extends Component {
     }
 
     genUUID() {
-        this.setState(prevState => ({
+        this.setState({
             device: {
-                ...prevState.device,
+                ...this.state.device,
                 device_id: generateUUID4()
             }
-        }))
+        })
     }
 
     mulitSelectChange(e) {
@@ -88,12 +84,12 @@ class DeviceModal extends Component {
             tmpVal.push(val)
         }
 
-        this.setState(prevState => ({
+        this.setState({
             device: {
-                ...prevState.device,
+                ...this.state.device,
                 [id]: tmpVal
             }
-        }))
+        })
     }
 
     transportChange(d, i) {
@@ -101,13 +97,9 @@ class DeviceModal extends Component {
             ...this.state.device.transport
         ]
         tmpTrans[i] = d
+        console.log(tmpTrans)
 
-        this.setState(prevState => ({
-            device: {
-                ...prevState.device,
-                transport: tmpTrans
-            }
-        }))
+        this.setState({ device: {...this.state.device, transport: tmpTrans }})
     }
 
     transportAdd(e) {
@@ -121,12 +113,7 @@ class DeviceModal extends Component {
                 serialization: ['JSON']
             }
         ]
-        this.setState(prevState => ({
-            device: {
-                ...prevState.device,
-                 transport: tmpTrans
-            }
-        }))
+        this.setState({ device: {...this.state.device, transport: tmpTrans }})
     }
 
     transportRemove(i) {
@@ -243,7 +230,7 @@ class DeviceModal extends Component {
                                 <div className="form-group col-lg-6">
                                     <label htmlFor="device_id">Device ID</label>
                                     <div className="input-group">
-                                        <input type="text" className="form-control" id="device_id" readOnly={ !this.register } value={ this.state.device.device_id } onChange={ (e) => this.setState({ device: {...prevState.device, device_id: e.target.value }}) } />
+                                        <input type="text" className="form-control" id="device_id" readOnly={ !this.register } value={ this.state.device.device_id } onChange={ (e) => this.setState({ device: {...this.state.device, device_id: e.target.value }}) } />
                                         <div className="input-group-append">
                                             <Button color="info" disabled={ !this.register } onClick={ this.genUUID } >Gen ID</Button>
                                         </div>
@@ -283,15 +270,20 @@ class DeviceModal extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    errors: state.Device.errors,
-    admin: state.Auth.access.admin
-})
+function mapStateToProps(state) {
+    return {
+        errors: state.Device.errors,
+
+        admin: state.Auth.access.admin
+    }
+}
 
 
-const mapDispatchToProps = (dispatch) => ({
-    createDevice: (dev) => dispatch(DeviceActions.createDevice(dev)),
-    updateDevice: (devUUID, dev) => dispatch(DeviceActions.updateDevice(devUUID, dev))
-})
+function mapDispatchToProps(dispatch) {
+    return {
+        createDevice: (dev) => dispatch(DeviceActions.createDevice(dev)),
+        updateDevice: (devUUID, dev) => dispatch(DeviceActions.updateDevice(devUUID, dev))
+    }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeviceModal)

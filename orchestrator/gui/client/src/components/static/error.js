@@ -38,13 +38,17 @@ class Error extends Component {
             WebkitAnimationDirection: 'reverse',
             animationDirection: 'reverse'
         }
+
+        console.log('Whoop, there\'s an issue here!')
     }
 
     goBack() {
         if (this.props.history.length === 1) {
+            console.log('Cant Go Back!!')
             toast(<p>Looks like this is a new tab, try closing it instead of going back</p>, {type: toast.TYPE.WARNING})
 
         } else {
+            console.log('Go Back!!')
             this.props.history.goBack()
         }
     }

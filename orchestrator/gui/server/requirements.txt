@@ -1,6 +1,6 @@
 bleach
 channels
-daphne
+cherrypy
 django
 django-cors-headers
 djangorestframework
@@ -8,5 +8,3 @@ djangorestframework-datatables
 djangorestframework-jwt
 django-rest-swagger
 mysql-connector-python
-simple-rest-client
-websocket_client

@@ -1,4 +1,5 @@
 import InputField from './inputField'
+import loadURL, { validURL } from './loadURL'
 import RemotePageTable from './remotePageTable'
 
 import {
@@ -6,8 +7,12 @@ import {
 } from './array'
 
 import {
+    escaped2cbor,
+    hexify
+} from './cbor'
+
+import {
     checkSchema,
-    safeGet,
     titleCase
 } from './general'
 
@@ -34,16 +39,19 @@ import {
 export {
     checkSchema,
     delMultiKey,
+    escaped2cbor,
     FormatJADN,
     generateUUID4,
     getMultiKey,
+    hexify,
     InputField,
+    loadURL,
     mergeByProperty,
     RemotePageTable,
-    safeGet,
     setMultiKey,
     ThemeChooser,
     ThemeSwitcher,
     titleCase,
-    validateUUID4
+    validateUUID4,
+    validURL
 }

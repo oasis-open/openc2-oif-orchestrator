@@ -1,8 +1,10 @@
 import { RSAA } from 'redux-api-middleware'
 
-import { withGUIAuth } from './util'
-
 const str_fmt = require('string-format')
+
+// General Actions
+
+import { withGUIAuth, withOrcAuth, withOrcURL } from './util'
 
 // API Base URL
 const baseAPI = '/api/actuator'
@@ -40,7 +42,7 @@ export const createActuator = (actuator) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/', {base: baseAPI}),
         method: 'POST',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         body: JSON.stringify(actuator),
         types: [
             CREATE_ACTUATOR_REQUEST, CREATE_ACTUATOR_SUCCESS, CREATE_ACTUATOR_FAILURE
@@ -56,9 +58,22 @@ export const getActuator = (actuatorUUID) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/{actuator}/', {base: baseAPI, actuator: actuatorUUID}),
         method: 'GET',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         types: [
             GET_ACTUATOR_REQUEST, GET_ACTUATOR_SUCCESS, GET_ACTUATOR_FAILURE
+        ]
+    }
+})
+
+// POST - /api/actuator/{name} - create specific actuator (name, host, port, protocol, serialization, profile)
+export const createActuatorUUID = (actuatorUUID, actuator) => ({
+    [RSAA]: {
+        endpoint: str_fmt('{base}/{actuator}/', {base: baseAPI, actuator: actuatorUUID}),
+        method: 'POST',
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
+        body: JSON.stringify(actuator),
+        types: [
+            CREATE_ACTUATOR_REQUEST, CREATE_ACTUATOR_SUCCESS, CREATE_ACTUATOR_FAILURE
         ]
     }
 })
@@ -71,7 +86,7 @@ export const updateActuator = (actuatorUUID, actuator) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/{actuator}/', {base: baseAPI, actuator: actuatorUUID}),
         method: 'PATCH',
-        headers: withGUIAuth(),
+        headers: withGUIAuth({'Content-Type': 'application/json'}),
         body: JSON.stringify(actuator),
         types: [
             UPDATE_ACTUATOR_REQUEST, UPDATE_ACTUATOR_SUCCESS, UPDATE_ACTUATOR_FAILURE

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from dynamic_preferences.registries import global_preferences_registry
 from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+
+from dynamic_preferences.registries import global_preferences_registry
 
 from orchestrator.models import Serialization, Protocol
 from command.models import SentHistory, ResponseHistory

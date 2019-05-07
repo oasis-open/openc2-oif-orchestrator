@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import atexit
+import os
+import signal
 import sys
 
 from django.apps import AppConfig
@@ -12,36 +13,28 @@ from utils import MessageQueue
 
 class OrchestratorConfig(AppConfig):
     name = 'orchestrator'
-    _FALSE_READY = (
-        'runserver',
-        'orchestrator.wsgi',
-        'uwsgi'
-    )
 
     def ready(self):
-        """
-        App ready, init runtime objects
-        :return: None
-        """
-        if all(state not in sys.argv for state in self._FALSE_READY):
-            return
-
+        print('Orchestrator Ready')
         from command.processors import command_response
+
+        # print(sys.argv)
+        if 'runserver' not in sys.argv and 'orchestrator.wsgi' not in sys.argv:
+            return True
+
+        print(f'Configuring Queue Subscription')
         settings.MESSAGE_QUEUE = MessageQueue(**settings.QUEUE, callbacks=[command_response])
 
 
-@atexit.register
-def shutdown(*args, **kwargs):
-    """
-    App shutdown and cleanup
-    :return: None
-    """
+def shutdown(signal, frame):
+    if os.environ.get('RUN_MAIN') == 'true':
+        print('STOPPED')
 
     if type(settings.MESSAGE_QUEUE) is MessageQueue:
         settings.MESSAGE_QUEUE.shutdown()
 
-    try:
-        import uwsgi
-        print(f"worker {uwsgi.worker_id()} has passed")
-    except ModuleNotFoundError:
-        pass
+    exit(signal)
+
+
+signal.signal(signal.SIGINT, shutdown)
+

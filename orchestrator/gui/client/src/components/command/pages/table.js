@@ -23,7 +23,15 @@ class CommandTable extends Component {
                 text: 'Received',
                 dataField: 'received_on',
                 sort: true
+            },/*{
+                text: 'Actuators',
+                dataField: 'actuators',
+                sort: true
             },{
+                text: 'Responses',
+                dataField: 'responses',
+                sort: true
+            },*/{
                 text: 'Status',
                 dataField: 'status',
                 sort: true
@@ -60,16 +68,21 @@ class CommandTable extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    siteTitle: state.Util.site_title,
-    orchestrator: {
-        name: state.Util.name || 'N/A'
-    },
-    admin: state.Auth.access.admin
-})
+function mapStateToProps(state) {
+    return {
+        siteTitle: state.Util.site_title,
+        orchestrator: {
+            name: state.Util.name || 'N/A'
+        },
+        admin: state.Auth.access.admin
+    }
+}
 
-const mapDispatchToProps = (dispatch) => ({
-    getCommands: (page, sizePerPage, sort) => dispatch(CommandActions.getCommands(page, sizePerPage, sort)),
-})
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getCommands: (page, sizePerPage, sort) => dispatch(CommandActions.getCommands(page, sizePerPage, sort)),
+    }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(CommandTable)

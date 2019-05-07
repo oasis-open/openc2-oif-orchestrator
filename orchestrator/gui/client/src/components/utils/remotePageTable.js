@@ -1,17 +1,20 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { confirmAlert } from 'react-confirm-alert'
-import BootstrapTable from 'react-bootstrap-table-next'
-import paginationFactory from 'react-bootstrap-table2-paginator'
-import { Button } from 'reactstrap'
 
-import 'react-confirm-alert/src/react-confirm-alert.css'
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css'
+import { Button } from 'reactstrap'
 
 import {
     getMultiKey,
     setMultiKey
 } from './'
+
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
+
+import BootstrapTable from 'react-bootstrap-table-next'
+import paginationFactory from 'react-bootstrap-table2-paginator'
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css'
+// import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css'
 
 const str_fmt = require('string-format')
 
@@ -33,7 +36,7 @@ const RemotePagination = ({ keyField, columns, data, page, pageSize, totalSize, 
 
     if (defaultSort.length == 0 || defaultSort == null) {
         defaultSort = [{
-            dataField: keyField, // if dataField is not match to any column defined, it will be ignored.
+            dataField: keyField, // if dataField is not match to any column you defined, it will be ignored.
             order: 'desc' // desc or asc
         }]
     }
@@ -59,7 +62,9 @@ const RemotePagination = ({ keyField, columns, data, page, pageSize, totalSize, 
 class RemotePageTable extends Component {
     constructor(props, context) {
         super(props, context)
+
         this.handleTableChange = this.handleTableChange.bind(this)
+
         this.editable = this.props.editRows == true
         this.keyField = this.props.keyField || 'id'
 
@@ -114,7 +119,10 @@ class RemotePageTable extends Component {
             sortOrder = -1
             property = property.substr(1)
         }
-        return (a, b) => ((a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0) * sortOrder
+        return (a, b) => {
+            let result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0
+            return result * sortOrder
+        }
     }
 
     tablePagination(page, sizePerPage, currentSize) {
@@ -126,11 +134,13 @@ class RemotePageTable extends Component {
             this.props.dataGet(page, sizePerPage, this.state.sort)
         }
 
-        this.setState((state, props) => ({
-            page: page,
-            displayData: this.editData(this.props.data.sort(this.dynamicSort(this.state.sort)).slice(startIndex, endIndex)),
-            pageSize: sizePerPage
-        }))
+        this.setState((state, props) => {
+            return {
+                page: page,
+                displayData: this.editData(this.props.data.sort(this.dynamicSort(this.state.sort)).slice(startIndex, endIndex)),
+                pageSize: sizePerPage
+            }
+        })
     }
 
     tableSort(column, order) {
@@ -151,6 +161,7 @@ class RemotePageTable extends Component {
     handleTableChange(type, args) {
         switch(type) {
             case 'filter':
+                console.log('FILTER')
                 break;
             case 'pagination':
                 this.tablePagination(args.page, args.sizePerPage, args.data.length)
@@ -159,9 +170,11 @@ class RemotePageTable extends Component {
                 this.tableSort(args.sortField, args.sortOrder)
                 break;
             case 'cellEdit':
+                console.log('CELL EDIT')
                 break;
+
             default:
-                break;
+                console.log('DEFAULT')
         }
     }
 
@@ -186,7 +199,9 @@ class RemotePageTable extends Component {
             buttons: [
                 {
                     label: 'Delete',
-                    onClick: () => delFun(key)
+                    onClick: () => {
+                        delFun(key)
+                    }
                 }, {
                     label: 'Cancel'
                 }
@@ -195,14 +210,14 @@ class RemotePageTable extends Component {
     }
 
     optionsFormatter(cell, row) {
-        let i = 1
+        let i=1
         let rtn = []
 
         if (Object.keys(this.options).length == 0) {
             rtn.push(<p key={ i++ } >Options not configured</p>)
         } else {
             if (this.options.modal) {
-                rtn.push(<this.options.modal key={ i++ } data={ row } />)
+                rtn = [<this.options.modal key={ i++ } data={ row } />]
             }
 
             if (this.options.navigate) {
@@ -237,9 +252,17 @@ class RemotePageTable extends Component {
     }
 }
 
-const mapStateToProps = (state, props) => ({
-    data: getMultiKey(state, props.dataKey) || [],
-    total: getMultiKey(state, [props.dataKey.split('.')[0], 'count'].join('.')) || 0
-})
+function mapStateToProps(state, props) {
+    return {
+        data: getMultiKey(state, props.dataKey) || [],
+        total: getMultiKey(state, [props.dataKey.split('.')[0], 'count'].join('.')) || 0
+    }
+}
 
-export default connect(mapStateToProps)(RemotePageTable)
+
+function mapDispatchToProps(dispatch, props) {
+    return {
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RemotePageTable)

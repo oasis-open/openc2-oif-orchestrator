@@ -1,11 +1,10 @@
 from django.contrib import admin
 from .models import EventLog, RequestLog
 
+# Register your models here.
+
 
 class RequestLogAdmin(admin.ModelAdmin):
-    """
-    Request Log model admin
-    """
     date_hierarchy = 'requested_at'
     list_display = (
         'id',
@@ -25,9 +24,6 @@ class RequestLogAdmin(admin.ModelAdmin):
 
 
 class EventLogAdmin(admin.ModelAdmin):
-    """
-    Event Log model admin
-    """
     date_hierarchy = 'occurred_at'
     list_display = (
         'id',
@@ -40,6 +36,5 @@ class EventLogAdmin(admin.ModelAdmin):
     list_filter = ('level', )
 
 
-# Register Models
 admin.site.register(RequestLog, RequestLogAdmin)
 admin.site.register(EventLog, EventLogAdmin)

@@ -11,27 +11,19 @@ from django.template import Library
 register = Library()
 
 
-@register.filter(is_safe=True)
+@register.filter
 def jsonify(val):
-    """
-    JSON stringify the given value
-    :param val: object to JSON stringify
-    :return: stringified JSON
-    """
     if isinstance(val, QuerySet):
         return mark_safe(serialize('json', val))
 
     return mark_safe(json.dumps(val))
 
 
+jsonify.is_safe = True
+
+
 @register.filter
 def pretty_json(val, ind=2):
-    """
-    Pretty format JSON data
-    :param val: Key/Value object
-    :param ind: spaces to use as indent
-    :return: pretty formatted key/value object
-    """
-    if not isinstance(val, dict):
+    if type(val) is not dict:
         val = json.loads(val)
     return mark_safe(json.dumps(val, indent=ind))

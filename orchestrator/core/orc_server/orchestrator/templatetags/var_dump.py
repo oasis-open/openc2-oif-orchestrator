@@ -11,32 +11,24 @@ from pprint import pformat
 register = template.Library()
 
 
-@register.filter
-def var_dump(var):
-    """
-    Dumps the value of the given object
-    :param var: var to dump its value
-    :return: dumped value of the given var
-    """
-    if hasattr(var, '__dict__'):
+def var_dump(x):
+    if hasattr(x, '__dict__'):
         d = dict(
-            __str__=str(var),
-            __unicode__=str(var).encode('utf-8', 'strict'),
-            __repr__=repr(var)
+            __str__=str(x),
+            __unicode__=str(x).encode('utf-8', 'strict'),
+            __repr__=repr(x)
         )
 
-        d.update(var.__dict__)
-        var = d
+        d.update(x.__dict__)
+        x = d
 
-    output = f"{pformat(var)}\n"
+    output = f'{pformat(x)}\n'
     return output
 
 
-@register.filter
-def dump(var):
-    """
-    Wrapper function for var_dump
-    :param var: var object to dump
-    :return: dumped value of the given var
-    """
-    return mark_safe(linebreaksbr(escape(var_dump(var))))
+def dump(x):
+    return mark_safe(linebreaksbr(escape(var_dump(x))))
+
+
+register.filter('var_dump', var_dump)
+register.filter('dump', dump)

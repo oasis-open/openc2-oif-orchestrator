@@ -1,43 +1,31 @@
-/*
-Nested associated array manipulation
-*/
-
-// Set value on a nested key
-export const setMultiKey = (arr, key, val) => {
-    key = key.replace(/\[\]$/, '')
-	let keys = key.split('.')
+export const setMultiKey = (a, k, v) => {
+    k = k.replace(/\[\]$/, '')
+	let keys = k.split('.')
 
 	if (keys.length > 1) {
-	    if (!arr.hasOwnProperty(keys[0])) {
-			arr[keys[0]] = {}
+	    if (!a.hasOwnProperty(keys[0])) {
+			a[keys[0]] = {}
 		}
-		setMultiKey(arr[keys[0]], keys.slice(1).join('.'), val)
+		setMultiKey(a[keys[0]], keys.slice(1).join('.'), v)
 	} else {
-	    arr[key] = val
+	    a[k] = v
 	}
 }
 
-// Get value of a nested key
-export const getMultiKey = (arr, key) => {
-    key = key.replace(/\[\]$/, '')
-    let keys = key.split('.')
+export const getMultiKey = (a, k) => {
+    k = k.replace(/\[\]$/, '')
+    let keys = k.split('.')
 
-    if (keys.length > 1) {
-        return arr.hasOwnProperty(keys[0]) ? getMultiKey(arr[keys[0]], keys.slice(1).join('.')) : ''
-    } else {
-        return arr.hasOwnProperty(key) ? arr[key] : ''
-    }
+    return keys.length > 1 ? (a.hasOwnProperty(keys[0]) ? getMultiKey(a[keys[0]], keys.slice(1).join('.')) : '') : (a.hasOwnProperty(k) ? a[k] : '')
 }
 
-
-// Delete a nested key
-export const delMultiKey = (arr, key) => {
-    key = key.replace(/\[\]$/, '')
-	let keys = key.split('.')
+export const delMultiKey = (a, k) => {
+    k = k.replace(/\[\]$/, '')
+	let keys = k.split('.')
 
 	if (keys.length > 1) {
-		delMultiKey(arr[keys[0]], keys.slice(1).join('.'), null)
-	} else if (arr && arr.hasOwnProperty(keys[0])) {
-	    delete arr[keys[0]]
+		delMultiKey(a[keys[0]], keys.slice(1).join('.'), null)
+	} else if (a && a.hasOwnProperty(keys[0])) {
+	    delete a[keys[0]]
 	}
 }

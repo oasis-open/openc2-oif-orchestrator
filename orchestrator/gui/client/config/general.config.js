@@ -1,13 +1,12 @@
-const webpack = require('webpack')
-const path = require('path')
+const webpack = require('webpack');
+const path = require('path');
 
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const DeadCodePlugin = require('webpack-deadcode-plugin')
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
-const BundleTracker = require('webpack-bundle-tracker')
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+const BundleTracker = require('webpack-bundle-tracker');
 
 const ROOT_DIR = path.join(__dirname, '..')
 const BUILD_DIR = path.join(ROOT_DIR, 'build')
@@ -37,14 +36,6 @@ const config  = {
         ]
     },
     plugins: [
-        new DeadCodePlugin({
-            patterns: [
-                'src/**/*.(js|jsx|css)',
-            ],
-            exclude: [
-                '**/*.(stories|spec).(js|jsx)',
-            ]
-        }),
         new HtmlWebpackPlugin({
             title: 'HtmlWebpackPlugin',
             filename: 'index.html',
@@ -94,6 +85,21 @@ const config  = {
             }
         })
     ],
+    devServer: {
+        contentBase: BUILD_DIR,
+        compress: true,
+        port: 3000,
+        hot: true,
+        open: false,
+        historyApiFallback: true,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8080',
+                //pathRewrite: {"^/api/v1" : ""},
+                secure: false
+            }
+        }
+    },
     optimization: {
         mergeDuplicateChunks: true,
         runtimeChunk: false,
@@ -117,7 +123,7 @@ const config  = {
                     loader: 'babel-loader',
                     options: {
                         babelrc: false,
-                        presets: [
+                         presets: [
                             '@babel/preset-env',
                             '@babel/preset-react'
                         ],
@@ -165,6 +171,5 @@ const config  = {
         ]
     }
 };
-
 
 module.exports = config

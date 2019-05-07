@@ -1,6 +1,3 @@
-/*
-automatically refresh the authentication JWT before it expires
-*/
 import { isRSAA } from 'redux-api-middleware'
 
 import * as AuthActions from '../actions/auth'
@@ -9,7 +6,6 @@ export default ({ getState }) => {
     return next => action => {
         if (isRSAA(action)) {
             let auth = getState().Auth
-
             if (auth.access) {
                 let exp = moment.unix(auth.access.exp)
                 let orig_iat = moment.unix(auth.access.orig_iat)

@@ -1,6 +1,6 @@
 import json, os, re
 from flask import Flask, request
-from sb_utils import Producer, decode_msg
+from utils import Producer, decode_msg
 app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
@@ -26,7 +26,7 @@ def result():
     }
 
     producer = Producer()
-    producer.publish(message=data, headers=headers, exchange='orchestrator', routing_key='response')
+    producer.publish(message=data, header=headers, exchange='orchestrator', routing_key='response')
     print('Writing to buffer.')
 
     return json.dumps(dict(
@@ -39,4 +39,4 @@ if __name__ == "__main__":
     certPath = '/opt/transport/HTTPS/certs/server.crt'
     keyPath = '/opt/transport/HTTPS/certs/server.key'
 
-    app.run(ssl_context=(certPath, keyPath), host='0.0.0.0', port=5000, debug=False)
+    app.run(ssl_context=(certPath, keyPath), host='0.0.0.0', port=5000, debug=True)

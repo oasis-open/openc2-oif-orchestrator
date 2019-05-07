@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome } from '@fortawesome/free-solid-svg-icons'
 
 import { ThemeChooser } from '../utils'
+
 import * as AuthActions from '../../actions/auth'
 
 class NavItem extends Component {
@@ -34,8 +35,10 @@ class Nav extends Component {
     constructor(props, context) {
         super(props, context)
         let act = (this.props.history.location.pathname === this.prefix)
+
         this.topNav = null
         this.bottomNav = null
+
         this.navigate = this.navigate.bind(this)
         this.setSize = this.setSize.bind(this)
 
@@ -63,6 +66,7 @@ class Nav extends Component {
         e.preventDefault()
         if (e.target.href === null || e.target.href === undefined ) { return }
         let href = e.target.href.replace(window.location.origin, '')
+
         let query = {}
 
         this.props.history.push({
@@ -114,11 +118,6 @@ class Nav extends Component {
                                             <NavItem dropdown external href="/admin" text="Admin" target="_blank" active={ this.state.active } />
                                         ) : ''
                                     }
-                                    {/*
-                                        this.props.admin ? (
-                                            <NavItem dropdown href="/admin" text="Admin" active={ this.state.active } click={ this.navigate }/>
-                                        ) : ''
-                                    */}
                                     {/* <a className="dropdown-item" href="/preferences/" >Site Preferences</a> */}
                                     {/* if user.preferences
                                         <li><a className="dropdown-item" href="/account/preferences/" >User Preferences</a></li>
@@ -126,7 +125,6 @@ class Nav extends Component {
                                     <NavItem dropdown href="/account/change_password/" text="Change Password" active={ this.state.active } click={ this.navigate }/>
 
                                     <li className="dropdown-divider" />
-
                                     <NavItem dropdown href="/logout" text="Logout" active={ this.state.active } click={ this.navigate }/>
                                 </ul>
                              </li>
@@ -155,16 +153,20 @@ class Nav extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    errors: state.Auth.errors,
-    isAuthenticated: AuthActions.isAuthenticated(state.Auth),
-    username: state.Auth.access == undefined ? 'User' : state.Auth.access.username,
-    admin: state.Auth.access ? state.Auth.access.admin : false,
-    site_title: state.Util.site_title
-})
+function mapStateToProps(state) {
+    return {
+        errors: state.Auth.errors,
+        isAuthenticated: AuthActions.isAuthenticated(state.Auth),
+        username: state.Auth.access == undefined ? 'User' : state.Auth.access.username,
+        admin: state.Auth.access ? state.Auth.access.admin : false,
+        site_title: state.Util.site_title
+    }
+}
 
-const mapDispatchToProps = (dispatch) => ({
-    logout: () => dispatch(AuthActions.logout())
-})
+function mapDispatchToProps(dispatch) {
+    return {
+        logout: () => dispatch(AuthActions.logout())
+    }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Nav)

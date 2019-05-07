@@ -23,9 +23,14 @@ const config = merge(generalConfig, {
                 NODE_ENV: JSON.stringify(env),
             },
         }),
-        new CleanWebpackPlugin({
-            dry: false
-        })
+        new CleanWebpackPlugin(
+            [BUILD_DIR],
+            {
+                root: ROOT_DIR,
+                verbose: true,
+                dry: false
+            }
+        )
     ],
     optimization: {
         minimizer: [

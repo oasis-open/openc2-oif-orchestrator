@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,7 +22,14 @@ if not os.path.isdir(DATA_DIR):
 SECRET_KEY = 'vcj0le7zphvkzdcmnh7)i2sd(+ba2@k4pahqss&nbbpk4cpk@y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = not os.getenv('DJANGO_ENV') == 'prod'
+DEBUG = True
+
+DEBUG_CHECK = [
+    'production' in sys.argv,
+    'collectstatic' in sys.argv
+]
+if any(DEBUG_CHECK):
+    DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,9 +45,9 @@ APPEND_SLASH = True
 INSTALLED_APPS = [
     # Custom Modules - MUST BE IN DEPENDENCY ORDER!!
     'orchestrator',
+    'account',
     'device',
     'actuator',
-    'account',
     'command',
     'tracking',
     # Default Modules
@@ -143,17 +151,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_URL = '/static/'
 
-# Central location for all static files
-STATIC_ROOT = os.path.join(DATA_DIR, "static")
-
 STATICFILES_DIRS = []
 
 if DEBUG:
+    # Default Static Dir
+    STATICFILES_DIRS.append(os.path.join(DATA_DIR, "static"))
     # App Static Dirs
     for app in INSTALLED_APPS:
         app_static_dir = os.path.join(BASE_DIR, app, 'static')
         if os.path.isdir(app_static_dir):
             STATICFILES_DIRS.append(app_static_dir)
+else:
+    # Central location for all static files
+    STATIC_ROOT = os.path.join(DATA_DIR, "static")
+
 
 MEDIA_URL = '/uploads/'
 
@@ -283,11 +294,15 @@ QUEUE = {
 
 MESSAGE_QUEUE = None
 
-# Valid Schema Formats
-SCHEMA_FORMATS = (
-    'jadn',
-    'json'
-)
-
 # GUI Configuration
 ADMIN_GUI = True
+
+# JSON Editor - Admin GUI
+JSON_EDITOR_JS = f'{STATIC_URL}admin/js/jsoneditor.js'
+
+JSON_EDITOR_CSS = f'{STATIC_URL}admin/css/jsoneditor.css'
+
+# OIF Specific Configurations
+PUB_SUB_PROTOS = [
+    'MQTT',
+]

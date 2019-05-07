@@ -3,12 +3,10 @@ import { connect } from 'react-redux'
 import DocumentMeta from 'react-document-meta'
 import qs from 'query-string'
 
-import {
-    Button,
-    Input
-} from 'reactstrap'
-
+import { Button, Input } from 'reactstrap'
 import classnames from 'classnames'
+
+import * as CommandActions from '../../actions/command'
 
 import {
     CommandTable,
@@ -16,18 +14,23 @@ import {
     GenerateCommands
 } from './pages'
 
-import * as CommandActions from '../../actions/command'
-
 const str_fmt = require('string-format')
 
 class Commands extends Component {
     constructor(props, context) {
         super(props, context)
         this.commandInfo = this.commandInfo.bind(this)
-        this.validPages = ['', 'info', 'generate']
+
+        this.validPages = [
+            '',
+            'info',
+            'generate'
+        ]
 
         this.commandUpdate = null
-        this.updateIntervals = [5, 10, 15, 20, 25, 30]
+        this.updateIntervals = [
+            5, 10, 15, 20, 25, 30
+        ]
 
         this.state = {
             updateInterval: 10 // seconds
@@ -35,7 +38,7 @@ class Commands extends Component {
     }
 
     componentDidMount() {
-        this.commandUpdate = setInterval(this.props.getCommands, this.state.updateInterval * 1000)
+        // this.commandUpdate = setInterval(this.props.getCommands, this.state.updateInterval * 1000)
     }
 
     componentWillUnmount() {
@@ -53,6 +56,7 @@ class Commands extends Component {
         let state_update = this.state !== nextState
 
         if (state_update) {
+            console.log('Update interval change')
             clearInterval(this.commandUpdate)
             this.commandUpdate = setInterval(this.props.getCommands, nextState.updateInterval * 1000)
         }
@@ -61,46 +65,45 @@ class Commands extends Component {
     }
 
     getContent(page, command) {
-        let content = []
         switch (page) {
             case 'generate':
-                content = (
-                    <h1>Command Generator</h1>,
-                    <GenerateCommands />
+                return (
+                    <div className="col-12">
+                        <h1>Command Generator</h1>
+                        <GenerateCommands />
+                    </div>
                 )
-                break;
             case 'info':
-                content = (
-                    <h1>Command { command } Info</h1>,
-                    <CommandInfo command_id={ command } />
+                return (
+                    <div className="col-12">
+                        <h1>Command { command } Info</h1>
+                        <CommandInfo command_id={ command } />
+                    </div>
                 )
-                break;
             default:
-                content = (
-                    <h1>Commands</h1>,
-                    <CommandTable cmdInfo={ this.commandInfo } />
+                return (
+                    <div className="col-12">
+                        <h1>Commands</h1>
+                        <CommandTable cmdInfo={ this.commandInfo } />
+                    </div>
                 )
-                break;
         }
-        return (
-            <div className="col-12">
-                { content }
-            </div>
-        )
     }
 
     updateIntervalOptions() {
-        let options = this.updateIntervals.map((interval, i) => (
-            <li key={ i }>
-                <a
-                    href='#'
-                    className={ 'dropdown-item' + (interval === this.state.updateInterval ? ' active' : '') }
-                    onClick={ () => this.setState({ updateInterval: interval }) }
-                >
-                    { interval === this.state.updateInterval ? '* ' : '' }{ interval }
-                </a>
-            </li>
-        ))
+        let options = this.updateIntervals.map((interval, i) => {
+            return (
+                <li key={ i }>
+                    <a
+                        href='#'
+                        className={ 'dropdown-item' + (interval === this.state.updateInterval ? ' active' : '') }
+                        onClick={ () => this.setState({ updateInterval: interval }) }
+                    >
+                        { interval === this.state.updateInterval ? '* ' : '' }{ interval }
+                    </a>
+                </li>
+            )
+        })
 
         return (
             <div
@@ -149,17 +152,21 @@ class Commands extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    siteTitle: state.Util.site_title,
-    orchestrator: {
-        name: state.Util.name || 'N/A'
-    },
-    admin: state.Auth.access.admin
-})
+function mapStateToProps(state) {
+    return {
+        siteTitle: state.Util.site_title,
+        orchestrator: {
+            name: state.Util.name || 'N/A'
+        },
+        admin: state.Auth.access.admin
+    }
+}
 
 
-const mapDispatchToProps = (dispatch) => ({
-    getCommands: (page, sizePerPage, sort) => dispatch(CommandActions.getCommands(page, sizePerPage, sort)),
-})
+function mapDispatchToProps(dispatch) {
+    return {
+        getCommands: (page, sizePerPage, sort) => dispatch(CommandActions.getCommands(page, sizePerPage, sort)),
+    }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Commands)

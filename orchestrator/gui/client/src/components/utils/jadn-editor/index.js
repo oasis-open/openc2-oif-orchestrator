@@ -18,7 +18,7 @@ import err from './err'; // direct copy
 import { format } from './locale'; // direct copy
 import defaultLocale from './locale/en'; // direct copy
 
-class JADNInput extends Component {
+class JSONInput extends Component {
     constructor(props, context) {
         super(props, context);
         this.updateInternalProps = this.updateInternalProps.bind(this);
@@ -471,7 +471,7 @@ class JADNInput extends Component {
         return labels.map( number => {
             const color = number !== errorLine ? colors.default : 'red';
             return (
-                <div
+                <div 
                     key={ number }
                     style={{
                         ...style.labels,
@@ -703,4 +703,4 @@ class JADNInput extends Component {
     }
 }
 
-export default JADNInput;
+export default JSONInput;

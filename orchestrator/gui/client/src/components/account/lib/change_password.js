@@ -2,15 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DocumentMeta from 'react-document-meta'
 import qs from 'query-string'
+
 import { toast } from 'react-toastify'
 
-import {
-    Button,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader
-} from 'reactstrap'
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
@@ -23,8 +18,6 @@ const str_fmt = require('string-format')
 class ChangePassword extends Component {
     constructor(props, context) {
         super(props, context)
-
-        this.submitForm = this.submitForm.bind(this)
 
         this.meta = {
             title: str_fmt('{base} | {page}', {base: this.props.siteTitle, page: 'Account - Change Password'}),
@@ -39,14 +32,17 @@ class ChangePassword extends Component {
             errors: {},
             status: ''
         }
+
+        this.submitForm = this.submitForm.bind(this)
     }
 
     submitForm(e) {
         e.preventDefault()
+        console.log('submit form')
         Promise.resolve(this.props.changePassword(this.props.username, ...Object.values(this.state.password))).then(rsp => {
             this.setState({
-                errors: this.props.errors[AccountActions.CHANGE_ACCOUNT_PASSWORD_FAILURE],
-                status: this.props.status[AccountActions.CHANGE_ACCOUNT_PASSWORD_SUCCESS]
+                errors: this.props.errors[AccountActions.CHANGE_USER_PASSWORD_FAILURE],
+                status: this.props.status[AccountActions.CHANGE_USER_PASSWORD_SUCCESS]
             })
         })
     }
@@ -55,15 +51,16 @@ class ChangePassword extends Component {
         return (
             <DocumentMeta { ...this.meta } extend >
                 <div className='jumbotron col-md-6 mx-auto'>
-                    <h1 className='text-center'>Password Change</h1>
+                    <h1>Password Change</h1>
 
-                    <form className='col-md-10 mx-auto' onSubmit={ this.submitForm }>
+                    <form onSubmit={ this.submitForm }>
                         {
                             this.state.status ? (
                                 <p className="form-text text-info">{ this.state.status }</p>
                             ) : ''
                         }
-                        <div className='form-group'>
+
+                        <div className='form-group col-md-8'>
                             <label htmlFor='old_password'>Old Password</label>
                             <input
                                 type='password'
@@ -80,7 +77,7 @@ class ChangePassword extends Component {
                                 ) : ''
                             }
                         </div>
-                        <div className='form-group'>
+                        <div className='form-group col-md-8'>
                             <label htmlFor='new_password_1'>New Password</label>
                             <input
                                 type='password'
@@ -95,8 +92,16 @@ class ChangePassword extends Component {
                                     <small className="form-text text-danger">{ this.state.errors.new_password_1 }</small>
                                 ) : ''
                             }
+                            <small className='form-text text-muted'>
+                                <ul>
+                                    <li>Your password can't be too similar to your other personal information.</li>
+                                    <li>Your password must contain at least 8 characters.</li>
+                                    <li>Your password can't be a commonly used password.</li>
+                                    <li>Your password can't be entirely numeric.</li>
+                                </ul>
+                            </small>
                         </div>
-                        <div className='form-group'>
+                        <div className='form-group col-md-8'>
                             <label htmlFor='new_password_2'>New Password Confirmation</label>
                             <input
                                 type='password'
@@ -113,16 +118,7 @@ class ChangePassword extends Component {
                             }
                         </div>
 
-                        <small className='form-text text-muted'>
-                            <ul>
-                                <li>Your password can't be too similar to your other personal information.</li>
-                                <li>Your password must contain at least 8 characters.</li>
-                                <li>Your password can't be a commonly used password.</li>
-                                <li>Your password can't be entirely numeric.</li>
-                            </ul>
-                        </small>
-
-                        <Button type='submit' color='primary' className="float-right">Save changes</Button>
+                        <Button type='submit' color='primary'>Save changes</Button>
                     </form>
                 </div>
             </DocumentMeta>
@@ -130,14 +126,19 @@ class ChangePassword extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    username: state.Auth.access == undefined ? 'User' : state.Auth.access.username,
-    errors: state.Account.errors,
-    status: state.Account.status
-})
+function mapStateToProps(state) {
+    return {
+        username: state.Auth.access == undefined ? 'User' : state.Auth.access.username,
+        errors: state.Account.errors,
+        status: state.Account.status
+    }
+}
 
-const mapDispatchToProps = (dispatch) => ({
-    changePassword: (usrn, op, np1, np2) => dispatch(AccountActions.changeAccountPassword(usrn, op, np1, np2))
-})
+
+function mapDispatchToProps(dispatch) {
+    return {
+        changePassword: (usrn, op, np1, np2) => dispatch(AccountActions.changeUserPassword(usrn, op, np1, np2))
+    }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangePassword)
