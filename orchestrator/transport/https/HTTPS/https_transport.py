@@ -1,5 +1,5 @@
 import json, os, urllib3
-from utils import Producer, Consumer, encode_msg
+from sb_utils import Producer, Consumer, encode_msg
 
 
 def process_message(body, message):
@@ -40,13 +40,13 @@ def process_message(body, message):
                 except Exception as err:
                     producer = Producer()
                     params['error'] = True
-                    producer.publish(message=str(err), header=params, exchange='orchestrator', routing_key='response')
+                    producer.publish(message=str(err), headers=params, exchange='orchestrator', routing_key='response')
                     print(err)
         else:
             response = 'Destination/Encoding/Host Address for command not specified'
             producer = Producer()
             params['error'] = True
-            producer.publish(message=str(response), header=params, exchange='orchestrator', routing_key='response')
+            producer.publish(message=str(response), headers=params, exchange='orchestrator', routing_key='response')
             print(response)
 
 
