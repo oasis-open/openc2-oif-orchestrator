@@ -5,36 +5,7 @@ Implements MQTT utilizing [Paho MQTT](https://www.eclipse.org/paho/clients/pytho
 [![pipeline status](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/badges/develop/pipeline.svg)](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/commits/develop)
 
 ## Running Transport
-- The MQTT Transport Module is configured to run from a docker container.
-
-1. Install Docker
-
-2. Build/Pull container
-
-    - Build:
-    ```
-    docker login gitlab.labs.g2-inc.net:4567
-    docker build -f Dockerfile -t gitlab.labs.g2-inc.net:4567/screamingbunny/transport/MQTT .
-    ```
-
-    - Pull:   
-    ```
-    docker login gitlab.labs.g2-inc.net:4567
-    docker pull gitlab.labs.g2-inc.net:4567/screamingbunny/transport/MQTT
-    ```
-
-3. Start the container
-
-    - Use dev-compose.yaml, this will pull latest image from gitlab and start the service.
-    ```
-    docker-compose -f dev-compose.yaml up
-    ```
-
-    - To ensure docker-compose stopped properly, use:
-    ```
-    docker-compose -f dev-compose.yaml down
-    ```
-# Setup
+The MQTT Transport Module is configured to run from a docker container as a part of the OIF-Orchestrator docker stack. Use the [configure.py](../../../configure.py) script to build the images needed to run the entirety of this Transport as a part of the Orchestrator.
 
 ## MQTT Topics
 
@@ -48,9 +19,11 @@ If running the OIF as the Orchestrator and Device on a single machine, the Rabbi
 
 ## Ports
 
-Default port for [RabbitMQ MQTT](https://www.rabbitmq.com/mqtt.html) Broker is `1883` or `8883` if TLS is activated for RabbitMQ MQTT. Can be modified through the `MQTT_PORT` environment variable (default 1883)
+Default port for [RabbitMQ MQTT](https://www.rabbitmq.com/mqtt.html) Broker is `1883` or `8883` if TLS is activated for RabbitMQ MQTT. This can be modified through the `MQTT_PORT` environment variable (default 1883)
 
-Read/Writes to an internal RabbitMQ AMQP Broker at default port `5672` on the orchestrator side and `5673` on the device side. All ports can be edited under the Docker Compose file under the queue port options.
+Read/Writes to an internal RabbitMQ AMQP Broker at default port `5672`. Note that the internal buffer can not be accessed outside of the docker network created during docker-compose. 
+
+All ports can be edited under the Docker Compose file under the queue port options.
 
 ## Adding certificates for TLS
 
