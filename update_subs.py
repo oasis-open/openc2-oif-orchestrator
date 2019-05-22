@@ -126,24 +126,24 @@ if __name__ == '__main__':
     # -------------------- Modules -------------------- #
     with Stage('Modules', 'modules'):
         Stylize.h2("Updating Utilities")
-        update_repo(f"{CONFIG.BaseRepo}/Utils.git", 'utils')
+        update_repo(f"{CONFIG.BaseRepo}/Utils.git", 'utils', options.repo_branch)
 
     # -------------------- Orchestrator -------------------- #
     with Stage('Orchestrator', 'orchestrator'):
         for repo in CONFIG.Repos.Orchestrator:
             Stylize.h2(f"Updating {repo}")
-            update_repo(f"{CONFIG.BaseRepo}/Orchestrator/{repo}.git", repo.lower())
+            update_repo(f"{CONFIG.BaseRepo}/Orchestrator/{repo}.git", repo.lower(), options.repo_branch)
 
     # -------------------- Orchestrator Transport -------------------- #
     with Stage(f'Orchestrator Transport', os.path.join('orchestrator', 'transport')):
         for transport in CONFIG.Repos.Transport:
             Stylize.h2(f"Updating Orchestrator {transport}")
-            update_repo(f"{CONFIG.BaseRepo}/Orchestrator/Transport/{transport}.git", transport.lower())
+            update_repo(f"{CONFIG.BaseRepo}/Orchestrator/Transport/{transport}.git", transport.lower(), options.repo_branch)
 
     # -------------------- Logger -------------------- #
     with Stage('Logger'):
         Stylize.h2("Updating Logger")
-        update_repo(f"{CONFIG.BaseRepo}/Logger.git", 'logger')
+        update_repo(f"{CONFIG.BaseRepo}/Logger.git", 'logger', options.repo_branch)
 
     # -------------------- Dockerfile -------------------- #
     with Stage('Dockerfiles'):
