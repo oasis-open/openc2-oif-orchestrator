@@ -1,25 +1,23 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-
 import { Provider } from 'react-redux'
-import registerServiceWorker from './registerServiceWorker'
 
-console.log('App State: ' + process.env.NODE_ENV)
+import registerServiceWorker from './registerServiceWorker'
 
 // Styles
 import { ThemeSwitcher } from './components/utils'
 import 'bootstrap'
 import 'react-toastify/dist/ReactToastify.css'
-// import './components/dependencies/css/themes/lumen.css'
 import './components/dependencies/css/styles.less'
 
+// Orchestrator Application
 import App from './app'
 
 // Config
-import createHistory from 'history/createBrowserHistory'
+import { createBrowserHistory } from 'history'
 import configureStore from './store'
 
-const history = createHistory()
+const history = createBrowserHistory()
 const store = configureStore(history)
 
 // Theme Options

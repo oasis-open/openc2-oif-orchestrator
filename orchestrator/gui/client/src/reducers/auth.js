@@ -45,20 +45,10 @@ export default (state=initialState, action=null) => {
                 refresh: false
             }
 
-        case auth.TOKEN_VALIDATED:
-            return {
-                ...state,
-                access: {
-                    token: action.payload.token,
-                    ...jwtDecode(action.payload.token)
-                },
-                errors: {}
-            }
-
         case auth.LOGIN_FAILURE:
         case auth.LOGOUT_FAILURE:
         case auth.TOKEN_FAILURE:
-            console.log('Failure', action.type, action.payload)
+            console.log('Auth Failure', action.type, action)
             return {
                 access: undefined,
                 errors: action.payload.response || {'non_field_errors': action.payload.statusText},

@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import base64
 import bleach
-import coreapi
 import coreschema
 import utils
 
@@ -11,7 +10,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 
-from rest_framework import permissions, status, viewsets
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.compat import coreapi
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
@@ -19,7 +19,7 @@ from ..models import UserSerializer, PasswordSerializer
 
 from command.models import SentHistory, HistorySerializer
 
-from utils import IsAdminOrIsSelf, OrcSchema
+from utils import IsAdminOrIsSelf
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -31,12 +31,13 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
 
     queryset = User.objects.all().order_by('-date_joined')
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = ('last_name', 'first_name', 'username', 'email_address', 'active')
 
-    @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_path='change_password')
+    @detail_route(methods=['POST'], permission_classes=[IsAdminOrIsSelf], serializer_class=PasswordSerializer)
     def change_password(self, request, username=None):
         """
-        Change user password
-        passwords sent as base64 encoded strings
+        Change user password, passwords sent as base64 encoded strings
         """
         serializer = PasswordSerializer(data=request.data)
         user = self.get_object()
@@ -69,13 +70,16 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
                 required=True,
                 location="path",
                 schema=coreschema.String(
-                    description='Username to list the command history for'
+                    description='Username to list the command history'
                 )
             ),
         ]
     )
 
     def list(self, request, username, *args, **kwargs):
+        """
+        Return a list of a users command history
+        """
         self.pagination_class.page_size_query_param = 'length'
         self.pagination_class.max_page_size = 100
         queryset = self.filter_queryset(self.get_queryset())
@@ -104,6 +108,9 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, username, *args, **kwargs):
+        """
+        Return a specific user's command
+        """
         instance = self.get_object()
 
         if not request.user.is_staff:  # Standard User

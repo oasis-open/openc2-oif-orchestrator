@@ -10,25 +10,23 @@ const initialState = {
     message: 'MESSAGE',
     id: '123456789',
     protocols: [],
-    serializations: [],
-    theme: ''
+    serializations: []
 }
 
 export default (state=initialState, action=null) => {
     switch(action.type) {
         case util.INFO_SUCCESS:
             return {
-                site_title: titleCase(action.payload.name.toLowerCase()) || 'Orchestrator',
-                name: action.payload.name || 'Orchestrator',
+                site_title: titleCase(action.payload.name.toLowerCase() || 'Orchestrator'),
+                name: titleCase(action.payload.name || 'Orchestrator'),
                 message: action.payload.message || 'MESSAGE',
                 id: action.payload.id || '123456789',
                 protocols: action.payload.protocols || [],
                 serializations: action.payload.serializations || []
             }
 
-
         case util.INFO_FAILURE:
-            console.log('Failure', action.type, action)
+            console.log('Utils Failure', action.type, action)
             return {
                 ...state,
                 errors: {

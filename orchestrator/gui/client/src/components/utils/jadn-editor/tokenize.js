@@ -1,5 +1,5 @@
-import { format } from './locale'; // direct copy
-import defaultLocale from './locale/en'; // direct copy
+import { format } from 'react-json-editor-ajrm/locale';
+import defaultLocale from 'react-json-editor-ajrm/locale/en';
 
 import {
     deleteCharAt,
@@ -1194,7 +1194,7 @@ export const JSON_Placeholder = (obj, colors) => {
 					return rtn
 				}
 				
-				if (rtn.token.length > 0 && !buffer2.isValue) {
+				if (token.length > 0 && !buffer2.isValue) {
 					rtn.type = 'key';
 					rtn.string = token;
 					if (rtn.string.indexOf(' ') > -1) rtn.string = "'" + rtn.string + "'";
@@ -1203,6 +1203,12 @@ export const JSON_Placeholder = (obj, colors) => {
 				}
 
        	}
+       	return {
+       	    type: '',
+            string: '',
+            value: '',
+            depth: buffer2.brackets.length
+        }
   	});
 
 	let clean = buffer2.tokens.map(t => t.string).join('');

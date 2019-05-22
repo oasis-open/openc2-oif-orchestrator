@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 
@@ -18,17 +18,13 @@ class Logout extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        authErrors: state.Auth.errors,
-        isAuthenticated: AuthActions.isAuthenticated(state.Auth)
-    }
-}
+const mapStateToProps = (state) => ({
+    authErrors: state.Auth.errors,
+    isAuthenticated: AuthActions.isAuthenticated(state.Auth)
+})
 
-function mapDispatchToProps(dispatch) {
-    return {
-        logout: () => dispatch(AuthActions.logout())
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    logout: () => dispatch(AuthActions.logout())
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Logout)

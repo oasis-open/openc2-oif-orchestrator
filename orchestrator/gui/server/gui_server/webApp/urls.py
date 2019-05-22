@@ -13,7 +13,6 @@ admin.site.site_header = 'OpenC2 Orchestrator Admin'
 admin.site.index_title = 'OpenC2 Orchestrator'
 
 # Catch all URL
-# urlpatterns.append(url(r'^(?P<url>.*)/?$', views.gui_catch_all, name='gui.catch_all'))
 handler400 = views.bad_request
 handler403 = views.permission_denied
 handler404 = views.page_not_found

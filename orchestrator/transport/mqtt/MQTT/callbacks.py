@@ -40,7 +40,7 @@ class Callbacks(object):
         :param msg: Contains payload, topic, qos, retain
         """
         payload = json.loads(msg.payload)
-        encoding = re.search(r'(?<=\+)(.*?)(?=\;)', payload.get('header', {}).get('content-type', '')).group(1)
+        encoding = re.search(r'(?<=\+)(.*?)(?=\;)', payload.get('header', {}).get('content_type', '')).group(1)
         
         # copy necessary headers
         header = dict(
@@ -72,7 +72,6 @@ class Callbacks(object):
         :param message: Contains data about the message as well as headers
         """
         payload = {}
-
         if os.environ.get('MQTT_TLS_ENABLED', False) and os.listdir('/opt/transport/MQTT/certs'):
             tls = dict(
                 ca_certs=os.environ.get('MQTT_CAFILE', None),
@@ -82,21 +81,18 @@ class Callbacks(object):
         else:
             tls = None
 
-        payload['header'] = format_header(message.headers)
         destination = message.headers.get('destination', {})
         # iterate through all devices within the list of destinations
         for device in destination:               
             # check that all necessary parameters exist for device
             if all(keys in device for keys in ['socket', 'encoding', 'profile']):
                 encoding = device.get('encoding', 'json')
-                payload['header']['content-type'] = "application/openc2-cmd+" + encoding + ";version=1.0"
-                payload['header']['socket'] = device.get('socket', 'localhost:1883')
-                payload['body'] = encode_msg(json.loads(body), encoding)
-                ip, port = device['socket'].split(':')
-                print(payload, ip, port)
+                ip, port = device.get('socket', 'localhost:1883').split(':')
                 # iterate through actuator profiles to send message to
-                for actuator in device['profile']:
-                    payload['header']['profile'] = actuator
+                for actuator in device.get('profile', []):
+                    payload['body'] = encode_msg(json.loads(body), encoding)
+                    payload['header'] = format_header(message.headers, device, actuator)
+                    print(payload, ip, port)
                     try:
                         publish.single(
                             actuator,
@@ -160,7 +156,7 @@ def get_response(ip, port, orchestratorID):
         client.on_message = Callbacks.on_message
         client.loop_start()
 
-def format_header(header):
+def format_header(header, device, actuator):
         """
         Takes relevant info from header and organizes it into a format that the orchestrator is expecting
         :param header: Header data received from device containing data to trace back the original command
@@ -170,7 +166,9 @@ def format_header(header):
             transport=header.get('source', {}).get('transport', {}).get('type', ''),
             correlationID=header.get('source', {}).get('correlationID', ''),
             orchestratorID=header.get('source', {}).get('orchestratorID', ''),
-            created=header.get('source', {}).get('date', '')
+            created=header.get('source', {}).get('date', ''),
+            content_type="application/openc2-cmd+" + device.get('encoding', 'json') + ";version=1.0",
+            profile=actuator
         )
         
         return response_header

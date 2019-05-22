@@ -3,14 +3,25 @@
     "model": "orchestrator.protocol",
     "pk": 1,
     "fields": {
-      "name": "HTTPS"
+      "name": "HTTPS",
+      "port": 5000
     }
   },
   {
     "model": "orchestrator.protocol",
     "pk": 2,
     "fields": {
-      "name": "MQTT"
+      "name": "MQTT",
+      "pub_sub": true,
+      "port": 1883
+    }
+  },
+  {
+    "model": "orchestrator.protocol",
+    "pk": 3,
+    "fields": {
+      "name": "COAP",
+      "port": 5683
     }
   },
   {

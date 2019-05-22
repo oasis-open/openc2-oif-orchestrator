@@ -1,11 +1,48 @@
 # OpenC2 MQTT Transport
 Implements MQTT utilizing [Paho MQTT](https://www.eclipse.org/paho/clients/python/docs/).
 
-
-[![pipeline status](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/badges/develop/pipeline.svg)](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/commits/develop)
-
 ## Running Transport
 The MQTT Transport Module is configured to run from a docker container as a part of the OIF-Orchestrator docker stack. Use the [configure.py](../../../configure.py) script to build the images needed to run the entirety of this Transport as a part of the Orchestrator.
+
+## MQTT and OpenC2 Headers
+
+At the time of writing this the OpenC2 MQTT Transport spec has not been finalized. The headers are meant to line up as closely with OpenC2 guidelines as closely as MQTT v3.11 can.
+
+The payload of the message in MQTT is split into two parts, the header and the OpenC2 command itself. Here is an example of what that looks like:
+
+```json
+"payload": {
+    "header": {
+        "socket":"127.0.0.1:1883",
+        "content_type":"application/openc2-cmd+json;version=1.0",
+        "correlationID":"a6b10d16-5537-41c9-9773-f69d17920600",
+        "created":"Wed, 22 May 2019 16:12:23 UTC",
+        "profile":"openc2_isr_actuator_profile",
+        "orchestratorID":"0a2cec81-51fa-4785-8069-723d7d46b105",
+    },
+    "body": {
+        "action": "locate",
+        "target": {
+            "isr": {
+                "signal": {
+                    "frequency": "92.3"
+                }
+            }
+        }
+    }
+}
+```
+
+Header descriptions:
+
+* `socket`: [to/from]. Location of the MQTT broker. This is where we are sending it to and reading the response from.
+* `content_type`: [content_type] The content_type of the message, contains the encoding type.
+* `correlationID`: [request_id] Identifier for this specific command being sent. Needed for orchestrator to relate repsonse with original command.
+* `created`: [created] Timestamp for when the message was initially created by the orchestrator.
+* `profile`: This is an O.I.F. specific header. It is used to route the message on the device side to the proper actuator.
+* `orchestratorID`: This is an O.I.F. specific header. Used to get the message back to the orchestrator. The MQTT transport listens on a topic that is the orchestratorID for responses.
+
+The body is the content of the OpenC2 Command/Response.
 
 ## MQTT Topics
 

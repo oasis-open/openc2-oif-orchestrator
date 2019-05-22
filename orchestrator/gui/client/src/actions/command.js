@@ -1,10 +1,8 @@
 import { RSAA } from 'redux-api-middleware'
 
+import { withGUIAuth } from './util'
+
 const str_fmt = require('string-format')
-
-// General Actions
-
-import { withGUIAuth, withOrcAuth, withOrcURL } from './util'
 
 // API Base URL
 const baseAPI = '/api/command'
@@ -12,8 +10,6 @@ const baseAPI = '/api/command'
 // Helper Functions
 
 // API Calls
-
-// Command API
 // GET - /api/command/ - all commands for requesting user
 const GET_COMMANDS_REQUEST = '@@command/GET_COMMANDS_REQUEST'
 export const GET_COMMANDS_SUCCESS = '@@command/GET_COMMANDS_SUCCESS'
@@ -22,7 +18,7 @@ export const getCommands = ({page=1, count=10, sort='name', refresh=false}={}) =
     [RSAA]: {
         endpoint: str_fmt('{base}?page={page}&length={count}&ordering={sort}', {base: baseAPI, page: page, count: count, sort: sort}),
         method: 'GET',
-        headers: withGUIAuth({'Content-Type': 'application/json'}),
+        headers: withGUIAuth(),
         types: [
             GET_COMMANDS_REQUEST,
             {
@@ -44,7 +40,7 @@ export const sendCommand = (command, act, chan) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/send/', {base: baseAPI}),
         method: 'PUT',
-        headers: withGUIAuth({'Content-Type': 'application/json'}),
+        headers: withGUIAuth(),
         body: JSON.stringify({
             actuator: act,
             command: command,
@@ -64,7 +60,7 @@ export const getCommand = (command_id) => ({
     [RSAA]: {
         endpoint: str_fmt('{base}/{command_id}/', {base: baseAPI, command_id: command_id}),
         method: 'GET',
-        headers: withGUIAuth({'Content-Type': 'application/json'}),
+        headers: withGUIAuth(),
         types: [
             GET_COMMAND_REQUEST, GET_COMMAND_SUCCESS, GET_COMMAND_FAILURE
         ]
