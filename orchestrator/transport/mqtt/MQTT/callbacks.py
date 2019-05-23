@@ -40,16 +40,18 @@ class Callbacks(object):
         :param msg: Contains payload, topic, qos, retain
         """
         payload = json.loads(msg.payload)
+
         encoding = re.search(r'(?<=\+)(.*?)(?=\;)', payload.get('header', {}).get('content_type', '')).group(1)
+        orchID, socket = payload["header"].get('from', '').rsplit('@', 1)
+        correlationID = payload.get('header', {}).get('correlationID', '')
         
         # copy necessary headers
-        header = dict(
-            socket=payload.get('header', {}).get('socket', 'localhost:1883'),
-            correlationID=payload.get('header', {}).get('correlationID', ''),
-            orchestratorID=payload.get('header', {}).get('orchestratorID', ''),
-            created=payload.get('header', {}).get('created', ''),
-            encoding=encoding,
-        )
+        header = {
+            "socket" : socket,
+            "correlationID" : correlationID,
+            "orchestratorID" : orchID,
+            "encoding" : encoding,
+        }
 
         # Connect and publish to internal buffer
         exchange = 'orchestrator'
@@ -106,7 +108,7 @@ class Callbacks(object):
                         print(f'There was an error sending command to {ip}:{port} - {e}')
                         send_error_response(e, payload['header'])
                         return
-                get_response(ip, port, payload['header']['orchestratorID'])
+                get_response(ip, port, message.headers.get('source', {}).get('orchestratorID', ''))
             else:
                 err_msg = 'Missing some/all required header data to successfully transport message.'
                 print(err_msg)
@@ -161,14 +163,14 @@ def format_header(header, device, actuator):
         Takes relevant info from header and organizes it into a format that the orchestrator is expecting
         :param header: Header data received from device containing data to trace back the original command
         """
-        response_header = dict(
-            socket=header.get('source', {}).get('transport', {}).get('socket', ''),
-            transport=header.get('source', {}).get('transport', {}).get('type', ''),
-            correlationID=header.get('source', {}).get('correlationID', ''),
-            orchestratorID=header.get('source', {}).get('orchestratorID', ''),
-            created=header.get('source', {}).get('date', ''),
-            content_type="application/openc2-cmd+" + device.get('encoding', 'json') + ";version=1.0",
-            profile=actuator
-        )
+        socket = header.get('source', {}).get('transport', {}).get('socket', '')
+        orchestratorID = header.get('source', {}).get('orchestratorID', '')
+        response_header = {
+            "to" : actuator + '@' + socket, 
+            "from" : orchestratorID + '@' + socket,
+            "correlationID" : header.get('source', {}).get('correlationID', ''),
+            "created" : header.get('source', {}).get('date', ''),
+            "content_type" : "application/openc2-cmd+" + device.get('encoding', 'json') + ";version=1.0",
+        }
         
         return response_header
