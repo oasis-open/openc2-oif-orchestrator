@@ -71,7 +71,7 @@ CONFIG = FrozenDict(
     ),
     Repos=FrozenDict(
         Orchestrator=('Core', 'GUI'),
-        Transport=('HTTPS', 'MQTT'),
+        Transport=('HTTPS', 'MQTT', 'CoAP'),
     )
 )
 

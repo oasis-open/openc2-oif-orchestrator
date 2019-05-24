@@ -92,6 +92,25 @@ services:
     entrypoint:
       - sh
       - dev_start.sh
+    
+  transport-coap:
+    hostname: transport-coap
+    image: oif/transport:orchestrator-coap
+    build:
+      context: ./orchestrator/transport/coap
+      dockerfile: Dockerfile
+    working_dir: /opt/transport/COAP
+    env_file:
+      - ./environment/que.connect.env
+    external_links:
+      - queue
+    ports:
+      - '5683:5683/udp'
+    depends_on:
+      - queue
+    entrypoint:
+      - sh
+      - dev_start.sh
 
   queue:
     hostname: rabbit
