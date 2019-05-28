@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from . import EVENT_LEVELS
-from .models import EventLog
-from .settings import TRACKING
 
-log_levels = TRACKING['EVENT_LEVELS']
+from . import EVENT_LEVELS, LEVEL_EVENTS
+from .conf import settings, TrackingConfig
+from .models import EventLog
 
 
 def log(level=EVENT_LEVELS.Info, usr=None, msg=''):
@@ -19,8 +18,8 @@ def log(level=EVENT_LEVELS.Info, usr=None, msg=''):
     level = level if level in EVENT_LEVELS else EVENT_LEVELS.Info
     usr = None if getattr(usr, 'is_anonymous', True) else usr
 
-    if level in log_levels:
-        print(f"{level} Log: {usr} - {msg}")
+    if level in getattr(settings, f"{TrackingConfig.Meta.prefix}_EVENT_LEVELS"):
+        print(f"{LEVEL_EVENTS.get(level, '')} Log: {usr} - {msg}")
         EventLog.objects.create(
             user=usr,
             level=level,

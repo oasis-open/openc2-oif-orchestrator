@@ -114,7 +114,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', '0Rch35Tr@t0r'),
         'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
         'PORT': os.environ.get('DATABASE_PORT', '3306'),
-        'CON_MAX_AGE': 0
+        'CON_MAX_AGE': 3600
     }
 }
 
@@ -254,7 +254,7 @@ LOGGING = {
         'level': 'DEBUG'
     }
 }
-
+'''
 # Tracking
 from tracking import REQUEST_LEVELS
 TRACKING = {
@@ -267,7 +267,7 @@ TRACKING = {
         REQUEST_LEVELS.Server_Error
     ]
 }
-
+'''
 # Queue
 QUEUE = {
     'hostname': os.environ.get('QUEUE_HOST', 'localhost'),

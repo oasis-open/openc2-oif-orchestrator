@@ -80,6 +80,7 @@ class SentHistory(models.Model):
 
     def gen_coap_id(self):
         self._coap_id = randBytes(2).hex()
+        return self._coap_id
 
     def __str__(self):
         return "Sent History: {} - {}".format(self.command_id, self.user)

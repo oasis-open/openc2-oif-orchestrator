@@ -7,7 +7,7 @@ import re
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.timezone import now
 
-from .settings import TRACKING
+from .conf import settings, TrackingConfig
 from .models import RequestLog
 
 
@@ -18,12 +18,13 @@ class LoggingMiddleware(MiddlewareMixin):
     """
     _CLEANED_SUBSTITUTE = "********************"
     _SENSITIVE_FIELDS = {"api", "token", "key", "secret", "password", "password1", "password2", "signature"}
+    _PREFIX = TrackingConfig.Meta.prefix
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.log = {}
 
-        self._SENSITIVE_FIELDS.update({f.lower() for f in TRACKING.get("SENSITIVE_FIELDS", [])})
+        self._SENSITIVE_FIELDS.update({f.lower() for f in getattr(settings, f"{self._PREFIX}_SENSITIVE_FIELDS")})
 
     def process_request(self, request):
         """
@@ -79,8 +80,8 @@ class LoggingMiddleware(MiddlewareMixin):
         :param response: response instance
         """
 
-        log_prefixes = TRACKING["URL_PREFIXES"]
-        log_levels = TRACKING["REQUEST_LEVELS"]
+        log_prefixes = getattr(settings, f"{self._PREFIX}_URL_PREFIXES")
+        log_levels = getattr(settings, f"{self._PREFIX}_REQUEST_LEVELS")
 
         return (
             any(re.compile(prefix).match(request.path) for prefix in log_prefixes)

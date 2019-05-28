@@ -1,4 +1,7 @@
 
+default_app_config = 'tracking.conf.TrackingConfig'
+
+
 class FrozenDict(dict):
     def __init__(self, *args, **kwargs):
         self._hash = None
@@ -33,9 +36,11 @@ LEVELS = (
     'Warn'
 )
 
-_DB_LEVELS = tuple((l[0], l) for l in LEVELS)
+_DB_LEVELS = tuple((l[0].upper(), l) for l in LEVELS)
 
-EVENT_LEVELS = FrozenDict({l: l[0] for l in LEVELS})
+EVENT_LEVELS = FrozenDict({l: l[0].upper() for l in LEVELS})
+
+LEVEL_EVENTS = FrozenDict(map(reversed, EVENT_LEVELS.items()))
 
 REQUEST_LEVELS = FrozenDict(
     Information=range(100, 199),
