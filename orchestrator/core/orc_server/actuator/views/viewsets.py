@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import bleach
 
 from rest_framework import permissions, viewsets, filters

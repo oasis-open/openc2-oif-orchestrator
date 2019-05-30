@@ -10,4 +10,3 @@ urlpatterns = [
     # Command Access
     path('', include(router.urls)),
 ]
-

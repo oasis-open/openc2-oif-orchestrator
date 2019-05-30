@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import bleach
 import coreapi
 import coreschema
 import utils
 
 from django.contrib.auth.models import Group, User
-
 from rest_framework import permissions
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response

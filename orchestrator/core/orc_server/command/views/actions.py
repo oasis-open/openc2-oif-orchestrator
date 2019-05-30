@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import bleach
 import json
 import time
@@ -108,11 +105,8 @@ def validate_actuator(usr, act=""):
         ), 400
 
 
-def validate_channel(usr, act, chan={}):
+def validate_channel(act, chan={}):
     if isinstance(act, Actuator):
-        # TODO: Validate channel - serialization/protocol
-        # print("check channel")
-        # print(act.device)
         dev = get_or_none(Device, device_id=act.device.device_id)
 
         proto = chan.get("protocol", None)
@@ -124,7 +118,6 @@ def validate_channel(usr, act, chan={}):
         if serial:
             serial = get_or_none(Serialization, name=bleach.clean(str(serial)))
 
-        print(f"Channel - {serial}/{proto}")
         return proto, serial
     else:
         return None, None
@@ -139,7 +132,6 @@ def action_send(usr=None, cmd={}, actuator="", channel={}):
     :param channel: serialization & protocol to send the command
     :return: response dict
     """
-
     err = validate_usr(usr)
     if err:
         return err
@@ -156,7 +148,7 @@ def action_send(usr=None, cmd={}, actuator="", channel={}):
         else:
             return err
 
-    protocol, serialization = validate_channel(usr, actuators, channel)
+    protocol, serialization = validate_channel(actuators, channel)
 
     # Store command in db
     cmd_id = cmd.get("id", uuid.uuid4())

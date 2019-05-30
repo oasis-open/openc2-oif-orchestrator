@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import uuid
 
 from django.conf import settings
@@ -117,6 +114,10 @@ class ActuatorGroup(AbstractGroup):
 
     @property
     def user_count(self):
+        """
+        get the number of users in the group
+        :return: users count of group
+        """
         if hasattr(self, "users"):
             return self.users.count()
         return 0

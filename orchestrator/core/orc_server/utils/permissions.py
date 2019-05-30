@@ -1,3 +1,6 @@
+"""
+Django View Permission Utilities
+"""
 from rest_framework import permissions
 
 

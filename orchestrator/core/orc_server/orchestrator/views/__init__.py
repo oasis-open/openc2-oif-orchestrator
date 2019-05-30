@@ -1,7 +1,6 @@
 from .api import api_root
 from .gui import gui_redirect
 from .handlers import bad_request, page_not_found, permission_denied, server_error
-# from .viewsets import
 
 __all__ = [
     # API
@@ -13,5 +12,4 @@ __all__ = [
     'page_not_found',
     'permission_denied',
     'server_error',
-    # Viewsets
 ]

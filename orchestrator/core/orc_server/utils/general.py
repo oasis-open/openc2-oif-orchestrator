@@ -1,23 +1,26 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-import random
+"""
+General Utilities
+"""
 import string
 import sys
 import uuid
+
+from typing import Any
 
 valid_hex = set(string.hexdigits)
 valid_hex.add(" ")
 
 
-def prefixUUID(pre="PREFIX", max_length=30):
+def prefixUUID(pre: str = "PREFIX", max_length: int = 30) -> str:
     """
     Create a unique name with a prefix and a UUID string
     :param pre: prefix to use
     :param max_length: max length of the unique name
     :return: unique name with the given prefix
     """
-    pre = str(pre)
+    if len(pre) < max_length:
+        raise ValueError(f"max_length is less than the length of the prefix: {len(pre)}")
+
     uid_max = max_length - len(pre)
     uid = str(uuid.uuid4()).replace("-", "")[:uid_max]
     if pre in ["", " ", None]:
@@ -26,7 +29,7 @@ def prefixUUID(pre="PREFIX", max_length=30):
         return f"{pre}-{uid}"[:max_length]
 
 
-def to_str(s):
+def to_str(s: Any) -> str:
     """
     Convert a given type to a default string
     :param s: item to convert to a string
@@ -35,15 +38,20 @@ def to_str(s):
     return s.decode(sys.getdefaultencoding(), "backslashreplace") if hasattr(s, "decode") else str(s)
 
 
-def randBytes(b=2):
+def randBytes(b: int = 2) -> bytes:
     """
     Get a random number of bytes
     :param b: number of bytes generate
     :return: random number of bytes requested
     """
-    return bytes([random.getrandbits(8) for _ in range(b)])
+    return randBytes(b)
 
 
-def isHex(val):
+def isHex(val: str) -> bool:
+    """
+    Determin if hte given value is a valid hexadecimal string
+    :param val: string to validate
+    :return: bool - valid/invalid hexadecimal
+    """
     val = ''.join(val.split("0x"))
     return len(set(val) - valid_hex) == 0

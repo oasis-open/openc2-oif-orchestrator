@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 
@@ -9,7 +6,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from ..models import Device, DeviceGroup, DeviceSerializer
+from ..models import Device, DeviceSerializer
 
 
 class DeviceViewSet(viewsets.ModelViewSet):

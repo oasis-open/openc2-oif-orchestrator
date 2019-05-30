@@ -1,3 +1,6 @@
+"""
+Django Model Utilities
+"""
 from django.contrib import admin
 
 

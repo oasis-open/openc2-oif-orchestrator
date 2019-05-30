@@ -1,4 +1,3 @@
-
 default_app_config = 'tracking.conf.TrackingConfig'
 
 

@@ -9,7 +9,7 @@ from . import _DB_LEVELS
 
 class RequestLog(models.Model):
     """
-    Logs Django requests
+    Django Request Logs
     """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -95,7 +95,7 @@ class RequestLog(models.Model):
 
 class EventLog(models.Model):
     """
-    Logs Specified Events
+    Specified Event Logs
     """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

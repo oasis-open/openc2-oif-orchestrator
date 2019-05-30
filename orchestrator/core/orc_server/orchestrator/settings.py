@@ -254,7 +254,7 @@ LOGGING = {
         'level': 'DEBUG'
     }
 }
-'''
+
 # Tracking
 from tracking import REQUEST_LEVELS
 TRACKING = {
@@ -267,7 +267,7 @@ TRACKING = {
         REQUEST_LEVELS.Server_Error
     ]
 }
-'''
+
 # Queue
 QUEUE = {
     'hostname': os.environ.get('QUEUE_HOST', 'localhost'),

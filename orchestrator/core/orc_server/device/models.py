@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import uuid
 
 from django.contrib.auth.models import User
@@ -81,6 +78,12 @@ class Transport(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        """
+        Override the save function for added validation
+        :param args: save args
+        :param kwargs: save key/value args
+        :return: None
+        """
         if not self.protocol.pub_sub:
             trans = get_or_none(Transport, host=self.host, port=self.port, protocol=self.protocol)
             trans = trans if isinstance(trans, (list, QuerySet)) else [trans]
@@ -126,10 +129,18 @@ class Device(models.Model):
 
     @property
     def url_name(self):
+        """
+        URL Formatted device name
+        :return: url name
+        """
         return self.name.lower().replace(" ", "_")
 
     @property
     def schema(self):
+        """
+        Ge the combined schema for the device
+        :return: device schema
+        """
         acts = self.actuator_set.all()
         schema = {}
         if len(acts) == 1:
@@ -169,9 +180,6 @@ class DeviceGroup(models.Model):
         blank=True,
         help_text="Devices available to users in the group"
     )
-
-    def natural_key(self):
-        return self.name,
 
     def __str__(self):
         return self.name

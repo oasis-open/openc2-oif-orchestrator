@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import base64
 import bleach
 import coreschema
@@ -9,7 +6,6 @@ import utils
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.compat import coreapi
 from rest_framework.decorators import detail_route

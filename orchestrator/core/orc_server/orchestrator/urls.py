@@ -4,10 +4,9 @@ from django.urls import include, path
 
 # from rest_framework import routers
 from rest_framework.schemas import get_schema_view
-
 from rest_framework_swagger.views import get_swagger_view
 
-from dynamic_preferences.api.viewsets import GlobalPreferencesViewSet
+# from dynamic_preferences.api.viewsets import GlobalPreferencesViewSet
 # GlobalPreferencesViewSet.pagination_class = None
 # from dynamic_preferences.users.viewsets import UserPreferencesViewSet
 

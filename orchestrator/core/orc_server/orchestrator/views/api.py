@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from dynamic_preferences.registries import global_preferences_registry
 from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes
