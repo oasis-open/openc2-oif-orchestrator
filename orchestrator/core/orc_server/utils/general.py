@@ -1,6 +1,7 @@
 """
 General Utilities
 """
+import random
 import string
 import sys
 import uuid
@@ -18,8 +19,8 @@ def prefixUUID(pre: str = "PREFIX", max_length: int = 30) -> str:
     :param max_length: max length of the unique name
     :return: unique name with the given prefix
     """
-    if len(pre) < max_length:
-        raise ValueError(f"max_length is less than the length of the prefix: {len(pre)}")
+    if len(pre) > max_length:
+        raise ValueError(f"max_length is greater than the length of the prefix: {len(pre)}")
 
     uid_max = max_length - len(pre)
     uid = str(uuid.uuid4()).replace("-", "")[:uid_max]
@@ -44,12 +45,12 @@ def randBytes(b: int = 2) -> bytes:
     :param b: number of bytes generate
     :return: random number of bytes requested
     """
-    return randBytes(b)
+    return bytes([random.getrandbits(8) for _ in range(b)])
 
 
 def isHex(val: str) -> bool:
     """
-    Determin if hte given value is a valid hexadecimal string
+    Determine if the given value is a valid hexadecimal string
     :param val: string to validate
     :return: bool - valid/invalid hexadecimal
     """

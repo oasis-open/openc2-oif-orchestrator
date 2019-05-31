@@ -55,7 +55,7 @@ def command_response(body, message):
         )
 
         if hasattr(actuator, '__iter__'):
-            log.warning(msg=f'Multiple actuators match for command response - {command.command_id}')
+            log.warn(msg=f'Multiple actuators match for command response - {command.command_id}')
             actuator = random.choice(actuator)
 
     try:
