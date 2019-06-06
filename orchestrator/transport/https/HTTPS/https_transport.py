@@ -27,7 +27,7 @@ def process_message(body, message):
 
         if device_socket and encoding and orc_socket:
             for profile in device["profile"]:
-                print(f"Sending command to {device_socket}")
+                print(f"Sending command to {profile}@{device_socket}")
 
                 try:
                     r = http.request(
@@ -43,6 +43,7 @@ def process_message(body, message):
                             "Host": f"{profile}@{device_socket}",
                         }
                     )
+                    print(f"Data: {{\"\"headers\": {{{r.request.headers}}}, \"content\": {{{r.request.data}}}")
                     print(f"Response from request: {r.status}")
                 except Exception as err:
                     err = str(getattr(err, "message", err))
@@ -56,14 +57,15 @@ def process_message(body, message):
             print(response)
 
 
-print("Connecting to RabbitMQ...")
-try:
-    consumer = Consumer(
-        exchange="transport",
-        routing_key="https",
-        callbacks=[process_message]
-    )
+if __name__ == "__main__":
+    print("Connecting to RabbitMQ...")
+    try:
+        consumer = Consumer(
+            exchange="transport",
+            routing_key="https",
+            callbacks=[process_message]
+        )
 
-except Exception as err:
-    print(f"Consumer Error: {err}")
-    consumer.shutdown()
+    except Exception as err:
+        print(f"Consumer Error: {err}")
+        consumer.shutdown()

@@ -1,5 +1,4 @@
 import json
-import os
 import re
 
 from flask import Flask, request
@@ -15,10 +14,10 @@ def result():
     status = request.headers['Status']
 
     profile, device = request.headers["From"].rsplit("@", 1)
-    # profile used
-    # device IP:port
+    # profile used, device IP:port
 
-    print(f"Received {status} response from {device}")
+    print(f"Received {status} response from {profile}@{device}")
+    print(f"Data: {{\"\"headers\": {{{request.headers}}}, \"content\": {{{request.data}}}")
     print("Writing to buffer.")
     producer = Producer()
     producer.publish(
