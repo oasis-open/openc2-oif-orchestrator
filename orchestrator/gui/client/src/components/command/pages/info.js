@@ -44,6 +44,7 @@ class CommandInfo extends Component {
 
     render() {
         let cmd = this.props.command
+        let received = moment.utc(cmd.received_on || "")
         let maxHeight = 500
 
         return (
@@ -52,7 +53,7 @@ class CommandInfo extends Component {
 
                 <p><strong>Command ID:</strong> { cmd.command_id }</p>
 
-                <p><strong>Received:</strong> { cmd.received_on }</p>
+                <p><strong>Received:</strong> { received.format("dddd, MMMM Do YYYY, h:mm:ss A z") }</p>
 
                 <div>
                     <p><strong>Actuators:</strong></p>
@@ -76,16 +77,16 @@ class CommandInfo extends Component {
                 <div>
                     <p className="m-0"><strong>Responses:</strong></p>
 
-                    <div className="p-1 border border-primary" style={{ maxHeight: maxHeight+'px' }}>
+                    <div className="p-1 border border-primary scroll" style={{ maxHeight: maxHeight+'px' }}>
                         {
                             (cmd.responses || []).map((rsp, i) => {
                                 return (
                                     <div key={ i }>
                                         <p className="m-0"><strong>{ rsp.actuator || 'Error' }:</strong></p>
-                                        <div className='position-relative'>
+                                        <div className='position-relative mb-2'>
                                             <JSONPretty
                                                 id={ 'response-' + i }
-                                                className='scroll-xl border'
+                                                className='border'
                                                 style={{ minHeight: 2.5+'em' }}
                                                 json={ rsp.response }
                                             />

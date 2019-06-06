@@ -145,7 +145,7 @@ class ResponseSerializer(serializers.ModelSerializer):
     """
     Command Response API Serializer
     """
-    received_on = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S %z")
+    received_on = serializers.DateTimeField(format="%a, %d %b %Y %H:%M:%S %z")
     actuator = serializers.SlugRelatedField(
         allow_null=True,
         read_only=True,
@@ -171,7 +171,7 @@ class HistorySerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field="username"
     )
-    received_on = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S %z")
+    received_on = serializers.DateTimeField(format="%a, %d %b %Y %H:%M:%S %z")
     actuators = ActuatorSerializer(read_only=True, many=True)
     command = serializers.JSONField()
     responses = serializers.JSONField()

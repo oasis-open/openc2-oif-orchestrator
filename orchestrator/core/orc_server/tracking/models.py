@@ -137,7 +137,7 @@ class RequestLogSerializer(serializers.ModelSerializer):
         slug_field='username'
     )
 
-    requested_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S %z')
+    requested_at = serializers.DateTimeField(format='%a, %d %b %Y %H:%M:%S %z')
     remote_addr = serializers.IPAddressField()
 
     class Meta:
@@ -156,7 +156,7 @@ class EventLogSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
     )
-    occurred_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S %z')
+    occurred_at = serializers.DateTimeField(format='%a, %d %b %Y %H:%M:%S %z')
 
     class Meta:
         model = EventLog
