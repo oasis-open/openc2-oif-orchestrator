@@ -14,6 +14,9 @@ import {
     Tooltip
 } from 'reactstrap'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons'
+
 import {
     JADN_Field,
     JSON_Field,
@@ -45,6 +48,7 @@ import * as GenerateActions from '../../../../actions/generate'
 import * as CommandActions from '../../../../actions/command'
 
 const str_fmt = require('string-format')
+const Ajv = require('ajv');
 
 
 class GenerateCommands extends Component {
@@ -55,6 +59,9 @@ class GenerateCommands extends Component {
 		this.selectChange = this.selectChange.bind(this)
 		this.sendCommand = this.sendCommand.bind(this)
         this.jadn_keys = ["meta", "types"]
+        this.json_validator = new Ajv({
+            unknownFormats: "ignore"
+        })
 
 		this.state = {
 		    command_record: '',
@@ -69,7 +76,8 @@ class GenerateCommands extends Component {
 				jadn_fmt: false,
 				exports: []
 			},
-		    message: {}
+		    message: {},
+		    message_warnings: []
 		}
 
 		this.props.actuatorInfo()
@@ -152,6 +160,8 @@ class GenerateCommands extends Component {
         this.setState(prevState => {
             let msg = prevState.message || {}
             let keys = k.split('.')
+            let errors = []
+
             keys = this.state.schema.exports.indexOf(keys[0]) == -1 ? keys : keys.slice(1)
 
             if (keys.length > 1 && msg[keys[0]] && !msg[keys[0]][keys[1]]) {
@@ -164,8 +174,21 @@ class GenerateCommands extends Component {
                 delMultiKey(msg, k)
             }
 
+            // TODO: Validate message - errors to state.message_warnings as array
+            if (this.state.schema.jadn_fmt) {
+                console.log("Generated from JADN", msg)
+
+            } else {
+                // console.log("Generated from JSON", msg)
+                var valid = this.json_validator.validate(this.state.schema.schema, msg)
+                if (!valid) {
+                    errors = this.json_validator.errors
+                }
+            }
+
             return {
-                message: msg
+                message: msg,
+                message_warnings: errors
             }
         })
     }
@@ -344,6 +367,9 @@ class GenerateCommands extends Component {
   			        <li id='msg-tab' className='nav-item' >
     			        <a className='nav-link' data-toggle='tab' href='#tab-message'>Message</a>
   			        </li>
+  			        <li id='msg-tab' className='nav-item' >
+    			        <a className='nav-link' data-toggle='tab' href='#tab-warning'>Warnings <span className="badge badge-warning">{ this.state.message_warnings.length }</span></a>
+  			        </li>
 		        </ul>
 
 		        <div className='tab-content'>
@@ -403,6 +429,35 @@ class GenerateCommands extends Component {
                                     json={ this.state.message }
                                 />
                             </div>
+                        </div>
+                    </div>
+
+                    <div className='tab-pane fade' id='tab-warning'>
+                        <div className='card col-12 p-0 mx-auto'>
+                            <div className='card-header h3'>
+                                Message Warnings
+                            </div>
+                             <div className='card-body p-2 position-relative' style={{ height: maxHeight-25+'px', overflowY: 'scroll' }}>
+                                {
+                                    this.state.message_warnings.length == 0 ?
+                                        <p>Warnings for the generated message will appear here if available</p>
+                                    :
+                                        this.state.message_warnings.map((err, i) => {
+                                            return (
+                                                <div key={ i } className="border border-warning mb-2 px-2 pt-2">
+                                                    <p>Warning from message "{ err.dataPath || "." }"
+                                                        <FontAwesomeIcon
+                                                            icon={ faLongArrowAltRight }
+                                                            className="mx-2"
+                                                        />
+                                                        "{ err.keyword }"
+                                                    </p>
+                                                    <p className="text-warning">{ err.message }</p>
+                                                </div>
+                                            )
+                                        })
+                                }
+                             </div>
                         </div>
                     </div>
                 </div>

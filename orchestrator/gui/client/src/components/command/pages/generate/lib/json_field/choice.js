@@ -43,17 +43,25 @@ class ChoiceField extends Component {
         let name = this.props.name || this.props.def.name
         let msgName = (this.props.parent ? [this.props.parent, name] : [name]).join('.')
 
-        let def_opts = Object.keys(this.props.def.oneOf[0].properties).map((field, i) => {
-            let def = this.props.def.oneOf[0].properties[field]
-            return <option key={ i } data-subtext={ def.desc || "" } value={ field }>{ field }</option>
-        })
+        let def_opts = []
+        if (this.props.def.hasOwnProperty("properties")) {
+            Object.keys(this.props.def.properties).forEach((field, i) => {
+                let def = this.props.def.properties[field]
+                def_opts.push(<option key={ i } data-subtext={ def.desc || "" } value={ field }>{ field }</option>)
+            })
+        }
+
+        if (this.props.def.hasOwnProperty("patternProperties")) {
+            // TODO: Pattern Properties
+            console.log("Choice Pattern Props", this.props.def.patternProperties)
+        }
 
         let selectedDef = ""
         if (this.state.selected) {
             selectedDef = <Field
                 name={ this.state.selected }
                 parent={ msgName }
-                def={ this.props.def.oneOf[0].properties[this.state.selected] || {} }
+                def={ this.props.def.properties[this.state.selected] || {} }
                 required
                 optChange={ this.props.optChange }
             />

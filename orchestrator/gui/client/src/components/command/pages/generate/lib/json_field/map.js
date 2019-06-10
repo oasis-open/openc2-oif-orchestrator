@@ -24,17 +24,25 @@ class MapField extends Component {
         let msgName = (this.props.parent ? [this.props.parent, name] : [name]).join('.')
 
         let def_opts = []
-        Object.keys(this.props.def.anyOf[0].properties).map((field, i) => {
-            let fieldArgs = {
-                key: i,
-                name: field,
-                def: this.props.def.anyOf[0].properties[field],
-                required: isOptional_json(this.props.def.required, field),
-                parent: this.props.parent ? msgName : "",
-                optChange: this.props.optChange
-            }
-            def_opts.push(<Field { ...fieldArgs } />)
-        })
+        if (this.props.def.hasOwnProperty("properties")) {
+            Object.keys(this.props.def.properties).forEach((field, i) => {
+                let fieldArgs = {
+                    key: i,
+                    name: field,
+                    def: this.props.def.properties[field],
+                    required: isOptional_json(this.props.def.required, field),
+                    parent: this.props.parent ? msgName : "",
+                    optChange: this.props.optChange
+                }
+                def_opts.push(<Field { ...fieldArgs } />)
+            })
+        }
+
+        if (this.props.def.hasOwnProperty("patternProperties")) {
+            // TODO: Pattern Properties
+            console.log("Map Pattern Props", this.props.def.patternProperties)
+        }
+
 
         return (
             <FormGroup tag="fieldset" className="border border-dark p-2">

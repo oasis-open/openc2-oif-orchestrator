@@ -58,25 +58,34 @@ class Field extends Component {
 
         switch(def.type) {
             case "object":
-                if (def.hasOwnProperty('anyOf')) {
-                    return <Map { ...fieldArgs } />
-
-                } else if (def.hasOwnProperty('oneOf')) {
+                let min_props = safeGet(def, "minProperties")
+                let max_props = safeGet(def, "maxProperties")
+                if (min_props == 1 && max_props == 1) {
+                    // console.log("Choice - " + fieldArgs.name + ", min: "+ min_props + ", max: " + max_props)
                     return <Choice { ...fieldArgs } />
 
-                } else if (def.hasOwnProperty('properties')) {
+                } else if (min_props == 1 && max_props == null) {
+                    // console.log("Map - " + fieldArgs.name + ", min: "+ min_props + ", max: " + max_props)
+                    return <Map { ...fieldArgs } />
+
+                } else if (def.hasOwnProperty('properties') || (min_props == null && max_props == null)) {
+                    // console.log("Record - " + fieldArgs.name + ", min: "+ min_props + ", max: " + max_props)
                     return <Record { ...fieldArgs } />
                 }
 
                 return <p>Object - { this.props.name }</p>
 
             case 'array':
+                // console.log("Array - " + fieldArgs.name)
 			    return <Array { ...fieldArgs } />
 
 			default:
-			    if (def.hasOwnProperty('enum')) {
+			    if (def.hasOwnProperty('enum') || def.hasOwnProperty("oneOf")) {
+                    // console.log("Enum - " + fieldArgs.name)
                     return <Enumerated { ...fieldArgs } />
                 }
+
+                // console.log("Basic - " + fieldArgs.name)
 			    return <Basic { ...fieldArgs } />
         }
     }

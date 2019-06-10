@@ -29,10 +29,18 @@ class EnumeratedField extends Component {
         this.msgName = (this.props.parent ? [this.props.parent, name] : [name]).join('.')
 
         let def_opts = []
-        if (this.props.def.hasOwnProperty("options")) {
-            def_opts = this.props.def.options.map((opt, i) => <option key={ i } value={ opt.value } data-subtext={ opt.description }>{ opt.label }</option>)
+
+        if (this.props.def.hasOwnProperty("enum")) {
+            if (this.props.def.hasOwnProperty("options")) {
+                def_opts = this.props.def.options.map((opt, i) => <option key={ i } value={ opt.value } data-subtext={ opt.description }>{ opt.label }</option>)
+            } else {
+                def_opts = this.props.def.enum.map(opt => <option key={ opt } value={ opt } data-subtext={ opt }>{ opt }</option>)
+            }
+        } else if (this.props.def.hasOwnProperty("oneOf")) {
+                def_opts = this.props.def.oneOf.map((opt, i) => <option key={ i } value={ opt.const } data-subtext={ opt.description }>{ opt.const }</option>)
+
         } else {
-            def_opts = this.props.def.enum.map(opt => <option key={ opt } value={ opt } data-subtext={ opt }>{ opt }</option>)
+            def_opts = [<option key={ 0 } value="">Unknown Enumerated format</option>]
         }
 
         return (
