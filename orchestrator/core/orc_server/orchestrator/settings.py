@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'actuator',
     'account',
     'command',
+    'backup',
     'tracking',
     # Default Modules
     'django.contrib.admin',

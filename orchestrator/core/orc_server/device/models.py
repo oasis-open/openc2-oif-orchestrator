@@ -141,13 +141,21 @@ class Device(models.Model):
         Ge the combined schema for the device
         :return: device schema
         """
-        acts = self.actuator_set.all()
         schema = {}
-        if len(acts) == 1:
-            schema = acts[0].schema
-        elif len(acts) > 1:
-            schema = acts[0].schema
-            # TODO: Merge schemas??
+
+        if self.multi_actuator:
+            """
+            acts = self.actuator_set.all()
+            if len(acts) == 1:
+                schema = acts[0].schema
+            elif len(acts) > 1:
+                schema = acts[0].schema
+                # TODO: Merge schemas??
+            """
+            schema["metaSchema"] = "TODO"
+        else:
+            act = self.actuator_set.first()
+            schema = getattr(act, "schema", {})
 
         return schema
 

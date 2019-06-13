@@ -35,6 +35,9 @@ api_patterns = [
     # Actuator App
     path('actuator/', include('actuator.urls')),
 
+    # Backup App
+    path('backup/', include('backup.urls')),
+
     # Command App
     path('command/', include('command.urls')),
 

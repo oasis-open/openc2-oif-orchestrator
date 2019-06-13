@@ -4,10 +4,14 @@ django-cors-headers
 django-dynamic-preferences
 djangorestframework
 djangorestframework-datatables
+djangorestframework-files
 djangorestframework-jwt
+djangorestframework-msgpack
 djangorestframework-queryfields
+djangorestframework-xml
 django-rest-swagger
 drf-writable-nested
 jsonfield
 mysql-connector-python
+pyexcel-xls
 uwsgi
