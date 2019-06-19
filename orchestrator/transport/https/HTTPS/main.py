@@ -17,7 +17,7 @@ def result():
     # profile used, device IP:port
 
     print(f"Received {status} response from {profile}@{device}")
-    print(f"Data: {{\"\"headers\": {{{request.headers}}}, \"content\": {{{request.data}}}")
+    print(f"Data: {{\"\"headers\": {json.dumps(request.headers)}, \"content\": {request.data}")
     print("Writing to buffer.")
     producer = Producer()
     producer.publish(
