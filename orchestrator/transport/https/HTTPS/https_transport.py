@@ -1,8 +1,7 @@
-import json
 import urllib3
 
 from datetime import datetime
-from sb_utils import Producer, Consumer, encode_msg
+from sb_utils import Producer, Consumer, default_encode, encode_msg, safe_json
 
 
 def process_message(body, message):
@@ -14,7 +13,7 @@ def process_message(body, message):
     http = urllib3.PoolManager(cert_reqs="CERT_NONE")
     producer = Producer()
 
-    body = body if isinstance(body, dict) else json.loads(body)
+    body = body if isinstance(body, dict) else safe_json(body)
     rcv_headers = message.headers
 
     orc_socket = rcv_headers["source"]["transport"]["socket"]  # orch IP:port
@@ -43,8 +42,11 @@ def process_message(body, message):
                             "Host": f"{profile}@{device_socket}",
                         }
                     )
-                    print(f"Data: {{\"\"headers\": {json.dumps(r.request.headers)}, \"content\": {r.request.data}")
-                    print(f"Response from request: {r.status}")
+                    data = safe_json({
+                        "headers": dict(r.headers),
+                        "content": safe_json(r.data.decode('utf-8'))
+                    })
+                    print(f"Response from request: {r.status} - {data}")
                 except Exception as err:
                     err = str(getattr(err, "message", err))
                     rcv_headers["error"] = True
@@ -63,7 +65,8 @@ if __name__ == "__main__":
         consumer = Consumer(
             exchange="transport",
             routing_key="https",
-            callbacks=[process_message]
+            callbacks=[process_message],
+            debug=True
         )
 
     except Exception as err:
