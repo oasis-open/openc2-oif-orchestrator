@@ -1,5 +1,7 @@
 import datetime
 import os
+import re
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -227,25 +229,53 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+
 # Logging
+IGNORE_LOGS = (
+    r'^pyexcel_io.*',
+    r'^lml.*'
+)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'ignore_logs': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda r: not any([re.match(reg, r.name) for reg in IGNORE_LOGS])
+        }
+    },
     'formatters': {
-        'simple': {
+        'requests': {
+            'format': '%{sctime} [{levelname}] {name}: {message}',
+            'style': '{',
+        },
+        'stream': {
             'format': '{levelname} {module} {message}',
             'style': '{',
-        }
+        },
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'level': 'DEBUG',
+            'formatter': 'stream',
+            'filters': ['ignore_logs']
         },
+        'requests': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'requests',
+            'filters': ['ignore_logs']
+        }
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['requests'],
             'level': 'DEBUG',
             'propagate': False
         }

@@ -88,7 +88,7 @@ def validate_actuator(usr, act=""):
                 detail="actuator invalid",
                 response="Actuator Invalid: actuator must be specified with a command"
             ), 404
-        return actuators
+        return [actuators, ]
 
     elif _type == "profile":  # Profile Actuators
         actuators = get_or_none(ActuatorProfile, name__iexact=_act_prof)
@@ -106,21 +106,22 @@ def validate_actuator(usr, act=""):
 
 
 def validate_channel(act, chan={}):
-    if isinstance(act, Actuator):
-        dev = get_or_none(Device, device_id=act.device.device_id)
+    if len(act) == 1:
+        act = act[0]
+        if isinstance(act, Actuator):
+            dev = get_or_none(Device, device_id=act.device.device_id)
 
-        proto = chan.get("protocol", None)
-        if proto:
-            proto = get_or_none(dev.transport, protocol__name=bleach.clean(str(proto)))
-            proto = proto.protocol if proto else None
+            proto = chan.get("protocol", None)
+            if proto:
+                proto = get_or_none(dev.transport, protocol__name=bleach.clean(str(proto)))
+                proto = proto.protocol if proto else None
 
-        serial = chan.get("serialization", None)
-        if serial:
-            serial = get_or_none(Serialization, name=bleach.clean(str(serial)))
+            serial = chan.get("serialization", None)
+            if serial:
+                serial = get_or_none(Serialization, name=bleach.clean(str(serial)))
 
-        return proto, serial
-    else:
-        return None, None
+            return proto, serial
+    return None, None
 
 
 def action_send(usr=None, cmd={}, actuator="", channel={}):
@@ -180,13 +181,13 @@ def action_send(usr=None, cmd={}, actuator="", channel={}):
         proto_acts = list(filter(lambda a: a.id not in processed_acts, proto_acts))
         processed_acts.update({act.id for act in proto_acts})
 
-        if proto.name.lower() == "coap" and com.coap_id is b"":
-            corr_id = com.gen_coap_id()
-            com.save()
-        else:
-            corr_id = str(com.command_id)
-
         if len(proto_acts) >= 1:
+            if proto.name.lower() == "coap" and com.coap_id is b"":
+                corr_id = com.gen_coap_id()
+                com.save()
+            else:
+                corr_id = str(com.command_id)
+
             header = dict(
                 source=dict(
                     orchestratorID=orc_id,

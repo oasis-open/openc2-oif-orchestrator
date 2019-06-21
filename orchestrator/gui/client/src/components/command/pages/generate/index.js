@@ -368,7 +368,7 @@ class GenerateCommands extends Component {
     			        <a className='nav-link' data-toggle='tab' href='#tab-message'>Message</a>
   			        </li>
   			        <li id='msg-tab' className='nav-item' >
-    			        <a className='nav-link' data-toggle='tab' href='#tab-warning'>Warnings <span className="badge badge-warning">{ this.state.message_warnings.length }</span></a>
+    			        <a className='nav-link' data-toggle='tab' href='#tab-warning'>Warnings <span className={ "badge badge-" + ( this.state.message_warnings.length > 0 ? "warning" : "success")}>{ this.state.message_warnings.length }</span></a>
   			        </li>
 		        </ul>
 
@@ -445,7 +445,7 @@ class GenerateCommands extends Component {
                                         this.state.message_warnings.map((err, i) => {
                                             return (
                                                 <div key={ i } className="border border-warning mb-2 px-2 pt-2">
-                                                    <p>Warning from message "{ err.dataPath || "." }"
+                                                    <p>Warning from message `{ err.dataPath || "." }`
                                                         <FontAwesomeIcon
                                                             icon={ faLongArrowAltRight }
                                                             className="mx-2"
