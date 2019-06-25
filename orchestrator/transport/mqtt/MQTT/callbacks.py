@@ -13,7 +13,7 @@ ACTIVE_CONNECTIONS = []
 
 
 class Callbacks(object):
-    required_device_keys = {"socket", "encoding", "profile"}
+    required_device_keys = {"encoding", "profile", "socket"}
 
     @staticmethod
     def on_connect(client, userdata, flags, rc):
@@ -48,7 +48,7 @@ class Callbacks(object):
         encoding = re.search(r"(?<=\+)(.*?)(?=;)", payload_header.get("content_type", "")).group(1)
         orc_id, broker_socket = payload_header.get("from", "").rsplit("@", 1)
         corr_id = payload_header.get("correlationID", "")
-        
+
         # copy necessary headers
         header = {
             "socket": broker_socket,
@@ -81,8 +81,7 @@ class Callbacks(object):
         :param body: Contains the message to be sent.
         :param message: Contains data about the message as well as headers
         """
-        payload = {}
-
+        # check for certs if TLS is enabled
         if os.environ.get("MQTT_TLS_ENABLED", False) and os.listdir("/opt/transport/MQTT/certs"):
             tls = dict(
                 ca_certs=os.environ.get("MQTT_CAFILE", None),
@@ -94,18 +93,18 @@ class Callbacks(object):
 
         # iterate through all devices within the list of destinations
         for device in message.headers.get("destination", []):
-
             # check that all necessary parameters exist for device
-            if len(Callbacks.required_device_keys.difference({*device.keys()})) == 0:
+            key_diff = Callbacks.required_device_keys.difference({*device.keys()})
+            if len(key_diff) == 0:
                 encoding = device.get("encoding", "json")
                 ip, port = device.get("socket", "localhost:1883").split(":")
 
                 # iterate through actuator profiles to send message to
                 for actuator in device.get("profile", []):
-                    payload.update({
+                    payload = {
                         "header": format_header(message.headers, device, actuator),
                         "body": encode_msg(json.loads(body), encoding)
-                    })
+                    }
                     print(f"Sending {ip}:{port} - {payload}")
 
                     try:
@@ -129,7 +128,7 @@ class Callbacks(object):
                         return
                 get_response(ip, port, message.headers.get("source", {}).get("orchestratorID", ""))
             else:
-                err_msg = "Missing some/all required header data to successfully transport message."
+                err_msg = f"Missing required header data to successfully transport message - {', '.join(key_diff)}"
                 send_error_response(err_msg, payload["header"])
 
 
