@@ -24,13 +24,12 @@ migrate() {
         python3 manage.py createsuperuser_default
     fi
 
-    echo $(python3 -c "from email.utils import formatdate; print(formatdate());") > orc_server/migration_complete
+    echo $(python3 -c "from email.utils import formatdate; print(formatdate());") > /opt/orc_server/migration_complete
 }
 
 date2unix() {
     echo $(python3 -c "from datetime import datetime; print(f\"{datetime.strptime('$1', '%a, %d %b %Y %H:%M:%S %z'):%s}\")")
 }
-
 
 date_diff() {
     d=$(date2unix "$1")

@@ -167,4 +167,3 @@ migrations/*
 !/orc_server/*/migrations/__init__.py
 !/orc_server/*/migrations/0001_initial.py
 orc_server/migration_complete
-orc_server/dev_start.sh

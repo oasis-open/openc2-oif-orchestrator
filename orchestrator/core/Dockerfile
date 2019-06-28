@@ -24,6 +24,7 @@ RUN apk add --no-cache --virtual .build-deps \
     gcc \
     make \
     libc-dev \
+    libffi-dev \
     musl-dev \
     python3-dev \
     pcre-dev \
