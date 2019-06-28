@@ -1,11 +1,11 @@
-from coapthon.server.coap import CoAP
-from coapthon.resources.resource import Resource
-from coapthon.messages.response import Response
-from coapthon import defines
-
-from sb_utils import Producer, decode_msg
-
 import os
+
+from coapthon import defines
+from coapthon.resources.resource import Resource
+from coapthon.server.coap import CoAP
+
+from sb_utils import decode_msg, encode_msg, Producer
+
 
 class TransportResource(Resource):
     def __init__(self, name="TransportResource", coap_server=None):
@@ -13,39 +13,46 @@ class TransportResource(Resource):
 
     def render_POST_advanced(self, request, response):
         # retrieve Content_type stored as dict of types:values (ex. "application/json": 50)
-        for content_type, val in defines.Content_types.items():
-            if request.content_type == val:
-                encoding = content_type.split('/')[1]
+        encoding = [k for k, v in defines.Content_types.items() if v == request.content_type]
+        encoding = "json" if len(encoding) != 1 else encoding[0].split("/")[1]
+
+        # read custom options added for O.I.F. and retrieve them based on their number
+        # opts = {o.name: o.value for o in request.options}
 
         # Create headers for the orchestrator from the request
         headers = dict(
-            correlationID=str(hex(request.mid))[2:],
-            socket=(request.source[0] + ':' + str(request.source[1])),
+            correlationID=f"{request.mid:x}",
+            socket=(request.source[0] + ":" + str(request.source[1])),
             encoding=encoding,
-            transport='coap',
-            #orchestratorID='orchid1234',  # orchestratorID is currently an unused field, this is a placeholder
-        ) 
+            transport="coap",
+            # orchestratorID="orchid1234",  # orchestratorID is currently an unused field, this is a placeholder
+        )
 
         # Send response back to Orchestrator
-        producer = Producer(os.environ.get('QUEUE_HOST', 'localhost'), os.environ.get('QUEUE_PORT', '5672'))
+        producer = Producer(os.environ.get("QUEUE_HOST", "localhost"), os.environ.get("QUEUE_PORT", "5672"))
         producer.publish(
-            message=decode_msg(request.payload, encoding), 
-            headers=headers, 
-            exchange="orchestrator", 
+            message=decode_msg(request.payload, encoding),
+            headers=headers,
+            exchange="orchestrator",
             routing_key="response"
-            )
-        
-        # build and send repsonse
-        response.payload = "Message successfully received."
+        )
+
+        # build and send response
+        response.payload = encode_msg({
+            "status": 200,
+            "status_text": "received"
+        }, encoding)
         response.code = defines.Codes.CONTENT.number
         return self, response
+
 
 class CoAPServer(CoAP):
     def __init__(self, host, port):
         CoAP.__init__(self, (host, port))
-        self.add_resource('transport/', TransportResource())
+        self.add_resource("transport/", TransportResource())
 
-def main():
+
+if __name__ == "__main__":
     server = CoAPServer("0.0.0.0", 5683)
     try:
         print("Server listening on 0.0.0.0:5683")
@@ -54,6 +61,3 @@ def main():
         print("Server Shutdown")
         server.close()
         print("Exiting...")
-
-if __name__ == '__main__':
-    main()

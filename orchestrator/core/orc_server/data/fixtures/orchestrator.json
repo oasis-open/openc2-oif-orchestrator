@@ -28,21 +28,42 @@
     "model": "orchestrator.serialization",
     "pk": 1,
     "fields": {
-      "name": "JSON"
+      "name": "BSON"
     }
   },
   {
     "model": "orchestrator.serialization",
     "pk": 2,
     "fields": {
-      "name": "XML"
+      "name": "CBOR"
     }
   },
   {
     "model": "orchestrator.serialization",
     "pk": 3,
     "fields": {
-      "name": "CBOR"
+      "name": "JSON"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 4,
+    "fields": {
+      "name": "MsgPack"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 5,
+    "fields": {
+      "name": "XML"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 6,
+    "fields": {
+      "name": "YAML"
     }
   }
 ]
