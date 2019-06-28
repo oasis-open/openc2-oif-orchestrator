@@ -8,7 +8,7 @@ import * as SocketActions from '../actions/socket'
 const NO_CONNECTION = null
 
 
-const createSocketMiddleware = ({getState, dispatch}) => {
+export default ({getState, dispatch}) => {
     setTimeout(() => dispatch(SocketActions.setupSocket(dispatch)), 100)
 
     return next => action => {
@@ -43,14 +43,4 @@ const createSocketMiddleware = ({getState, dispatch}) => {
             return next(action)
         }
     }
-}
-
-
-const socketMiddleware = ({ getState, dispatch }) => createSocketMiddleware()({ getState, dispatch })
-
-
-export {
-    socketMiddleware as default,
-    createSocketMiddleware,
-    socketMiddleware
 }

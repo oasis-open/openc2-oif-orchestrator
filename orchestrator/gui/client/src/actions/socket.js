@@ -56,7 +56,7 @@ export const setupSocket = (dispatch, endpoint, protocols, options) => {
 
 // Socket Connected - WebSocket is connected and open
 export const SOCKET_CONNECTED = '@@socket/SOCKET_CONNECTED'
-export const createConnectionAction = (endpoint) => ({
+const createConnectionAction = (endpoint) => ({
     type: SOCKET_CONNECTED,
     payload: {
         connected: true
@@ -68,7 +68,7 @@ export const createConnectionAction = (endpoint) => ({
 
 // Socket Disconnected - WebSocket disconnected
 export const SOCKET_DISCONNECTED = '@@socket/SOCKET_DISCONNECTED'
-export const createDisconnectionAction = (endpoint) => ({
+const createDisconnectionAction = (endpoint) => ({
     type: SOCKET_DISCONNECTED,
     payload: {
         connected: false
@@ -90,8 +90,8 @@ export const createErrorAction = (endpoint, error) => ({
 })
 
 // Socket Message - WebSocket has received data, triggers appropriate store call
-export const RECEIVED_SOCKET_DATA = 'socket/RECEIVED_SOCKET_DATA'
-export const createMessageAction = (endpoint, data) => ({
+export const RECEIVED_SOCKET_DATA = '@@socket/RECEIVED_SOCKET_DATA'
+const createMessageAction = (endpoint, data) => ({
     type: RECEIVED_SOCKET_DATA,
     payload: data,
     meta: {

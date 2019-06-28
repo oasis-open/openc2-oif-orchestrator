@@ -1,4 +1,4 @@
-from oif/base:alpine
+FROM oif/base:alpine
 
 MAINTAINER Screaming_Bunny
 

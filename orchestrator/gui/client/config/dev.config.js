@@ -29,7 +29,7 @@ const config = merge(generalConfig, {
         historyApiFallback: true,
         proxy: {
             '/api': {
-                target: 'http://localhost:8080',
+                target: 'http://localhost:8081',
                 //pathRewrite: {"^/api/v1" : ""},
                 secure: false
             }
