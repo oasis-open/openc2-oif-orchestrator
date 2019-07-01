@@ -10,8 +10,8 @@ import {
     ModalHeader
 } from 'reactstrap'
 
-import JSONInput from '../../utils/jadn-editor'
-import locale from '../../utils/jadn-editor/locale/en'
+import JSONInput from 'react-json-editor-ajrm'
+import locale from 'react-json-editor-ajrm/locale/en'
 
 import {
     FormatJADN,

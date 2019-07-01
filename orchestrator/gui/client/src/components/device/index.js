@@ -48,8 +48,7 @@ class Devices extends Component {
             modal: DeviceModal,
             delete: this.props.deleteDevice
         }
-
-        this.props.getDevices()
+        // this.props.getDevices()
     }
 
     render() {

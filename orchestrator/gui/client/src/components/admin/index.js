@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DocumentMeta from 'react-document-meta'
 
-const str_fmt = require('string-format')
-
 import {
     Settings,
     Users
@@ -12,6 +10,8 @@ import {
 import {
     titleCase
 } from '../utils'
+
+const str_fmt = require('string-format')
 
 class Admin extends Component {
     constructor(props, context) {

@@ -44,7 +44,7 @@ export default (history) => {
             logErrors: true
         });
 
-        middleware.push(logger);
+        // middleware.push(logger);
     }
 
     const enhancers = compose(

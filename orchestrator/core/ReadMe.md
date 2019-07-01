@@ -8,6 +8,9 @@
     - Login - admin/password
     - Ports
         - HTTPS/API - 8080
+- Serializations
+    - JSON is currently the only approved OpenC2 serialization
+    - All others are included for development/testing purposes
 
 ## Apps
 ### Orchestrator - /api/<orchestrator_urls>
@@ -77,6 +80,7 @@
     - [Bleach](https://bleach.readthedocs.io/en/latest/index.html) - String Sanitation
     - [PyExcel XLS](https://pypi.org/project/pyexcel-xls/) - XLS file parsing for python
     - [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/) - Production Server
+    - [Whitenoise](http://whitenoise.evans.io/en/stable/index.html#) - Static file serving
     
 #### Interesting Modules
 - [REST MultiToken Auth](https://pypi.org/project/django-rest-multitokenauth/)

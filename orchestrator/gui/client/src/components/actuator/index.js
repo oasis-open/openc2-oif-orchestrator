@@ -47,8 +47,7 @@ class Actuators extends Component {
         if (this.props.devices.loaded === 0) {
             this.props.getDevices()
         }
-
-        this.props.getActuators()
+        // this.props.getActuators()
     }
 
     getDevice(id) {
