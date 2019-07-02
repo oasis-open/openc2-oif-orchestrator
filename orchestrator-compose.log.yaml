@@ -68,7 +68,7 @@ services:
 
   logger_server:
     hostname: logger_server
-    image: oif/logger:server
+    image: g2inc/oif-logger:server
     build:
       context: ./logger/server
       dockerfile: Dockerfile
@@ -87,7 +87,7 @@ services:
 
   logger_gui:
     hostname: logger_gui
-    image: oif/logger:gui
+    image: g2inc/oif-logger:gui
     build:
       context: ./logger/gui
       dockerfile: Dockerfile

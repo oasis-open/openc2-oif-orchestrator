@@ -65,9 +65,8 @@ CONFIG = FrozenDict(
     ),
     BaseRepo=f"{Base_URL}ScreamingBunny",
     ImageReplace=(
-        ("base", "gitlab.*docker:alpine", "oif/base:alpine"),
-        ("python3", "gitlab.*plus:alpine-python3", "oif/base:alpine-python3"),
-        ("python3_plus", "gitlab.*plus:alpine-python3_plus", "oif/base:alpine-python3_plus")
+        ("base", r"gitlab.*?docker:alpine( as.*)?", r"alpine\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
+        ("python3", r"gitlab.*plus:alpine-python3( as.*)?", fr"g2inc/oif-python:{'' if options.repo_branch == 'master' else 'dev-'}latest\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
     ),
     Repos=FrozenDict(
         Orchestrator=('Core', 'GUI'),
@@ -151,11 +150,11 @@ if __name__ == '__main__':
             with open(dockerfile, 'r') as f:
                 tmpFile = f.read()
 
-            for img in CONFIG.ImageReplace:
-                if re.search(img[1], tmpFile):
+            for (name, orig_img, repl_img) in CONFIG.ImageReplace:
+                if re.search(orig_img, tmpFile):
                     Stylize.info(f'Updating {dockerfile}')
-                    Stylize.bold(f'- Found {img[0]} image, updating for public repo\n')
-                    tmpFile = re.sub(img[1], img[2], tmpFile)
+                    Stylize.bold(f'- Found {name} image, updating for public repo\n')
+                    tmpFile = re.sub(orig_img, repl_img, tmpFile)
                     with open(dockerfile, 'w') as f:
                         f.write(tmpFile)
                     break
