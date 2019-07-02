@@ -8,23 +8,32 @@ license="BSD" \
 version="2.0" \
 description="This is the Orchestrator GUI container"
 
-ADD build/ /opt/syslog/gui
+ADD . /tmp/gui
 ADD httpd/httpd.conf /etc/apache2/httpd.conf
 
 # Package installation
 # Packages - https://pkgs.alpinelinux.org/packages
 #
-# Requirements install
+# Build GUI
+RUN apk add --update nodejs nodejs-npm && \
+cd /tmp/gui && \
+npm install  && \
+npm run init  && \
+npm run build  && \
+mkdir -p /opt/orchestrator/gui && \
+cp -r build/* /opt/orchestrator/gui && \
+#
 # HTTPD Install & Config
-RUN apk add --no-cache apache2 apache2-utils apache2-ssl apache2-proxy apache2-proxy-html && \
+apk add --no-cache apache2 apache2-utils apache2-ssl apache2-proxy apache2-proxy-html && \
 mkdir -p /run/apache2 && \
 # addgroup -g 82 -S www-data && \
 adduser -u 82 -D -S -G www-data www-data && \
 ln -s /usr/lib/apache2 /etc/apache2/modules && \
 # GUI Config
 # mkdir -p /opt/syslog/gui && \
-chown -R www-data:www-data /opt/syslog/gui && \
+chown -R www-data:www-data /opt/orchestrator/gui && \
 # Cleanup
+apk del nodejs nodejs-npm && \
 rm -rf /var/cache/apk/* *.tar.gz* /usr/src /root/.gnupg /tmp/*
 
 # Ports
