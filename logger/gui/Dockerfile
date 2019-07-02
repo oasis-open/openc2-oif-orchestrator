@@ -1,11 +1,13 @@
 # GUI Builder
-FROM oif/base:alpine as builder
+FROM alpine as builder
+RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
 
 ADD . /tmp/gui
 
 RUN apk add --update nodejs nodejs-npm && \
 cd /tmp/gui && \
 npm install  && \
+find ./node_modules/babel-runtime -type f -exec sed -i -e 's/core-js\/library\/fn\//core-js\/features\//g' {} \; && \
 npm run init  && \
 npm run build  && \
 mkdir -p /opt/syslog/gui && \
@@ -13,7 +15,8 @@ cp -r build/* /opt/syslog/gui
 
 
 # GUI Image
-FROM oif/base:alpine
+FROM alpine
+RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
 
 MAINTAINER Screaming_Bunny
 

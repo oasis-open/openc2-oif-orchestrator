@@ -1,4 +1,4 @@
-FROM g2inc/oif-orchestrator-python:dev-latest
+FROM g2inc/oif-python:dev-latest
 RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
 
 MAINTAINER Screaming_Bunny
