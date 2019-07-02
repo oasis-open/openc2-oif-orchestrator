@@ -167,6 +167,6 @@ venv.bak/
 .mypy_cache/
 
 # Custom Ignore
-.idea/
+.idea
 *.sqlite3
 migrations/
