@@ -1,7 +1,15 @@
+import json
+import re
 import sys
 import uuid
 
-from typing import Any, Type
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Type,
+    Union
+)
 
 
 # Util Functions
@@ -40,30 +48,85 @@ def safe_cast(val: Any, to_type: Type, default: Any = None) -> Any:
         return default
 
 
-# Util Classes
-class FrozenDict(dict):
-    def __init__(self, *args, **kwargs) -> None:
-        self._hash = None
-        super(FrozenDict, self).__init__(*args, **kwargs)
+def safe_json(msg: Union[dict, str], encoders: Dict[Type, Callable[[Any], Any]] = {}, *args, **kwargs) -> Union[dict, str]:
+    """
+    Load JSON data if given a str and able
+    Dump JSON data otherwise, encoding using encoders & JSON Defaults
+    :param msg: str JSON to attempt to load
+    :param encoders: custom type encoding - Ex) -> {bytes: lambda b: b.decode('utf-8', 'backslashreplace')}
+    :return: loaded JSON data or original str
+    """
+    if isinstance(msg, str):
+        try:
+            return json.loads(msg, *args, **kwargs)
+        except ValueError:
+            return msg
 
-    def __hash__(self) -> int:
-        if self._hash is None:
-            self._hash = hash(tuple(sorted(self.items())))  # iteritems() on py2
-        return self._hash
+    msg = default_encode(msg, encoders)
+    return json.dumps(msg, *args, **kwargs)
 
-    def __getattr__(self, item: str) -> Any:
-        return self.get(item, None)
 
-    def __getitem__(self, item: str, default: Any = None) -> Any:
-        return self.get(item, default)
+def check_values(val: Any) -> Any:
+    """
+    Check the value of given and attempt to convert it to a bool, int, float
+    :param val: value to check
+    :return: converted/original value
+    """
+    if isinstance(val, str):
+        if val.lower() in ("true", "false"):
+            return safe_cast(val, bool,  val)
 
-    def _immutable(self, *args, **kwargs) -> TypeError:
-        raise TypeError('cannot change object - object is immutable')
+        if re.match(r"^\d+\.\d+$", val):
+            return safe_cast(val, float,  val)
 
-    __setitem__ = _immutable
-    __delitem__ = _immutable
-    pop = _immutable
-    popitem = _immutable
-    clear = _immutable
-    update = _immutable
-    setdefault = _immutable
+        if val.isdigit():
+            return safe_cast(val, int,  val)
+
+    return val
+
+
+def default_encode(itm: Any, encoders: Dict[Type, Callable[[Any], Any]] = {}) -> Any:
+    """
+    Default encode the given object to the predefined types
+    :param itm: object to encode/decode,
+    :param encoders: custom type encoding - Ex) -> {bytes: lambda b: b.decode('utf-8', 'backslashreplace')}
+    :return: default system encoded object
+    """
+    if isinstance(itm, tuple(encoders.keys())):
+        return encoders[type(itm)](itm)
+
+    if isinstance(itm, dict):
+        return {k: default_encode(v, encoders) for k, v in itm.items()}
+
+    if isinstance(itm, (list, tuple)):
+        return type(itm)(default_encode(i, encoders) for i in itm)
+
+    if isinstance(itm, (int, float)):
+        return itm
+
+    return toStr(itm)
+
+
+def default_decode(itm: Any, decoders: Dict[Type, Callable[[Any], Any]] = {}) -> Any:
+    """
+    Default decode the given object to the predefined types
+    :param itm: object to encode/decode,
+    :param decoders: custom type decoding - Ex) -> {bytes: lambda b: b.decode('utf-8', 'backslashreplace')}
+    :return: default system encoded object
+    """
+    if isinstance(itm, tuple(decoders.keys())):
+        return decoders[type(itm)](itm)
+
+    if isinstance(itm, dict):
+        return {k: default_decode(v, decoders) for k, v in itm.items()}
+
+    if isinstance(itm, (list, tuple)):
+        return type(itm)(default_decode(i, decoders) for i in itm)
+
+    if isinstance(itm, (int, float)):
+        return itm
+
+    if isinstance(itm, str):
+        return check_values(itm)
+
+    return itm
