@@ -1,19 +1,34 @@
-# OpenC2 Orchestrator GUI - Client
+# OASIS TC Open: oif-orchestrator-gui
 
-#### Notes:
-- React based single page application
-    - User/Pass via JWT
-    - Data passed via HTTP(s) API calls
+## Server
+### About this Image
+- Work in progress Not available as of yet
 
-### Startup Notes:
-- Prior to the GUI starting, the Core shoud be started and running.
+### How to use this image
+- Work in progress Not available as of yet
+
+## GUI
+### About this Image
+- This image is Alpine 3.10 with a simple GUI for use with the GUI Server
+- UI port - 80
+
+### How to use this image
+Note: Pulling an images requires using a specific tag (server or gui), the latest tag is not supported.
+
+- Prior to the GUI starting, the Core should be started and running.
 - Container Env Args:
 	- `ORC_HOST` - Hostname/IP address of the system running the Core	- `ORC_PORT` - Port the Core runs one (Docker port not mapped port)
 
 - Adding Certs 
 	1. Create a directory in httpd named `conf`
-	2. ...
-	
+	2. TODO...
+
+Environment Variables
+
+| Variable | Type | Description | Default|
+| ----------- | ----------- | ----------- | ----------- |
+| ORC_HOST | String | Hostname/IP address of the system running the Orchestrator Core | None |
+| ORC_PORT | Integer | Port the Orchestrator Core is running the API on | None |
 
 ### Resources
 - General
