@@ -1,15 +1,19 @@
+"""
+Django Model Utilities
+"""
 from django.contrib import admin
 
 
-def get_or_none(model, *args, **kwargs):
-    tmp_qry = model.objects.filter(*args, **kwargs)
-
-    if len(tmp_qry) == 0:
-        return None
-    elif len(tmp_qry) == 1:
-        return tmp_qry.first()
-    else:
-        return tmp_qry
+def get_or_none(model, **kwargs):
+    """
+    Get filtered results from the given model
+    :param model: model to filter
+    :param kwargs: field/value to match
+    :return: matching row(s) from the model
+    """
+    base_model = getattr(model, 'objects', model)
+    qry = base_model.filter(**kwargs)
+    return None if len(qry) == 0 else (qry.first() if len(qry) == 1 else qry)
 
 
 class ReadOnlyModelAdmin(admin.ModelAdmin):

@@ -8,7 +8,5 @@ router.register(r'', views.HistoryViewSet)
 
 urlpatterns = [
     # Command Access
-    path('send/', views.api_command_send, name='command.api_send'),
     path('', include(router.urls)),
 ]
-

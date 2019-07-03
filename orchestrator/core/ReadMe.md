@@ -1,135 +1,92 @@
-# OpenC2 Orchestrator Server
+# OASIS TC Open: oif-orchestrator-core
+## OpenC2 Orchestrator Server
 
-[![pipeline status](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/badges/develop/pipeline.svg)](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/commits/develop)
-[![coverage report](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/badges/develop/coverage.svg)](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/commits/develop)
-
-#### Notes:
+### About this image
 - Django based
     - Django REST Framework
     - User/Pass via JWT Token
 - Default info:
     - Login - admin/password
     - Ports
-        - API - 8080 
+        - HTTPS/API - 8080
+- Serializations
+    - JSON is currently the only approved OpenC2 serialization
+    - All others are included for development/testing purposes
 
-## Apps
-### Orchestrator - /api/<orchestrator_urls>
+#### Django Apps
+##### Orchestrator - /api/<orchestrator_urls>
 - Main application/Root 
 
-### Account - /api/account/<account_urls>
+##### Account - /api/account/<account_urls>
 - Note: Naming conflict with user, same concept different name
 - Handles all endpoints related to accounts
 
-### Actuator - /api/actuator/<actuator_urls>
+##### Actuator - /api/actuator/<actuator_urls>
 - Handles all endpoints related to actuators
+
+##### Backup - /api/backup/<backup_url>
+- Handles all endpoints related to data backup
  
-### Command - /api/command/<command_urls>
+##### Command - /api/command/<command_urls>
 - Handles all endpoints related to commands
 
-### Device - /api/device/<device_urls>
+##### Device - /api/device/<device_urls>
 - Handles all endpoints related to devices
 
-### Group - /api/group/<group_urls>
-- Handles all endpoints related to auth groups
-
-### Log - /api/log/<log_urls>
+##### Log - /api/log/<log_urls>
 - Handles all endpoints related to logs
 
-### Admin GUI - /admin/<admin_urls>
+##### Admin GUI - /admin/<admin_urls>
 - Administration GUI, prebuild and preconfigured from Django
 
-## Running Server
-- Server is configured to run a docker container
 
-1. Install docker
+### How to use this image
+- Prior to the Core starting, the mysql database and queue/buffer should be started and running.
 
-2. Update submodules
-    
-    ```bash
-    git submodule update --remote
-    ```
+Environment Variables
 
-2. Build/pull container
-    - Build
-    
-    ```bash
-    docker login gitlab.labs.g2-inc.net:4567
-    docker build -f Dockerfile -t gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/core .
-    ```
-    
-    - Pull
-    
-    ```bash
-    docker login gitlab.labs.g2-inc.net:4567
-    docker pull gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/core
-    ```
+| Variable | Type | Description | Default |
+| ----------- | ----------- | ----------- | ----------- |
+| DATABASE_NAME | String | Name of the database to use, create if not created | orchestrator |
+| DATABASE_HOST | String | Hostname/IP address of the system runnig the MySQL Database | localhost |
+| DATABASE_PORT | Integer | Port the database has available for connections | 3306 |
+| DATABASE_USER | String | User to connect to the database | orc_root |
+| DATABASE_PASSWORD | String | Password of the connection user | 0Rch35Tr@t0r | 
+| QUEUE_HOST | String | Hostname/IP address of the system running the AMQP capable queue | localhost |
+| QUEUE_PORT | Integer | Port the queue has available for connections | 5672 |
+| QUEUE_USER | String | User to connect to the queue | guest |
+| QUEUE_PASSWORD | String | Password of the connection user | guest |
 
-3. Start the container
-    - Note: There should be a RabbitMQ and MariaDB container/instance for the core to connect to
+ - Adding Certs
+	- Certificates are not necessary for the `Core` container as it does not directly connect to by the user
+	- For adding certificates to the web/API interface, see `orchestrator/gui/client/`
 
-- Development
-    - Note: This will attempt to bind to port 8080
-    
-     ```bash
-    docker run \
-	--hostname core \
-	--name core \
-    -e DATABASE_NAME=orchestrator \
-    -e DATABASE_HOST=database \
-    -e DATABASE_PORT=3306 \
-    -e DATABASE_USER=orc_root \
-    -e DATABASE_PASSWORD=0Rch35Tr@t0r \
-    -e QUEUE_HOST=queue \
-    -e QUEUE_PORT=5672 \
-    -e QUEUE_USER=guest \
-    -e QUEUE_PASSWORD=guest \
-    -p 8080:8080 \
-    -v $(PWD)/orc_server:/opt/orchestrator/orc_server \
-	--link queue \
-	--link database \
-	--rm \
-    gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/core \
-    ./dev_start.sh
-	```
-    
-- Production
-    - Note: This will attempt to bind to port 80
-    
-    ```bash
-    docker run \
-	--hostname core \
-	--name core \
-    -e DATABASE_NAME=orchestrator \
-    -e DATABASE_HOST=database \
-    -e DATABASE_PORT=3306 \
-    -e DATABASE_USER=orc_root \
-    -e DATABASE_PASSWORD=0Rch35Tr@t0r \
-    -e QUEUE_HOST=queue \
-    -e QUEUE_PORT=5672 \
-    -e QUEUE_USER=guest \
-    -e QUEUE_PASSWORD=guest \
-    -p 8080:80 \
-	--link queue \
-	--link database \
-	--rm \
-    gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/core
-	```
 
 ### Resources
 - General
     - [HTTP Status Codes](https://www.restapitutorial.com/httpstatuscodes.html)
-- Server
+
+- Core
     - [Django](https://www.djangoproject.com/) - Core Framework
+        - [Cors Headers](https://pypi.org/project/django-cors-headers/) - Cross Origin Headers
         - [Django REST Framework](http://www.django-rest-framework.org/) - Core Framework REST
         - [DRF DataTables](https://django-rest-framework-datatables.readthedocs.io/en/latest/) - Server Side processing
+        - [DRF Files](https://pypi.org/project/djangorestframework-files/) - File download/upload
+        - [DRF JWT](https://getblimp.github.io/django-rest-framework-jwt/) - JSON WebTokens
+        - [DRF MessagePack](https://pypi.org/project/djangorestframework-msgpack/) - MessagePack serialization support
+        - [DRF QueryFields](https://djangorestframework-queryfields.readthedocs.io/en/latest/) - Dynamic fields in API
+        - [DRF Swagger](https://django-rest-swagger.readthedocs.io/en/latest/) - Dynamic Rest API
         - [DRF Tracking](https://drf-tracking.readthedocs.io/en/latest/) - Tracking app based from
+        - [DRF Writable Nested](https://pypi.org/project/drf-writable-nested/) - Writable Nested Serializer
+        - [DRF XML](https://pypi.org/project/djangorestframework-XML/) - XML serialization support
         - [Dynamic Preferences](https://django-dynamic-preferences.readthedocs.io/en/latest/) - Dynamic config
-        - [JSON Field](https://pypi.org/project/jsonfield/) - JSON in database
-    - [Bleach](https://bleach.readthedocs.io/en/latest/index.html) - String Sanitization
-    - [cherrypy](https://cherrypy.org/) - Production WSGI Server
+    - [Json Field](https://pypi.org/project/jsonfield/) - JSON field for database
+    - [Bleach](https://bleach.readthedocs.io/en/latest/index.html) - String Sanitation
+    - [PyExcel XLS](https://pypi.org/project/pyexcel-xls/) - XLS file parsing for python
+    - [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/) - Production Server
+    - [Whitenoise](http://whitenoise.evans.io/en/stable/index.html#) - Static file serving
     
 #### Interesting Modules
-- [Excel Response](https://pypi.org/project/django-excel-response/)
 - [REST MultiToken Auth](https://pypi.org/project/django-rest-multitokenauth/)
 - [JWT Asymetric Auth](https://pypi.org/project/asymmetric_jwt_auth/)
 - [Central Authentication Server](https://hub.docker.com/r/apereo/cas/)

@@ -1,5 +1,6 @@
 import datetime
 import os
+import re
 import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -22,14 +23,7 @@ if not os.path.isdir(DATA_DIR):
 SECRET_KEY = 'vcj0le7zphvkzdcmnh7)i2sd(+ba2@k4pahqss&nbbpk4cpk@y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-DEBUG_CHECK = [
-    'production' in sys.argv,
-    'collectstatic' in sys.argv
-]
-if any(DEBUG_CHECK):
-    DEBUG = False
+DEBUG = not os.getenv('DJANGO_ENV') == 'prod'
 
 ALLOWED_HOSTS = ['*']
 
@@ -45,10 +39,11 @@ APPEND_SLASH = True
 INSTALLED_APPS = [
     # Custom Modules - MUST BE IN DEPENDENCY ORDER!!
     'orchestrator',
-    'account',
     'device',
     'actuator',
+    'account',
     'command',
+    'backup',
     'tracking',
     # Default Modules
     'django.contrib.admin',
@@ -74,6 +69,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -122,7 +118,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', '0Rch35Tr@t0r'),
         'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
         'PORT': os.environ.get('DATABASE_PORT', '3306'),
-        'CON_MAX_AGE': 0
+        'CON_MAX_AGE': 3600
     }
 }
 
@@ -151,20 +147,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_URL = '/static/'
 
+# Central location for all static files
+STATIC_ROOT = os.path.join(DATA_DIR, "static")
+
 STATICFILES_DIRS = []
 
 if DEBUG:
-    # Default Static Dir
-    STATICFILES_DIRS.append(os.path.join(DATA_DIR, "static"))
     # App Static Dirs
     for app in INSTALLED_APPS:
         app_static_dir = os.path.join(BASE_DIR, app, 'static')
         if os.path.isdir(app_static_dir):
             STATICFILES_DIRS.append(app_static_dir)
-else:
-    # Central location for all static files
-    STATIC_ROOT = os.path.join(DATA_DIR, "static")
-
 
 MEDIA_URL = '/uploads/'
 
@@ -237,25 +230,53 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+
 # Logging
+IGNORE_LOGS = (
+    r'^pyexcel_io.*',
+    r'^lml.*'
+)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'ignore_logs': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda r: not any([re.match(reg, r.name) for reg in IGNORE_LOGS])
+        }
+    },
     'formatters': {
-        'simple': {
+        'requests': {
+            'format': '%{sctime} [{levelname}] {name}: {message}',
+            'style': '{',
+        },
+        'stream': {
             'format': '{levelname} {module} {message}',
             'style': '{',
-        }
+        },
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'level': 'DEBUG',
+            'formatter': 'stream',
+            'filters': ['ignore_logs']
         },
+        'requests': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'requests',
+            'filters': ['ignore_logs']
+        }
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['requests'],
             'level': 'DEBUG',
             'propagate': False
         }
@@ -294,15 +315,11 @@ QUEUE = {
 
 MESSAGE_QUEUE = None
 
+# Valid Schema Formats
+SCHEMA_FORMATS = (
+    'jadn',
+    'json'
+)
+
 # GUI Configuration
 ADMIN_GUI = True
-
-# JSON Editor - Admin GUI
-JSON_EDITOR_JS = f'{STATIC_URL}admin/js/jsoneditor.js'
-
-JSON_EDITOR_CSS = f'{STATIC_URL}admin/css/jsoneditor.css'
-
-# OIF Specific Configurations
-PUB_SUB_PROTOS = [
-    'MQTT',
-]

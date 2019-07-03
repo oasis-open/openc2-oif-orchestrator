@@ -1,24 +1,18 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import coreapi
 import coreschema
-import time
 import utils
 
 from rest_framework import permissions, viewsets, filters
-from rest_framework.decorators import list_route, schema
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.response import Response
 
 from .actions import action_send
 
-from ..models import SentHistory, ResponseHistory, HistorySerializer, ResponseSerializer
-
-from utils import get_or_none
+from ..models import SentHistory, HistorySerializer
 
 
-class HistoryViewSet(viewsets.ReadOnlyModelViewSet):
+class HistoryViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Command History to be viewed or edited.
     """
@@ -32,6 +26,8 @@ class HistoryViewSet(viewsets.ReadOnlyModelViewSet):
         'partial_update': (permissions.IsAdminUser,),
         'retrieve': (permissions.IsAuthenticated,),
         'update': (permissions.IsAdminUser,),
+        # Custom Views
+        'send': (permissions.IsAuthenticated,),
     }
 
     queryset = SentHistory.objects.order_by('-received_on')
@@ -97,7 +93,7 @@ class HistoryViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(command)
         return Response(serializer.data)
 
-    @list_route(['PUT'])
+    @action(detail=False, methods=['PUT'])
     def send(self, request, *args, **kwargs):
         """
         Sends the specified command to the specified orchestrator in the command or in the request
@@ -105,10 +101,8 @@ class HistoryViewSet(viewsets.ReadOnlyModelViewSet):
         rslt = action_send(
             usr=request.user,
             cmd=request.data.get('command', {}),
-            actuator=request.data.get('actuator', None)
+            actuator=request.data.get('actuator', None),
+            channel=request.data.get('channel', {}),
         )
 
-        if type(rslt) is tuple:
-            raise NotFound(*rslt)
-
-        return Response(rslt)
+        return Response(*rslt)
