@@ -14,7 +14,7 @@ volumes:
 services:
   core:
     hostname: core
-    image: oif/orchestrator:core
+    image: g2inc/oif-orchestrator-core
     build:
       context: ./orchestrator/core
       dockerfile: Dockerfile
@@ -36,7 +36,7 @@ services:
 
   core-gui:
     hostname: core-gui
-    image: oif/orchestrator:gui
+    image: g2inc/oif-orchestrator-gui
     build:
       context: ./orchestrator/gui/client
       dockerfile: Dockerfile
@@ -58,7 +58,7 @@ services:
 
   transport-mqtt:
     hostname: transport-mqtt
-    image: oif/transport:orchestrator-mqtt
+    image: g2inc/oif-orchestrator-transport:mqtt
     build:
       context: ./orchestrator/transport/mqtt
       dockerfile: Dockerfile
@@ -76,7 +76,7 @@ services:
 
   transport-https:
     hostname: transport-https
-    image: oif/transport:orchestrator-https
+    image: g2inc/oif-orchestrator-transport:https
     build:
       context: ./orchestrator/transport/https
       dockerfile: Dockerfile
@@ -87,6 +87,25 @@ services:
       - queue
     ports:
       - 5000:5000
+    depends_on:
+      - queue
+    entrypoint:
+      - sh
+      - dev_start.sh
+    
+  transport-coap:
+    hostname: transport-coap
+    image: g2inc/oif-orchestrator-transport:coap
+    build:
+      context: ./orchestrator/transport/coap
+      dockerfile: Dockerfile
+    working_dir: /opt/transport/COAP
+    env_file:
+      - ./environment/queue.connect.env
+    external_links:
+      - queue
+    ports:
+      - '5683:5683/udp'
     depends_on:
       - queue
     entrypoint:

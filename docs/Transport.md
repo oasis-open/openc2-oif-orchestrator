@@ -4,7 +4,7 @@ This is a tutorial on adding additional, custom transport mechanisms to the O.I.
 
 ## Adding Transport to Docker Stack
 
-Open the [Device Compose file](device-compose.yaml) or [Orchestrator Compose file](orchestrator-compose.yaml) to add your transport to the stack. You can copy-paste either the `transport-https` or `transport-mqtt` images and replace it with your own transport's info. Read more on Docker Compose [here](https://docs.docker.com/compose/overview/).
+Open the [Orchestrator Compose file](orchestrator-compose.yaml) to add your transport to the stack. You can copy-paste either the `transport-https` or `transport-mqtt` images and replace it with your own transport's info. Read more on Docker Compose [here](https://docs.docker.com/compose/overview/).
 
 Here is what our HTTPS transport looks like:
 
@@ -31,9 +31,17 @@ transport-https:                                    # container name
 
 Once added to the compose, your transport will be brought up as a part of the docker-compose stack and be added to the stack's docker network.
 
+## Adding port information to the O.I.F.
+
+When a transport sends a command while residing on a [Docker Network](https://docs.docker.com/network/), the Docker Network will obscure the IP and Port such that it appears that the message came from the location of the Docker Stack and not the originating machine. To ensure that the response is able to return to the originating machine we need to send the IP and Port as a part of the headers. 
+
+The IP can be set in the O.I.F. Admin Page > Global Preferences > Orchestrator Host. The default value is `127.0.0.1`.
+
+The Port for each transport needs to be set in the data fixtures file [orchestrator.json](../orchestrator/core/orc_server/data/fixtures/orchestrator.json). (See example at bottom of this page.) The port is specified under orchestrator.protocol under the "fields" section once you have added your transport to the list of orchestator.protocols. 
+
 ## Listening to the Internal Buffer
 
-The Orchestrator and Device routes messages to the correct transport by using an internal AMQP broker. This buffer is a structure that is a part of the O.I.F. for routing messages to the correct locations, but NOT a part of OpenC2 itself. Note that the port does not appear in the docker-compose file, because although the image utilizes default port 5672 for AMQP, the port is not exposed. The [sb_utils](modules/utils/sb_utils/amqp_tools.py) module has a Consumer wrapper available for use to easily implement for your transport. You can view an example [here](orchestrator/transport/https/https/https_transport.py) which looks like this:
+The Orchestrator and Device routes messages to the correct transport by using an internal AMQP broker. This buffer is a structure that is a part of the O.I.F. for routing messages to the correct locations, but NOT a part of OpenC2 itself. Note that the port does not appear in the docker-compose file, because although the image utilizes default port 5672 for AMQP, the port is not exposed. The [sb_utils](../modules/utils/sb_utils/amqp_tools.py) module has a Consumer wrapper available for use to easily implement for your transport. You can view an example [here](../orchestrator/transport/https/https/https_transport.py) which looks like this:
 
 ```python
 from sb_utils import Consumer
@@ -62,7 +70,7 @@ They listen on `exchange="actuator"` and `routing_key=actuatorProfileName` (eg. 
 
 ## Responding to the Orchestrator
 
-To send a response/error message back to the Orchestrator, you will instantiate a Producer which can also be found in [sb_utils](modules/utils/sb_utils/amqp_tools.py). You can find a response example [here](transport/https/https/main.py) which looks like this:
+To send a response/error message back to the Orchestrator, you will instantiate a Producer which can also be found in [sb_utils](modules/utils/sb_utils/amqp_tools.py). You can find a response example [here](../transport/https/https/main.py) which looks like this:
 
 ```python
 from sb_utils import Producer
@@ -134,14 +142,15 @@ From this information, you are able to build the headers for your transport as n
 
 ## Making the transport usable in the O.I.F. GUI
 
-In order to have the transport that you have created selectable in the "Register Device" section of the GUI you will need to add it to the [fixtures file](orchestrator/core/orc_server/data/fixtures/orchestrator.json) and add it as an additional `orchestrator.protocol`. The other transports look like this:
+In order to have the transport that you have created selectable in the "Register Device" section of the GUI you will need to add it to the [fixtures file](../orchestrator/core/orc_server/data/fixtures/orchestrator.json) and add it as an additional `orchestrator.protocol`. The other transports look like this:
 
 ```json
   {
     "model": "orchestrator.protocol",
     "pk": 1,
     "fields": {
-      "name": "HTTPS"
+      "name": "HTTPS",
+      "port": 5000
     }
   },
   {
@@ -149,7 +158,8 @@ In order to have the transport that you have created selectable in the "Register
     "pk": 2,
     "fields": {
       "name": "MQTT",
-      "pub_sub": true
+      "pub_sub": true,
+      "port": 1883
     }
   }
 ```
@@ -157,4 +167,5 @@ In order to have the transport that you have created selectable in the "Register
 * `pub_sub`: If the transport being added follows a publish/subscribe model and utilizes a broker (or similar) set `pub_sub` to true. This will allow multiple transports to have the same ip:port since they may be connecting to the same broker under different queue/exchange/topic/etc.
 * `pk` (private key): Increment this value to the next unused integer of model orchestrator.protocol
 * `name`: Set this value to the desired protocol name.
+* `port`: This is the port in which your transport will be listening on, and receiving responses from.
 
