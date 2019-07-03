@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 from optparse import OptionParser
 
-from modules.script_utils import (
+from base.modules.script_utils import (
     # Functions
     build_image,
     check_docker,
@@ -56,7 +56,6 @@ RootDir = os.path.dirname(os.path.realpath(__file__))
 
 CONFIG = FrozenDict(
     WorkDir=RootDir,
-    ModuleDir=os.path.join(RootDir, "modules"),
     Requirements=(
         ("docker", "docker"),
         ("colorama", "colorama"),
@@ -70,11 +69,6 @@ CONFIG = FrozenDict(
         ),
         Central=(
             ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
-        )
-    ),
-    ModuleCopy=FrozenDict(
-        utils=(
-            ("base", "modules"),
         )
     ),
     GUIS=FrozenDict(
@@ -112,23 +106,6 @@ if __name__ == "__main__":
     except Exception as e:
         Stylize.error("Docker connection failed, check that docker is running")
         exit(1)
-
-    # -------------------- Build Images -------------------- #
-    Stylize.h1(f"[Step {get_count()}]: Creating base images ...")
-
-    # -------------------- Copy Modules -------------------- #
-    for module, dirs in CONFIG.ModuleCopy.items():
-        mod_dir = os.path.join(CONFIG.ModuleDir, module)
-        if os.path.isdir(mod_dir):
-            Stylize.info(f"Copying module: {module}")
-            for cp_dir in dirs:
-                dst_dir = os.path.join(CONFIG.WorkDir, *cp_dir, module)
-                if os.path.isdir(dst_dir):
-                    shutil.rmtree(dst_dir)
-                shutil.copytree(mod_dir, dst_dir)
-        else:
-            Stylize.error(f"Module not found: {module}")
-            exit(1)
 
     # -------------------- Build Base Images -------------------- #
     Stylize.h1(f"[Step {get_count()}]: Build Base Images ...")

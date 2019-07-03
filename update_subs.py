@@ -9,7 +9,7 @@ from datetime import datetime
 from optparse import OptionParser
 from pathlib import Path
 
-from modules.script_utils import (
+from base.modules.script_utils import (
     # Functions
     checkRequiredArguments,
     install_pkg,
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     Stylize.underline('Starting Update')
 
     # -------------------- Modules -------------------- #
-    with Stage('Modules', 'modules'):
+    with Stage('Modules', 'base/modules'):
         Stylize.h2("Updating Utilities")
         update_repo(f"{CONFIG.BaseRepo}/Utils.git", 'utils', options.repo_branch)
 
