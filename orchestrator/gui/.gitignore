@@ -223,6 +223,6 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # Custom Ignore
-.idea/*
+**/.idea
 *.sqlite
 *.sqlite3

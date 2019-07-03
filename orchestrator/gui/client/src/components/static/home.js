@@ -50,10 +50,8 @@ class Home extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        siteTitle: state.Util.site_title
-    }
-}
+const mapStateToProps = (state) => ({
+    siteTitle: state.Util.site_title
+})
 
 export default connect(mapStateToProps)(Home)

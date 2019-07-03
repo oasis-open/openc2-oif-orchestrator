@@ -6,7 +6,6 @@ import { persistReducer, persistStore } from 'redux-persist'
 import { routerMiddleware } from 'connected-react-router'
 
 import createRootReducer from '../reducers'
-
 import refreshMiddleware from './refreshMiddleware'
 // import socketMiddleware from './socketMiddleware'
 import asyncDispatchMiddleware from './asyncDispatchMiddleware'
@@ -14,7 +13,7 @@ import asyncDispatchMiddleware from './asyncDispatchMiddleware'
 export default (history) => {
     const persistedFilter = createFilter(
         'Auth', ['access']
-    );
+    )
 
     const reducer = persistReducer(
         {
@@ -45,8 +44,7 @@ export default (history) => {
             logErrors: true
         });
 
-        console.log('Apply Logger');
-        //middleware.push(logger);
+        // middleware.push(logger);
     }
 
     const enhancers = compose(

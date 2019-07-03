@@ -8,10 +8,18 @@ from django.template import loader
 
 from tracking import log
 
+_browser_search = (
+    "IE",
+    "Firefox",
+    "Chrome",
+    "Opera",
+    "Safari"
+)
 
-def is_browser(request, *args, **kwargs):
-    # TODO: Differentiate between browser and cli
-    return False
+
+def is_browser(request):
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    return any(s in user_agent for s in _browser_search)
 
 
 def get_error_msg(exception):

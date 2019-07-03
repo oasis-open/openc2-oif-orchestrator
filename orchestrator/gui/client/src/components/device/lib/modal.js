@@ -1,26 +1,35 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader
+} from 'reactstrap'
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import JADNInput from '../../utils/jadn-editor'
+import JSONInput from 'react-json-editor-ajrm'
+import locale    from 'react-json-editor-ajrm/locale/en'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import * as DeviceActions from '../../../actions/device'
-import { withGUIAuth } from '../../../actions/util'
-
 import { Transport } from './'
 
 import {
+    FormatJADN,
     generateUUID4,
     validateUUID4
 } from '../../utils'
 
+import * as DeviceActions from '../../../actions/device'
+import { withGUIAuth } from '../../../actions/util'
+
 class DeviceModal extends Component {
     constructor(props, context) {
         super(props, context)
-
         this.toggleModal = this.toggleModal.bind(this)
         this.genUUID = this.genUUID.bind(this)
         this.registerDevice = this.registerDevice.bind(this)
@@ -29,11 +38,16 @@ class DeviceModal extends Component {
         this.transportChange = this.transportChange.bind(this)
         this.transportAdd = this.transportAdd.bind(this)
         this.transportRemove = this.transportRemove.bind(this)
+        this.loadSchema = this.loadSchema.bind(this)
+        this.textAreaChange = this.textAreaChange.bind(this)
+        this.jadn_keys = ["meta", "types"]
 
         this.register = this.props.register == true
         this.defaultDevice = {
             device_id: 'UUID',
             name: 'Device',
+            multi_actuator: true,
+            schema: {},
             note: '',
             transport: [
                 {
@@ -47,10 +61,24 @@ class DeviceModal extends Component {
 
         this.state = {
             modal: false,
+            jadn_fmt: false,
             device: {
                 ...this.defaultDevice
-            }
+            },
+            error: null
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        let props_update = this.props != nextProps
+        let state_update = this.state != nextState
+
+        if (this.state.device.schema != nextState.device.schema) {
+            let schema_keys = Object.keys(nextState.device.schema)
+            nextState.jadn_fmt = (schema_keys.length === this.jadn_keys.length && schema_keys.every(v => this.jadn_keys.indexOf(v) !== -1))
+        }
+
+        return props_update || state_update
     }
 
     toggleModal() {
@@ -64,12 +92,12 @@ class DeviceModal extends Component {
     }
 
     genUUID() {
-        this.setState({
+        this.setState(prevState => ({
             device: {
-                ...this.state.device,
+                ...prevState.device,
                 device_id: generateUUID4()
             }
-        })
+        }))
     }
 
     mulitSelectChange(e) {
@@ -84,12 +112,12 @@ class DeviceModal extends Component {
             tmpVal.push(val)
         }
 
-        this.setState({
+        this.setState(prevState => ({
             device: {
-                ...this.state.device,
+                ...prevState.device,
                 [id]: tmpVal
             }
-        })
+        }))
     }
 
     transportChange(d, i) {
@@ -97,9 +125,13 @@ class DeviceModal extends Component {
             ...this.state.device.transport
         ]
         tmpTrans[i] = d
-        console.log(tmpTrans)
 
-        this.setState({ device: {...this.state.device, transport: tmpTrans }})
+        this.setState(prevState => ({
+            device: {
+                ...prevState.device,
+                transport: tmpTrans
+            }
+        }))
     }
 
     transportAdd(e) {
@@ -113,7 +145,12 @@ class DeviceModal extends Component {
                 serialization: ['JSON']
             }
         ]
-        this.setState({ device: {...this.state.device, transport: tmpTrans }})
+        this.setState(prevState => ({
+            device: {
+                ...prevState.device,
+                 transport: tmpTrans
+            }
+        }))
     }
 
     transportRemove(i) {
@@ -142,6 +179,42 @@ class DeviceModal extends Component {
         })
         return Object.keys(counts).map(k => counts[k] === 1).every(itm => itm)
     }
+
+    textAreaChange(e) {
+        e.preventDefault()
+        try {
+            this.setState(prevState => ({
+                device: {
+                    ...prevState.device,
+                    schema: JSON.parse(e.target.value)
+                }
+            }))
+        } catch (e) {
+            toast(<p>Schema is not valid</p>, {type: toast.TYPE.WARNING})
+        }
+	}
+
+    loadSchema(e) {
+	   let file = e.target.files[0]
+	   let fileReader = new FileReader()
+
+		fileReader.onload = e => {
+			let data = atob(fileReader.result.split(',')[1])
+			try {
+		        this.setState(prevState => ({
+                    device: {
+                        ...prevState.device,
+                        schema: JSON.parse(data)
+                    }
+                }))
+            } catch(e) {
+                toast(<p>Schema cannot be loaded</p>, {type: toast.TYPE.WARNING})
+                return
+            }
+    	}
+
+    	fileReader.readAsDataURL(file)
+	}
 
     registerDevice() {
         if (!this.transportValidate()) {
@@ -203,6 +276,7 @@ class DeviceModal extends Component {
     }
 
     render() {
+        let Editor = this.state.jadn_fmt ? JADNInput : JSONInput
         let transports = this.state.device.transport.map((trans, i) => (
             <Transport
                 key={ i }
@@ -230,7 +304,7 @@ class DeviceModal extends Component {
                                 <div className="form-group col-lg-6">
                                     <label htmlFor="device_id">Device ID</label>
                                     <div className="input-group">
-                                        <input type="text" className="form-control" id="device_id" readOnly={ !this.register } value={ this.state.device.device_id } onChange={ (e) => this.setState({ device: {...this.state.device, device_id: e.target.value }}) } />
+                                        <input type="text" className="form-control" id="device_id" readOnly={ !this.register } value={ this.state.device.device_id } onChange={ (e) => this.setState({ device: {...prevState.device, device_id: e.target.value }}) } />
                                         <div className="input-group-append">
                                             <Button color="info" disabled={ !this.register } onClick={ this.genUUID } >Gen ID</Button>
                                         </div>
@@ -252,6 +326,58 @@ class DeviceModal extends Component {
                                 </div>
                             </fieldset>
 
+                            <fieldset className='border p-2'>
+                                <legend>
+                                    Actuator
+                                    <div className="form-group h6 mb-0 mt-3 float-right">
+                                        <div className="form-check-inline">
+                                            <label className="form-check-label">
+                                                <input type="radio" className="form-check-input" checked={ this.state.device.multi_actuator } onChange={ (e) => this.setState(prevState => ({ device: { ...prevState.device, multi_actuator: true }}) )} />
+                                                Multiple
+                                            </label>
+                                        </div>
+
+                                        <div className="form-check-inline">
+                                            <label className="form-check-label">
+                                                <input type="radio" className="form-check-input" checked={ !this.state.device.multi_actuator } onChange={ (e) => this.setState(prevState => ({ device: { ...prevState.device, multi_actuator: false }}) )} />
+                                                Single
+                                            </label>
+                                        </div>
+                                    </div>
+                                </legend>
+
+                                <div className={ this.state.device.multi_actuator ? "" : "d-none" }>
+                                    <p className="m-1">Multiple Actuators</p>
+                                    <p className="m-1">Each actuator is to be registered the Actuators tab</p>
+                                </div>
+
+                                <div className={ (this.state.device.multi_actuator ? "d-none " : "") + "border p-0" } style={{ height: '250px' }} >
+                                    <textarea
+                                        style={{
+                                            height: '100%',
+                                            width: '100%',
+                                            border: 'none',
+                                            overflow: 'auto',
+                                            outline: 'none',
+                                            boxShadow: 'none',
+                                            resize: 'none'
+                                        }}
+                                        value={ FormatJADN(this.state.device.schema) }
+                                        onChange={ this.textAreaChange }
+                                    />
+                                    <div className='clearfix'>
+                                        <Button color='info' size='sm' className='float-right' onClick={ () => this.schemaUpload.click() }>Upload Schema</Button>
+                                        <input
+                                            type='file'
+                                            className='d-none'
+                                            ref={ e => this.schemaUpload = e }
+                                            accept="application/json, .jadn, .json"
+                                            onChange={ this.loadSchema }
+                                        />
+                                    </div>
+                                </div>
+                            </fieldset>
+
                             <div className="form-row">
                                 <div className="form-group col-lg-6">
                                     <label htmlFor="note">Note</label>
@@ -270,20 +396,15 @@ class DeviceModal extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        errors: state.Device.errors,
-
-        admin: state.Auth.access.admin
-    }
-}
+const mapStateToProps = (state) => ({
+    errors: state.Device.errors,
+    admin: state.Auth.access.admin
+})
 
 
-function mapDispatchToProps(dispatch) {
-    return {
-        createDevice: (dev) => dispatch(DeviceActions.createDevice(dev)),
-        updateDevice: (devUUID, dev) => dispatch(DeviceActions.updateDevice(devUUID, dev))
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    createDevice: (dev) => dispatch(DeviceActions.createDevice(dev)),
+    updateDevice: (devUUID, dev) => dispatch(DeviceActions.updateDevice(devUUID, dev))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeviceModal)

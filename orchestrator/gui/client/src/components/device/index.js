@@ -2,7 +2,13 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DocumentMeta from 'react-document-meta'
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader
+} from 'reactstrap'
 
 import {
     DeviceModal
@@ -42,8 +48,7 @@ class Devices extends Component {
             modal: DeviceModal,
             delete: this.props.deleteDevice
         }
-
-        this.props.getDevices()
+        // this.props.getDevices()
     }
 
     render() {
@@ -81,22 +86,18 @@ class Devices extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        siteTitle: state.Util.site_title,
-        orchestrator: {
-            name: state.Util.name || 'N/A'
-        },
-        admin: state.Auth.access.admin
-    }
-}
+const mapStateToProps = (state) => ({
+    siteTitle: state.Util.site_title,
+    orchestrator: {
+        name: state.Util.name || 'N/A'
+    },
+    admin: state.Auth.access.admin
+})
 
 
-function mapDispatchToProps(dispatch) {
-    return {
-        getDevices: (page, sizePerPage, sort) => dispatch(DeviceActions.getDevices(page, sizePerPage, sort)),
-        deleteDevice: (dev) => dispatch(DeviceActions.deleteDevice(dev))
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    getDevices: (page, sizePerPage, sort) => dispatch(DeviceActions.getDevices(page, sizePerPage, sort)),
+    deleteDevice: (dev) => dispatch(DeviceActions.deleteDevice(dev))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Devices)

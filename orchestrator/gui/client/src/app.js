@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
-
-import qs from 'query-string'
-
 import { ConnectedRouter } from 'connected-react-router'
 import { Route, Switch } from 'react-router'
 import { toast, ToastContainer } from 'react-toastify'
+
+import qs from 'query-string'
 
 import {
     Breadcrumbs,
@@ -21,6 +20,7 @@ import {
     PrivateRoute
 } from './components/auth'
 
+// import Admin from './components/admin'
 import Account from './components/account'
 import Device from './components/device'
 import Actuator from './components/actuator'
@@ -32,7 +32,6 @@ import * as UtilActions from './actions/util'
 class App extends Component {
     constructor(props, context) {
         super(props, context)
-
         this.props.info()
     }
 
@@ -51,6 +50,7 @@ class App extends Component {
                                 <Route path="/:prefix*/logout/" component={ Logout } />
                                 <PrivateRoute exact path="/" component={ Home } />
                                 <PrivateRoute path="/account/:page?" component={ Account } />
+                                {/* <PrivateRoute path="/admin/:page?" adminRequired component={ Admin } /> */}
                                 <PrivateRoute path="/device/" component={ Device } />
                                 <PrivateRoute path="/actuator/" component={ Actuator } />
                                 <PrivateRoute path="/command/:page?/:command?" component={ Command } />
@@ -66,16 +66,12 @@ class App extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        errors: state.Auth.errors
-    }
-}
+const mapStateToProps = state => ({
+    errors: state.Auth.errors
+})
 
-function mapDispatchToProps(dispatch) {
-    return {
-        info: () => dispatch(UtilActions.info())
-    }
-}
+const mapDispatchToProps = dispatch => ({
+    info: () => dispatch(UtilActions.info())
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

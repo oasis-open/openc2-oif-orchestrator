@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const merge = require('webpack-merge')
 const path = require('path')
 
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
@@ -23,14 +23,9 @@ const config = merge(generalConfig, {
                 NODE_ENV: JSON.stringify(env),
             },
         }),
-        new CleanWebpackPlugin(
-            [BUILD_DIR],
-            {
-                root: ROOT_DIR,
-                verbose: true,
-                dry: false
-            }
-        )
+        new CleanWebpackPlugin({
+            dry: false
+        })
     ],
     optimization: {
         minimizer: [

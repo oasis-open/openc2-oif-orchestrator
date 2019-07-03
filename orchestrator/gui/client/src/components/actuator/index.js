@@ -2,13 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DocumentMeta from 'react-document-meta'
 
-import {
-    ActuatorModal
-} from './lib'
+import { ActuatorModal } from './lib'
 
-import {
-    RemotePageTable
-} from '../utils'
+import { RemotePageTable } from '../utils'
 
 import * as ActuatorActions from '../../actions/actuator'
 import * as DeviceActions from '../../actions/device'
@@ -51,8 +47,7 @@ class Actuators extends Component {
         if (this.props.devices.loaded === 0) {
             this.props.getDevices()
         }
-
-        this.props.getActuators()
+        // this.props.getActuators()
     }
 
     getDevice(id) {
@@ -72,7 +67,7 @@ class Actuators extends Component {
             <DocumentMeta { ...this.meta } extend >
                 <div className="row mx-auto">
                     <div className="col-12">
-                         <div className="col-12">
+                        <div className="col-12">
                             { this.props.admin ? <ActuatorModal register className="float-right" /> : '' }
                             <h1>{ this.props.orchestrator.name } Actuators</h1>
                         </div>
@@ -104,29 +99,23 @@ class Actuators extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        siteTitle: state.Util.site_title,
-        orchestrator: {
-            name: state.Util.name || 'N/A'
-        },
-        admin: state.Auth.access.admin,
-        devices: {
-            devices: state.Device.devices,
-            loaded: state.Device.devices.length,
-            total: state.Device.count
-        }
+const mapStateToProps = (state) => ({
+    siteTitle: state.Util.site_title,
+    orchestrator: {
+        name: state.Util.name || 'N/A'
+    },
+    admin: state.Auth.access.admin,
+    devices: {
+        devices: state.Device.devices,
+        loaded: state.Device.devices.length,
+        total: state.Device.count
     }
-}
+})
 
-
-function mapDispatchToProps(dispatch) {
-    return {
-        getActuators: (page, sizePerPage, sort) => dispatch(ActuatorActions.getActuators(page, sizePerPage, sort)),
-        deleteActuator: (act) => dispatch(ActuatorActions.deleteActuator(act)),
-
-        getDevices: (page, sizePerPage, sort) => dispatch(DeviceActions.getDevices(page, sizePerPage, sort))
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    getActuators: (page, sizePerPage, sort) => dispatch(ActuatorActions.getActuators(page, sizePerPage, sort)),
+    deleteActuator: (act) => dispatch(ActuatorActions.deleteActuator(act)),
+    getDevices: (page, sizePerPage, sort) => dispatch(DeviceActions.getDevices(page, sizePerPage, sort))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Actuators)

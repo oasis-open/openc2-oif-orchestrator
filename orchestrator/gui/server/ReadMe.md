@@ -1,97 +1,111 @@
-# OpenC2 Orchestrator GUI - Server
+# OASIS TC Open: oif-orchestrator-gui
 
-#### Notes:
-- Django based
-    - Django REST Framework
-    - User/Pass, JWT Token
+## Server
+### About this Image
+- Work in progress Not available as of yet
 
-## Apps
-### webApp - /api/<webApp_urls>
-- Main application/Root 
+### How to use this image
+- Work in progress Not available as of yet
 
-### Admin GUI - /admin/<admin_urls>
-- Administration GUI, prebuild and preconfigured from Django
+## GUI
+### About this Image
+- This image is Alpine 3.10 with a simple GUI for use with the GUI Server
+- UI port - 80
 
-## Running Server
-- Server is configured to run a docker container
+### How to use this image
+Note: Pulling an images requires using a specific tag (server or gui), the latest tag is not supported.
 
-1. Install docker
+- Prior to the GUI starting, the Core should be started and running.
+- Container Env Args:
+	- `ORC_HOST` - Hostname/IP address of the system running the Core	- `ORC_PORT` - Port the Core runs one (Docker port not mapped port)
 
-2. Build/pull container
-    - Build
-    
-    ```bash
-    docker login gitlab.labs.g2-inc.net:4567
-    docker build -f Dockerfile -t gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/gui .
-    ```
-    
-    - Pull
-    
-    ```bash
-    docker login gitlab.labs.g2-inc.net:4567
-    docker pull gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/gui
-    ```
+- Adding Certs 
+	1. Create a directory in httpd named `conf`
+	2. TODO...
 
-3. Start the container
-    - Note: There should be a MariaDB container/instance for the gui to connect to
+Environment Variables
 
-- Development
-    - Note: This will attempt to bind to port 8080
-    
-     ```bash
-    docker run \
-	--hostname gui \
-	--name gui \
-    -e DATABASE_NAME=orchestrator_gui \
-    -e DATABASE_HOST=database \
-    -e DATABASE_PORT=3306 \
-    -e DATABASE_USER=orc_root \
-    -e DATABASE_PASSWORD=0Rch35Tr@t0r \
-    -p 8080:8080 \
-    -v $(PWD)/gui_server:/opt/orchestrator/gui_server \
-	--link database \
-	--rm \
-    gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/gui \
-    ./dev_start.sh
-	```
-    
-- Production
-    - Note: This will attempt to bind to port 80
-    
-    ```bash
-    docker run \
-	--hostname gui \
-	--name gui \
-    -e DATABASE_NAME=orchestrator_gui \
-    -e DATABASE_HOST=database \
-    -e DATABASE_PORT=3306 \
-    -e DATABASE_USER=orc_root \
-    -e DATABASE_PASSWORD=0Rch35Tr@t0r \
-    -p 8080:80 \
-	--link database \
-	--rm \
-    gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/gui
-	```
+| Variable | Type | Description | Default|
+| ----------- | ----------- | ----------- | ----------- |
+| ORC_HOST | String | Hostname/IP address of the system running the Orchestrator Core | None |
+| ORC_PORT | Integer | Port the Orchestrator Core is running the API on | None |
 
 ### Resources
 - General
-    - [HTTP Status Codes](https://www.restapitutorial.com/httpstatuscodes.html)
-- Backend
-    - [Django](https://www.djangoproject.com/) - Core Framework
-    - [Django REST Framework](http://www.django-rest-framework.org/) - Core Framework REST
-    - [JWT Tokens](https://getblimp.github.io/django-rest-framework-jwt/) - Auth
-    - [cherrypy](https://cherrypy.org/) - Production WSGI Server
-    - [JSON Field](https://pypi.org/project/jsonfield/) - JSON in database
-    - [Bleach](https://bleach.readthedocs.io/en/latest/index.html) - String Sanitization
-    - [DRF Tracking](https://drf-tracking.readthedocs.io/en/latest/) - Tracking based from
-- Fronend
-	- See Cliend ReadMe
+	- [Another JSON Validator](https://www.npmjs.com/package/ajv) - JSON schema validator
+	- [Bootstrap](https://getbootstrap.com/)
+	    - [Bootstrap](https://www.npmjs.com/package/bootstrap) - Bootstrap for node
+	    - [jQuery](https://www.npmjs.com/package/jquery) - jQuery for node
+	    - [Reactstrap](https://www.npmjs.com/package/reactstrap) - Bootstrap v4 components for React
+	- [Django Channels](https://www.npmjs.com/package/django-channels) - WebSocket support for Django Channels
+   	- [FontAwesome](https://fontawesome.com/) - Additional Icons
+	    - [Core SVG Icons](https://www.npmjs.com/package/@fortawesome/fontawesome-svg-core)
+	    - [Solid SVG Icons](https://www.npmjs.com/package/@fortawesome/free-solid-svg-icons)
+	    - [React FontAwesome](https://www.npmjs.com/package/@fortawesome/react-fontawesome)
+	- [History](https://www.npmjs.com/package/history) - History management for single page apps
+	- [JWT Decode](https://www.npmjs.com/package/jwt-decode) - JSON Web Tokens
+	- [Moment](https://www.npmjs.com/package/moment) - DateTime formatting/parsing
+	- [Query String](https://www.npmjs.com/package/query-string) - Parse and stringify URL query strings
+	- [React](https://reactjs.org/) - Core Framework
+    	- [Bootstrap Tables](https://www.npmjs.com/package/react-bootstrap-table-next/)
+    	- [Bootstrap Tables Paginator](https://www.npmjs.com/package/react-bootstrap-table2-paginator)
+    	- [Confirm Alert](https://www.npmjs.com/package/react-confirm-alert) - Confirmation popup
+		- [Connected React Router](https://www.npmjs.com/package/connected-react-router) - Router State Sync, replacement for react-router-redux
+    	- [Document Meta](https://www.npmjs.com/package/react-document-meta) - Dynamic page metadata
+		- [DOM](https://www.npmjs.com/package/react-dom)
+    	- [JSON Editor](https://www.npmjs.com/package/react-json-editor-ajrm) - JSON Syntax Editor
+    	- [JSON Pretty](https://www.npmjs.com/package/react-json-pretty) - JSON Pretty Format
+    	- [Moment](https://www.npmjs.com/package/react-moment) - Date/Time Formatting
+		- [Redux](https://www.npmjs.com/package/react-redux) - React Redux Bindings
+		- [Router DOM](https://www.npmjs.com/package/react-router-dom)
+		- [Scripts](https://www.npmjs.com/package/react-scripts)
+		- [Toastify](https://www.npmjs.com/package/react-toastify) - Notifications
+    	- [Transition Group](https://www.npmjs.com/package/react-transition-group)
+    - [Redux](https://redux.js.org/) - State container
+    	- [API Middleware](https://www.npmjs.com/package/redux-api-middleware)
+    	- [Logger](https://www.npmjs.com/package/redux-logger)
+		- [Persist](https://www.npmjs.com/package/redux-persist)
+		- [Persist Transform Filter](https://www.npmjs.com/package/redux-persist-transform-filter)
+	- [String Format](https://www.npmjs.com/package/string-format)
+	- [vkBeautify](https://www.npmjs.com/package/vkbeautify) - JSON, XML, CSS, SQL pretty/minify
+	- [Warning](https://www.npmjs.com/package/warning)
+
+- Developement
+	- [CSSO](https://www.npmjs.com/package/csso) - CSS Optimizer
+	- [fs-extra](https://www.npmjs.com/package/fs-extra) - File system methods
+	- [File Download](https://www.npmjs.com/package/download-file) - File Downloads
+	- [Named Regex Groups](https://www.npmjs.com/package/named-regexp-groups) - Named group extraction
+	- [Strinct URI Encode](https://www.npmjs.com/package/strict-uri-encode)
+	- [Sync Requests](https://www.npmjs.com/package/sync-requests) - Synchronous HTTP requests
+	- [WebPack](https://www.npmjs.com/package/webpack) - Module bundler and builder
+		- [Bundle Tracker](https://www.npmjs.com/package/webpack-bundle-tracker)
+		- [CLI](https://www.npmjs.com/package/webpack-cli)
+		- [Dev Server](https://www.npmjs.com/package/webpack-dev-server)
+		- [HTTP Proxy Middleware](https://www.npmjs.com/package/http-proxy-middleware)
+		- [Loaders](https://webpack.js.org/loaders) - Loader Info
+			- [Babel](https://www.npmjs.com/package/babel-loader)
+				- [Babel Core](https://www.npmjs.com/package/@babel/core)
+				- [Proposal Object Rest Spread](https://www.npmjs.com/package/@babel/plugin-proposal-object-rest-spread)
+				- [Preset Env](https://www.npmjs.com/package/@babel/preset-env)
+				- [Preset React](https://www.npmjs.com/package/@babel/preset-react)
+			- [CSS](https://www.npmjs.com/package/css-loader)
+			- [File](https://www.npmjs.com/package/file-loader)
+			- [Less](https://www.npmjs.com/package/less-loader) - Loads Less to CSS
+				- [Less](https://www.npmjs.com/package/less) - Core package
+			- [Style](https://www.npmjs.com/package/style-loader)
+			- [URL](https://www.npmjs.com/package/url-loader)
+		- [Merge](https://www.npmjs.com/package/webpack-merge) - Config Merge
+		- [Plugins](https://webpack.js.org/plugins) - Plugin Info
+			- [Clean](https://www.npmjs.com/package/clean-webpack-plugin)
+			- [Copy](https://www.npmjs.com/package/copy-webpack-plugin)
+			- [Deadcode](https://www.npmjs.com/package/webpack-deadcode-plugin) - Find and notify of unused code
+			- [Favicons](https://www.npmjs.com/package/favicons-webpack-plugin)
+			- [HTML](https://www.npmjs.com/package/html-webpack-plugin)
+			- [Mini CSS](https://www.npmjs.com/package/mini-css-extract-plugin)
+			- [Optimize CSS Assets](https://www.npmjs.com/package/optimize-css-assets-webpack-plugin)
+			- [Terser](https://www.npmjs.com/package/terser-webpack-plugin)
 
 #### Interesting Modules
-- [Excel Response](https://pypi.org/project/django-excel-response/)
-- [REST Password Reset](https://pypi.org/project/django-rest-passwordreset/)
-- [REST MultiToken Auth](https://pypi.org/project/django-rest-multitokenauth/)
-- [JWT Asymetric Auth](https://pypi.org/project/asymmetric_jwt_auth/)
-- [Central Authentication Server](https://hub.docker.com/r/apereo/cas/)
-- [CAS Auth](https://github.com/mingchen/django-cas-ng)
-- [User Agents](https://github.com/selwin/django-user_agents)
+- [Entity Editor](https://www.npmjs.com/package/react-entity-editor)
+- [SpreadSheet Grid](https://www.npmjs.com/package/react-spreadsheet-grid)
+- [React Admin](https://github.com/marmelab/react-admin)

@@ -1,12 +1,19 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { Alert, Button, Jumbotron, Form, FormGroup, FormFeedback, Label, Input } from 'reactstrap';
-
 import {
-    InputField
-} from '../utils'
+    Alert,
+    Button,
+    Form,
+    FormGroup,
+    FormFeedback,
+    Input,
+    Jumbotron,
+    Label,
+} from 'reactstrap'
+
+import { InputField } from '../utils'
 
 import * as AuthActions from '../../actions/auth'
 
@@ -23,9 +30,9 @@ class Login extends Component {
     }
 
     handleInputChange(event) {
-        const target = event.target,
-            value = target.type === 'checkbox' ? target.checked : target.value,
-            name = target.name
+        const target = event.target
+        const value = target.type === 'checkbox' ? target.checked : target.value
+        const name = target.name
 
         this.setState({
             [name]: value
@@ -71,8 +78,8 @@ class Login extends Component {
                         />
 
                         <div className="float-right btn-group" role="group">
-                            <Button type="submit" color="primary" size="lg">Log In</Button>
-                            <Button type="reset" color="warning" size="lg">Reset</Button>
+                            <Button type="submit" color="primary">Log In</Button>
+                            <Button type="reset" color="warning">Reset</Button>
                         </div>
                     </Form>
                 </Jumbotron>
@@ -81,17 +88,13 @@ class Login extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        authErrors: state.Auth.errors,
-        isAuthenticated: AuthActions.isAuthenticated(state.Auth)
-    }
-}
+const mapStateToProps = (state) => ({
+    authErrors: state.Auth.errors,
+    isAuthenticated: AuthActions.isAuthenticated(state.Auth)
+})
 
-function mapDispatchToProps(dispatch) {
-    return {
-        onSubmit: (username, password) => dispatch(AuthActions.login(username, password))
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    onSubmit: (username, password) => dispatch(AuthActions.login(username, password))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

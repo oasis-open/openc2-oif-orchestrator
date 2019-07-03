@@ -2,10 +2,17 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader
+} from 'reactstrap'
 
-import JSONInput from '../../utils/jadn-editor'
-import locale from '../../utils/jadn-editor/locale/en'
+import JADNInput from '../../utils/jadn-editor'
+import JSONInput from 'react-json-editor-ajrm'
+import locale    from 'react-json-editor-ajrm/locale/en'
 
 import {
     FormatJADN,
@@ -27,13 +34,12 @@ class ActuatorModal extends Component {
         this.registerActuator = this.registerActuator.bind(this)
         this.saveActuator = this.saveActuator.bind(this)
         this.loadSchema = this.loadSchema.bind(this)
-        this.textareaChange = this.textareaChange.bind(this)
+        this.textAreaChange = this.textAreaChange.bind(this)
+        this.jadn_keys = ["meta", "types"]
 
         this.register = this.props.register == true
-
         this.schemaUpload = null
-
-        this.defaultParent = {} //this.props.data ? this.props.data.device : null
+        this.defaultParent = {}
 
         this.defaultActuator = {
             name: 'Actuator',
@@ -44,6 +50,7 @@ class ActuatorModal extends Component {
 
         this.state = {
             modal: false,
+            jadn_fmt: false,
             actuator: {
                 ...this.defaultActuator
             }
@@ -85,26 +92,32 @@ class ActuatorModal extends Component {
             }
             nextState.actuator.device = this.defaultActuator.device
         }
+
+        if (this.state.actuator.schema != nextState.actuator.schema) {
+            let schema_keys = Object.keys(nextState.actuator.schema)
+            nextState.jadn_fmt = (schema_keys.length === this.jadn_keys.length && schema_keys.every(v => this.jadn_keys.indexOf(v) !== -1))
+        }
+
         return props_update || state_update
     }
 
     genUUID() {
-        this.setState({
+        this.setState(prevState => ({
             actuator: {
-                ...this.state.actuator,
+                ...prevState.actuator,
                 actuator_id: generateUUID4()
             }
-        })
+        }))
     }
 
     toggleModal() {
-        this.setState({
-            modal: !this.state.modal,
+        this.setState(prevState => ({
+            modal: !prevState.modal,
             actuator: {
                 ...this.defaultActuator,
                 ...(this.register ? {} : this.props.data)
             }
-        })
+        }))
     }
 
     changeParent(e) {
@@ -180,7 +193,6 @@ class ActuatorModal extends Component {
                 }))
             } catch(e) {
                 toast(<p>Schema cannot be loaded</p>, {type: toast.TYPE.WARNING})
-                console.log(e)
                 return
             }
     	}
@@ -188,7 +200,7 @@ class ActuatorModal extends Component {
     	fileReader.readAsDataURL(file)
 	}
 
-	textareaChange(e) {
+	textAreaChange(e) {
 	    e.preventDefault()
         try {
             this.setState(prevState => ({
@@ -199,11 +211,11 @@ class ActuatorModal extends Component {
             }))
         } catch (e) {
             toast(<p>Schema is not valid</p>, {type: toast.TYPE.WARNING})
-            console.log(e)
         }
 	}
 
     render() {
+        let Editor = this.state.jadn_fmt ? JADNInput : JSONInput
         let devices = this.props.devices.map((d, i) => <option key={ i } value={ d.device_id }>{ d.name }</option> )
 
         return (
@@ -211,7 +223,7 @@ class ActuatorModal extends Component {
                 <Button color='primary' size='sm' onClick={ this.toggleModal } >{ this.register ? 'Register' : 'Edit' }</Button>
 
                 <Modal isOpen={ this.state.modal } toggle={ this.toggleModal } size='lg' >
-                    <ModalHeader toggle={ this.toggleModal }>{ this.register ? 'Register' : 'Edit' }  Actuator</ModalHeader>
+                    <ModalHeader toggle={ this.toggleModal }>{ this.register ? 'Register' : 'Edit' } Actuator</ModalHeader>
                     <ModalBody>
                         <form onSubmit={ () => false }>
                             <div className="form-row">
@@ -254,14 +266,17 @@ class ActuatorModal extends Component {
                                     value={ FormatJADN(this.state.actuator.schema) }
                                     onChange={ this.textAreaChange }
                                 />
-
                                 {/*
-                                <JSONInput
-                                    id='actuator_schema'
+                                <Editor
                                     placeholder={ this.state.actuator.schema }
                                     onChange={ (val) => {
                                         if (val.jsObject) {
-                                            this.setState({ actuator: {...this.state.actuator, schema: val.jsObject }})
+                                            this.setState(prevState => ({
+                                                actuator: {
+                                                    ...prevState.schema,
+                                                    schema: val.jsObject
+                                                }
+                                            }))
                                         }
                                     }}
                                     theme='light_mitsuketa_tribute'
@@ -272,16 +287,16 @@ class ActuatorModal extends Component {
                                 />
                                 */}
                             </div>
-                            <div className='clearfix' >
-                                    <Button color='info' size='sm' className='float-right' onClick={ () => this.schemaUpload.click() }>Upload Schema</Button>
-                                    <input
-                                        type='file'
-                                        className='d-none'
-                                        ref={ e => this.schemaUpload = e }
-                                        accept="application/json, .jadn, .json"
-                                        onChange={ this.loadSchema }
-                                    />
-                                </div>
+                            <div className='clearfix'>
+                                <Button color='info' size='sm' className='float-right' onClick={ () => this.schemaUpload.click() }>Upload Schema</Button>
+                                <input
+                                    type='file'
+                                    className='d-none'
+                                    ref={ e => this.schemaUpload = e }
+                                    accept="application/json, .jadn, .json"
+                                    onChange={ this.loadSchema }
+                                />
+                            </div>
                         </form>
                     </ModalBody>
                     <ModalFooter>
@@ -294,28 +309,23 @@ class ActuatorModal extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        orchestrator: {
-            // ...state.Orcs.selected,
-            protocols: state.Util.protocols,
-            serializations: state.Util.serializations,
-        },
-        errors: state.Actuator.errors,
-
-        admin: state.Auth.access.admin,
-        devices: state.Device.devices
-    }
-}
+const mapStateToProps = (state) => ({
+    orchestrator: {
+        // ...state.Orcs.selected,
+        protocols: state.Util.protocols,
+        serializations: state.Util.serializations,
+    },
+    errors: state.Actuator.errors,
+    admin: state.Auth.access.admin,
+    devices: state.Device.devices
+})
 
 
-function mapDispatchToProps(dispatch) {
-    return {
-        createActuator: (act) => dispatch(ActuatorActions.createActuator(act)),
-        updateActuator: (actUUID, act) => dispatch(ActuatorActions.updateActuator(actUUID, act)),
-        getDevice: (devUUID) => dispatch(DeviceActions.getDevice(devUUID)),
-        getDevices: () => dispatch(DeviceActions.getDevices())
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+    createActuator: (act) => dispatch(ActuatorActions.createActuator(act)),
+    updateActuator: (actUUID, act) => dispatch(ActuatorActions.updateActuator(actUUID, act)),
+    getDevice: (devUUID) => dispatch(DeviceActions.getDevice(devUUID)),
+    getDevices: () => dispatch(DeviceActions.getDevices())
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActuatorModal)
