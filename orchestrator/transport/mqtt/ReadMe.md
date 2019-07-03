@@ -1,11 +1,47 @@
 # OpenC2 MQTT Transport
 Implements MQTT utilizing [Paho MQTT](https://www.eclipse.org/paho/clients/python/docs/).
 
-
-[![pipeline status](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/badges/develop/pipeline.svg)](https://gitlab.labs.g2-inc.net/ScreamingBunny/Orchestrator/Core/commits/develop)
-
 ## Running Transport
 The MQTT Transport Module is configured to run from a docker container as a part of the OIF-Orchestrator docker stack. Use the [configure.py](../../../configure.py) script to build the images needed to run the entirety of this Transport as a part of the Orchestrator.
+
+## MQTT and OpenC2 Headers
+
+At the time of writing this the OpenC2 MQTT Transport spec has not been finalized. The headers are meant to line up as closely with OpenC2 guidelines as closely as MQTT v3.11 can.
+
+The payload of the message in MQTT is split into two parts, the header and the OpenC2 command itself. Here is an example of what that looks like:
+
+```json
+"payload": {
+    "header": {
+        "to":"openc2_isr_actuator_profile@127.0.0.1:1883",
+        "from":"0a2cec81-51fa-4785-8069-723d7d46b105@127.0.0.1:1883",
+        "content_type":"application/openc2-cmd+json;version=1.0",
+        "correlationID":"a6b10d16-5537-41c9-9773-f69d17920600",
+        "created":"Wed, 22 May 2019 16:12:23 UTC",
+    },
+    "body": {
+        "action": "locate",
+        "target": {
+            "isr": {
+                "signal": {
+                    "frequency": "92.3"
+                }
+            }
+        }
+    }
+}
+```
+
+Header descriptions:
+
+* `to`: Actuator profile name + the location of the MQTT broker. The transport on the device side uses this to route the message to the proper actuator
+* `from`: orchestratorID + the location of the MQTT broker for return sending. The Orchestrator-side transport is listening on a topic using the orchestratorID for responses.
+* `content_type`: The content_type of the message, contains the encoding type.
+* `correlationID`: Identifier for this specific command being sent. Needed for orchestrator to relate repsonse with original command.
+* `created`: Timestamp for when the message was initially created by the orchestrator.
+
+
+The body is the content of the OpenC2 Command/Response.
 
 ## MQTT Topics
 
