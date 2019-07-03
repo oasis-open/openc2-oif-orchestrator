@@ -44,17 +44,18 @@
 - Prior to the Core starting, the mysql database and queue/buffer should be started and running.
 
 Environment Variables
-| Variable | Type | Description | Default|
+
+| Variable | Type | Description | Default |
 | ----------- | ----------- | ----------- | ----------- |
-| DATABASE_NAME | String | Name of the database to use, create if not created | orchestrator
-| DATABASE_HOST | String | Hostname/IP address of the system runnig the MySQL Database | localhost
-| DATABASE_PORT | Integer | Port the database has available for connections | 3306
-| DATABASE_USER | String | User to connect to the database | orc_root
-| DATABASE_PASSWORD | String | Password of the connection user | 0Rch35Tr@t0r 
-| QUEUE_HOST | String | Hostname/IP address of the system running the AMQP capable queue | localhost
-| QUEUE_PORT | Integer | Port the queue has available for connections | 5672
-| QUEUE_USER | String | User to connect to the queue | guest
-| QUEUE_PASSWORD | String | Password of the connection user | guest
+| DATABASE_NAME | String | Name of the database to use, create if not created | orchestrator |
+| DATABASE_HOST | String | Hostname/IP address of the system runnig the MySQL Database | localhost |
+| DATABASE_PORT | Integer | Port the database has available for connections | 3306 |
+| DATABASE_USER | String | User to connect to the database | orc_root |
+| DATABASE_PASSWORD | String | Password of the connection user | 0Rch35Tr@t0r | 
+| QUEUE_HOST | String | Hostname/IP address of the system running the AMQP capable queue | localhost |
+| QUEUE_PORT | Integer | Port the queue has available for connections | 5672 |
+| QUEUE_USER | String | User to connect to the queue | guest |
+| QUEUE_PASSWORD | String | Password of the connection user | guest |
 
  - Adding Certs
 	- Certificates are not necessary for the `Core` container as it does not directly connect to by the user
