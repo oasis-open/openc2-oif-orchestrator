@@ -61,7 +61,6 @@ CONFIG = FrozenDict(
         ("colorama", "colorama"),
         ("yaml", "pyyaml")
     ),
-    EmptyString=("", b"", None),
     ImagePrefix="g2inc",
     Logging=FrozenDict(
         Default=(
@@ -71,14 +70,11 @@ CONFIG = FrozenDict(
             ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
         )
     ),
-    GUIS=FrozenDict(
-        Orchestrator=("orchestrator", "gui", "client"),
-        Logger=("logger", "gui")
-    ),
     Composes=tuple(file for file in os.listdir(RootDir) if re.match(r"^\w*?-compose(\.\w*?)?\.yaml$", file))
 )
 
 
+# Utility Functions
 def get_count():
     global ItemCount
     c = ItemCount
@@ -109,18 +105,6 @@ if __name__ == "__main__":
 
     # -------------------- Build Base Images -------------------- #
     Stylize.h1(f"[Step {get_count()}]: Build Base Images ...")
-    '''
-    Stylize.info("Building base alpine image")
-    build_image(
-        docker_sys=system,
-        console=Stylize,
-        path="./base",
-        dockerfile="./Dockerfile_alpine",
-        tag=f"{CONFIG.ImagePrefix}/base:alpine",
-        pull=True,
-        rm=True
-    )
-    '''
 
     Stylize.info("Building base alpine python3 image")
     build_image(
@@ -131,18 +115,6 @@ if __name__ == "__main__":
         tag=f"{CONFIG.ImagePrefix}/oif-python:{'dev-' if options.dev else ''}latest",
         rm=True
     )
-
-    '''
-    Stylize.info("Building base alpine python3 with sb_utils image")
-    build_image(
-        docker_sys=system,
-        console=Stylize,
-        path="./base",
-        dockerfile="./Dockerfile_alpine-python3_utils",
-        tag=f"{CONFIG.ImagePrefix}/base:alpine-python3_utils",
-        rm=True
-    )
-    '''
 
     # -------------------- Build Compose Images -------------------- #
     Stylize.h1(f"[Step {get_count()}]: Creating compose images ...")
@@ -165,10 +137,10 @@ if __name__ == "__main__":
                     build_image(
                         docker_sys=system,
                         console=Stylize,
+                        rm=True,
                         path=opts["build"]["context"],
                         dockerfile=opts["build"].get("dockerfile", "Dockerfile"),
-                        tag=opts["image"],
-                        rm=True
+                        tag=opts["image"]
                     )
 
     # -------------------- Cleanup Images -------------------- #

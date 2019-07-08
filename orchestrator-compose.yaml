@@ -58,7 +58,7 @@ services:
 
   transport-mqtt:
     hostname: transport-mqtt
-    image: g2inc/oif-orchestrator-transport:mqtt
+    image: g2inc/oif-orchestrator-transport-mqtt
     build:
       context: ./orchestrator/transport/mqtt
       dockerfile: Dockerfile
@@ -76,7 +76,7 @@ services:
 
   transport-https:
     hostname: transport-https
-    image: g2inc/oif-orchestrator-transport:https
+    image: g2inc/oif-orchestrator-transport-https
     build:
       context: ./orchestrator/transport/https
       dockerfile: Dockerfile
@@ -95,7 +95,7 @@ services:
     
   transport-coap:
     hostname: transport-coap
-    image: g2inc/oif-orchestrator-transport:coap
+    image: g2inc/oif-orchestrator-transport-coap
     build:
       context: ./orchestrator/transport/coap
       dockerfile: Dockerfile
