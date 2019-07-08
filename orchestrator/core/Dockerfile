@@ -61,4 +61,4 @@ WORKDIR /opt/orc_server
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Startup Command
-CMD ["/usr/bin/uwsgi", "--ini", "/opt/orc_server/uwsgi.ini"]
+CMD ["uwsgi", "--ini", "/opt/orc_server/uwsgi.ini"]
