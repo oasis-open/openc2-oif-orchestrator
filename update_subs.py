@@ -9,7 +9,7 @@ from datetime import datetime
 from optparse import OptionParser
 from pathlib import Path
 
-from modules.script_utils import (
+from base.modules.script_utils import (
     # Functions
     checkRequiredArguments,
     install_pkg,
@@ -66,7 +66,7 @@ CONFIG = FrozenDict(
     BaseRepo=f"{Base_URL}ScreamingBunny",
     ImageReplace=(
         ("base", r"gitlab.*?docker:alpine( as.*)?", r"alpine\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
-        ("python3", r"gitlab.*plus:alpine-python3( as.*)?", fr"g2inc/oif-python:{'' if options.repo_branch == 'master' else 'dev-'}latest\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
+        ("python3", r"gitlab.*plus:alpine-python3( as.*)?", fr"g2inc/oif-python\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
     ),
     Repos=FrozenDict(
         Orchestrator=('Core', 'GUI'),
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     Stylize.underline('Starting Update')
 
     # -------------------- Modules -------------------- #
-    with Stage('Modules', 'modules'):
+    with Stage('Modules', 'base/modules'):
         Stylize.h2("Updating Utilities")
         update_repo(f"{CONFIG.BaseRepo}/Utils.git", 'utils', options.repo_branch)
 
