@@ -7,7 +7,8 @@
     "start": "webpack-dev-server --hot --progress --colors --inline --config ./config/dev.config.js",
     "build": "webpack --progress --colors --config ./config/prod.config.js",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "analyze": "source-map-explorer build/js/main.*"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.22",
@@ -45,7 +46,8 @@
     "redux-persist-transform-filter": "0.0.18",
     "string-format": "^2.0.0",
     "vkbeautify": "^0.99.3",
-    "warning": "^4.0.3"
+    "warning": "^4.0.3",
+    "webpack-visualizer-plugin": "^0.1.11"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -68,6 +70,7 @@
     "mini-css-extract-plugin": "^0.8.0",
     "named-regexp-groups": "^1.0.3",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "source-map-explorer": "^2.0.1",
     "strict-uri-encode": "^2.0.0",
     "style-loader": "^1.0.0",
     "sync-request": "^6.1.0",

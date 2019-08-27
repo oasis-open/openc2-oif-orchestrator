@@ -11,13 +11,13 @@ import generate from './generate'
 import util from './util'
 
 export default (history) => combineReducers({
-    'Actuator': actuator,
-    'Account': account,
-    'Auth': auth,
-    'Command': command,
-    'Device': device,
-    'Generate': generate,
-    'router': connectRouter(history), // MUST BE 'router'
-    // 'Socket': socket,
-    'Util': util
+  'Actuator': actuator,
+  'Account': account,
+  'Auth': auth,
+  'Command': command,
+  'Device': device,
+  'Generate': generate,
+  'router': connectRouter(history), // MUST BE 'router'
+  // 'Socket': socket,
+  'Util': util
 })

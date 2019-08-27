@@ -32,7 +32,7 @@ const config = merge(generalConfig, {
             new TerserPlugin({
                 cache: true,
                 parallel: true,
-                sourceMap: false
+                sourceMap: true
             }),
             new OptimizeCSSAssetsPlugin({
                 cssProcessorPluginOptions: {

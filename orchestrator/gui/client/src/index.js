@@ -24,11 +24,11 @@ const store = configureStore(history)
 const validThemes = ['cyborg', 'darkly', 'lumen', 'slate', 'solar', 'superhero']
 
 const Root = () => (
-    <Provider store={ store } >
-        <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeOptions={ validThemes }>
-            <App history={ history } />
-        </ThemeSwitcher>
-    </Provider>
+  <Provider store={ store } >
+    <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeOptions={ validThemes }>
+      <App history={ history } />
+    </ThemeSwitcher>
+  </Provider>
 )
 
 ReactDOM.render(<Root />, document.getElementById('root'));

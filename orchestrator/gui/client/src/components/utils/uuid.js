@@ -2,29 +2,29 @@
 UUID creation and validation utility
 */
 const uuid_creation = [
-    'xxxxxxxx-xxxx-1xxx-yxxx-xxxxxxxxxxxx', // v1
-    'xxxxxxxx-xxxx-2xxx-yxxx-xxxxxxxxxxxx',  // v2
-    'xxxxxxxx-xxxx-3xxx-yxxx-xxxxxxxxxxxx',  // v3
-    'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx',  // v4
-    'xxxxxxxx-xxxx-5xxx-yxxx-xxxxxxxxxxxx'  // v5
+  'xxxxxxxx-xxxx-1xxx-yxxx-xxxxxxxxxxxx', // v1
+  'xxxxxxxx-xxxx-2xxx-yxxx-xxxxxxxxxxxx',  // v2
+  'xxxxxxxx-xxxx-3xxx-yxxx-xxxxxxxxxxxx',  // v3
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx',  // v4
+  'xxxxxxxx-xxxx-5xxx-yxxx-xxxxxxxxxxxx'  // v5
 ]
 
 const uuid_validation = [
-    /^[a-f0-9]{8}-[a-f0-9]{4}-[1][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v1
-    /^[a-f0-9]{8}-[a-f0-9]{4}-[2][0-9A-F]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v2
-    /^[a-f0-9]{8}-[a-f0-9]{4}-[3][0-9A-F]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v3
-    /^[a-f0-9]{8}-[a-f0-9]{4}-[4][0-9A-F]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v4
-    /^[a-f0-9]{8}-[a-f0-9]{4}-[5][0-9A-F]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v5
+  /^[a-f0-9]{8}-[a-f0-9]{4}-[1][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v1
+  /^[a-f0-9]{8}-[a-f0-9]{4}-[2][0-9A-F]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v2
+  /^[a-f0-9]{8}-[a-f0-9]{4}-[3][0-9A-F]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v3
+  /^[a-f0-9]{8}-[a-f0-9]{4}-[4][0-9A-F]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v4
+  /^[a-f0-9]{8}-[a-f0-9]{4}-[5][0-9A-F]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i, // v5
 ]
 
 // Generate UUIDs
 const generateUUID = (v=4) => {
-    let d = new Date().getTime()
-    return uuid_creation[v].replace(/[xy]/g, function(c) {
-        let r = (d + Math.random()*16)%16 | 0;
-        d = Math.floor(d/16);
-        return (c == 'x' ? r : (r&0x3|0x8)).toString(16);
-    })
+  let d = new Date().getTime()
+  return uuid_creation[v].replace(/[xy]/g, function(c) {
+    let r = (d + Math.random()*16)%16 | 0;
+    d = Math.floor(d/16);
+    return (c == 'x' ? r : (r&0x3|0x8)).toString(16);
+  })
 }
 // export const generateUUID1 = () => generateUUID(1)
 // export const generateUUID2 = () => generateUUID(2)
