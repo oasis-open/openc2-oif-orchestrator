@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import PropTypes from 'prop-types'
+import { validThemes } from './themes'
 import './assets/css/loader.css'
 
 const setItem = (key, obj) => {
@@ -78,28 +79,21 @@ class ThemeSwitcher extends React.Component {
     this.load = this.load.bind(this);
     this.loadTheme = this.loadTheme.bind(this);
 
-    if (Object.keys(this.props.themes || {}).length === 0) {
-      import(
-        /* webpackChunkName: "themes" */
-        /* webpackMode: "lazy" */
-        /* webpackPrefetch: true */
-        /* webpackPreload: true */
-        './themes'
-      ).then(theme_module => {
-        this.setState({
-          themes: theme_module
-        }, () => {
-          let storedTheme = getItem(this.props.storeThemeKey)
-          let theme = storedTheme ? storedTheme : this.props.defaultTheme
-          this.load(theme)
-        })
-      })
-    }
+    let themes = [...this.props.themeOptions]
+
+    let defaultTheme = getItem(this.props.storeThemeKey)
+    themes.push(defaultTheme ? defaultTheme : this.props.defaultTheme)
+
+    themes = Object.assign(
+      ...this.props.themeOptions.map(t => ({[t]: validThemes.includes(t) ? require('./themes/'+t).default : ''})),
+      this.props.themes
+    )
+    themes = Object.assign(...Object.keys(themes).map(k => (null, '', ' ').includes(themes[k]) ? {} : {[k]: themes[k]}))
 
     this.state = {
       loaded: false,
       currentTheme: null,
-      themes: this.props.themes || {}
+      themes: themes
     }
   }
 

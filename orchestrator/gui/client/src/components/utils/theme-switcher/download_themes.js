@@ -94,14 +94,6 @@ for (let theme of themes['themes']) {
 let theme_index_file = fs.createWriteStream(path.join(ROOT_DIR, 'themes', 'index.js'), {
   flags: 'w'
 });
-
-for (let name of theme_names) {
-  theme_index_file.write('import ' + name + ' from \'./' + name + '\'\n')
-}
-theme_index_file.write('\n\n')
-theme_index_file.write('export {\n')
-for (let name of theme_names) {
-  theme_index_file.write('\t' + name + ',\n')
-}
-theme_index_file.write('}')
+theme_index_file.write('let validThemes = [\n\t\''+ theme_names.join('\',\n\t \'') +'\'\n]\n')
+theme_index_file.write('export {\n\tvalidThemes\n}')
 theme_index_file.end()

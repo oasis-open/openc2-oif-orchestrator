@@ -138,5 +138,7 @@ typings/
 
 # Custom Ignore
 !src/components/***/lib/
+analyzer.stats.html
+analyzer.stats.json
 webpack.stats.json
 package-lock.json
