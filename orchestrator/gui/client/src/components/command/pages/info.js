@@ -4,6 +4,11 @@ import DocumentMeta from 'react-document-meta'
 import JSONPretty from 'react-json-pretty'
 
 import {
+  format,
+  fromUnixTime
+} from 'date-fns'
+
+import {
   RemotePageTable
 } from '../../utils'
 
@@ -44,7 +49,7 @@ class CommandInfo extends Component {
 
   render() {
     let cmd = this.props.command
-    let received = moment.utc(cmd.received_on || "")
+    let received = fromUnixTime(cmd.received_on)
     let maxHeight = 500
 
     return (
@@ -53,7 +58,7 @@ class CommandInfo extends Component {
 
         <p><strong>Command ID:</strong> { cmd.command_id }</p>
 
-        <p><strong>Received:</strong> { received.format("dddd, MMMM Do YYYY, h:mm:ss A z") }</p>
+        <p><strong>Received:</strong> { format(received, "EEEE, MMMM do yyyy, h:mm:ss a..aaa zzzz") }</p>
 
         <div>
           <p><strong>Actuators:</strong></p>

@@ -2,7 +2,7 @@ const webpack = require('webpack')
 const path = require('path')
 
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const DeadCodePlugin = require('webpack-deadcode-plugin')
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
@@ -31,13 +31,12 @@ const config  = {
   context: ROOT_DIR,
   resolve: {
     modules: [
-      'node_modules',
+      'node_modules'
       path.join(ROOT_DIR, 'src')
     ],
     extensions: ['.js', '.jsx', '.json', '.css']
   },
   plugins: [
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new DeadCodePlugin({
       patterns: [
         'src/**/*.(js|jsx|css)',
@@ -122,6 +121,7 @@ const config  = {
           options: {
             babelrc: false,
             presets: [
+              '@babel/preset-react',
               [
                 '@babel/preset-env',
                 {
@@ -130,11 +130,9 @@ const config  = {
                     'babel-plugin-transform-classes'
                   ]
                 }
-              ],
-              '@babel/preset-react'
+              ]
             ],
             plugins: [
-              '@babel/plugin-syntax-dynamic-import',
               '@babel/plugin-proposal-object-rest-spread'
             ]
           }
@@ -180,6 +178,5 @@ const config  = {
     ]
   }
 };
-
 
 module.exports = config

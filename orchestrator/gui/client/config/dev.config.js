@@ -16,7 +16,7 @@ const config = merge(generalConfig, {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(env),
-      },
+      }
     }),
     new webpack.NoEmitOnErrorsPlugin(),
   ],
@@ -30,7 +30,6 @@ const config = merge(generalConfig, {
     proxy: {
       '/api': {
         target: 'http://localhost:8081',
-        //pathRewrite: {"^/api/v1" : ""},
         secure: false
       }
     }
@@ -39,6 +38,5 @@ const config = merge(generalConfig, {
     usedExports: true,
   }
 });
-
 
 module.exports = config
