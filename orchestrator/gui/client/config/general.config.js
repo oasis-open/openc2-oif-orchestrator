@@ -31,7 +31,7 @@ const config  = {
   context: ROOT_DIR,
   resolve: {
     modules: [
-      'node_modules'
+      'node_modules',
       path.join(ROOT_DIR, 'src')
     ],
     extensions: ['.js', '.jsx', '.json', '.css']
