@@ -2,7 +2,7 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 
 from rest_framework import filters, permissions, status, viewsets
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
@@ -117,7 +117,7 @@ class DeviceViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-    @detail_route(['GET'])
+    @action(methods=['GET'], detail=False)
     def users(self, request, *args, **kwargs):
         """
         API endpoint that allows for Device user retrieval

@@ -8,7 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.compat import coreapi
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ..models import UserSerializer, PasswordSerializer
@@ -30,7 +30,7 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('last_name', 'first_name', 'username', 'email_address', 'active')
 
-    @detail_route(methods=['POST'], permission_classes=[IsAdminOrIsSelf], serializer_class=PasswordSerializer)
+    @action(methods=['POST'], detail=False, permission_classes=[IsAdminOrIsSelf], serializer_class=PasswordSerializer)
     def change_password(self, request, username=None):
         """
         Change user password, passwords sent as base64 encoded strings

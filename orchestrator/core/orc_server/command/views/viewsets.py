@@ -93,7 +93,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(command)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['PUT'])
+    @action(methods=['PUT'], detail=False)
     def send(self, request, *args, **kwargs):
         """
         Sends the specified command to the specified orchestrator in the command or in the request
