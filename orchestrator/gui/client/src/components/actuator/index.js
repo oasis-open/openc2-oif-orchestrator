@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
+import { Helmet } from 'react-helmet'
 
 import { ActuatorModal } from './lib'
 import { RemotePageTable } from '../utils'
@@ -63,37 +63,39 @@ class Actuators extends Component {
     }, 10)
 
     return (
-      <DocumentMeta { ...this.meta } extend >
-        <div className="row mx-auto">
+      <div className="row mx-auto">
+        <Helmet>
+          <title>{ this.meta.title }</title>
+          <link rel="canonical" href={ this.meta.canonical } />
+        </Helmet>
+        <div className="col-12">
           <div className="col-12">
-            <div className="col-12">
-              { this.props.admin ? <ActuatorModal register className="float-right" /> : '' }
-              <h1>{ this.props.orchestrator.name } Actuators</h1>
-            </div>
-
-            <RemotePageTable
-              keyField='actuator_id'
-              dataKey='Actuator.actuators'
-              dataGet={ this.props.getActuators }
-              columns={ this.tableColumns }
-              editRows
-              editOptions={ this.editOptions }
-              defaultSort={[
-                {
-                  dataField: 'name',
-                  order: 'desc'
-                },{
-                  dataField: 'profile',
-                  order: 'desc'
-                },{
-                  dataField: 'device',
-                  order: 'desc'
-                }
-              ]}
-            />
+            { this.props.admin ? <ActuatorModal register className="float-right" /> : '' }
+            <h1>{ this.props.orchestrator.name } Actuators</h1>
           </div>
+
+          <RemotePageTable
+            keyField='actuator_id'
+            dataKey='Actuator.actuators'
+            dataGet={ this.props.getActuators }
+            columns={ this.tableColumns }
+            editRows
+            editOptions={ this.editOptions }
+            defaultSort={[
+              {
+                dataField: 'name',
+                order: 'desc'
+              },{
+                dataField: 'profile',
+                order: 'desc'
+              },{
+                dataField: 'device',
+                order: 'desc'
+              }
+            ]}
+          />
         </div>
-      </DocumentMeta>
+      </div>
     )
   }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
+import { Helmet } from 'react-helmet'
 
 import {
   Button,
@@ -53,35 +53,37 @@ class Devices extends Component {
 
   render() {
     return (
-      <DocumentMeta { ...this.meta } extend >
-        <div className="row mx-auto">
+      <div className="row mx-auto">
+        <Helmet>
+          <title>{ this.meta.title }</title>
+          <link rel="canonical" href={ this.meta.canonical } />
+        </Helmet>
+        <div className="col-12">
           <div className="col-12">
-            <div className="col-12">
-              { this.props.admin ? <DeviceModal register className="float-right" /> : '' }
-              <h1>{ this.props.orchestrator.name } Devices</h1>
-            </div>
-
-            <RemotePageTable
-              keyField='device_id'
-              dataKey='Device.devices'
-              dataGet={ this.props.getDevices }
-              columns={ this.tableColumns }
-              editRows
-              editOptions={ this.editOptions }
-              defaultSort={[
-                {
-                  dataField: 'name',
-                  order: 'desc'
-                },
-                {
-                  dataField: 'transport',
-                  order: 'desc'
-                }
-              ]}
-            />
+            { this.props.admin ? <DeviceModal register className="float-right" /> : '' }
+            <h1>{ this.props.orchestrator.name } Devices</h1>
           </div>
+
+          <RemotePageTable
+            keyField='device_id'
+            dataKey='Device.devices'
+            dataGet={ this.props.getDevices }
+            columns={ this.tableColumns }
+            editRows
+            editOptions={ this.editOptions }
+            defaultSort={[
+              {
+                dataField: 'name',
+                order: 'desc'
+              },
+              {
+                dataField: 'transport',
+                order: 'desc'
+              }
+            ]}
+          />
         </div>
-      </DocumentMeta>
+      </div>
     )
   }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
+import { Helmet } from 'react-helmet'
 
 const str_fmt = require('string-format')
 
@@ -41,34 +41,36 @@ class Settings extends Component {
 
   render() {
     return (
-      <DocumentMeta { ...this.meta } extend >
-        <div className="row mx-auto">
+      <div className="row mx-auto">
+        <Helmet>
+          <title>{ this.meta.title }</title>
+          <link rel="canonical" href={ this.meta.canonical } />
+        </Helmet>
+        <div className="col-12">
           <div className="col-12">
-            <div className="col-12">
-              {/* <SettingsModal register className="float-right" /> */}
-              <h1>Settings</h1>
-            </div>
-
-            <RemotePageTable
-              keyField='id'
-              dataKey='Users.users'
-              dataGet={ this.props.getUsers }
-              columns={ this.tableColumns }
-              editRows
-              editOptions={ this.editOptions }
-              defaultSort={[
-                {
-                  dataField: 'last_name',
-                  order: 'desc'
-                },{
-                  dataField: 'first_name',
-                  order: 'desc'
-                }
-              ]}
-            />
+            {/* <SettingsModal register className="float-right" /> */}
+            <h1>Settings</h1>
           </div>
+
+          <RemotePageTable
+            keyField='id'
+            dataKey='Users.users'
+            dataGet={ this.props.getUsers }
+            columns={ this.tableColumns }
+            editRows
+            editOptions={ this.editOptions }
+            defaultSort={[
+              {
+                dataField: 'last_name',
+                order: 'desc'
+              },{
+                dataField: 'first_name',
+                order: 'desc'
+              }
+            ]}
+          />
         </div>
-      </DocumentMeta>
+      </div>
     )
   }
 }

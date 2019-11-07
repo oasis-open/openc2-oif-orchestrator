@@ -51,8 +51,8 @@ Environment Variables
     	- [Bootstrap Tables Paginator](https://www.npmjs.com/package/react-bootstrap-table2-paginator)
     	- [Confirm Alert](https://www.npmjs.com/package/react-confirm-alert) - Confirmation popup
 		- [Connected React Router](https://www.npmjs.com/package/connected-react-router) - Router State Sync, replacement for react-router-redux
-    	- [Document Meta](https://www.npmjs.com/package/react-document-meta) - Dynamic page metadata
 		- [DOM](https://www.npmjs.com/package/react-dom)
+    	- [Helmet](https://www.npmjs.com/package/react-helmet) - Dynamic page metadata
     	- [JSON Editor](https://www.npmjs.com/package/react-json-editor-ajrm) - JSON Syntax Editor
     	- [JSON Pretty](https://www.npmjs.com/package/react-json-pretty) - JSON Pretty Format
     	- [Moment](https://www.npmjs.com/package/react-moment) - Date/Time Formatting

@@ -21,6 +21,4 @@ let validThemes = [
 	 'united',
 	 'yeti'
 ]
-export {
-	validThemes
-}
+export default validThemes

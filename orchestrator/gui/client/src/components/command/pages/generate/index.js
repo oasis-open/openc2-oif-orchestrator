@@ -113,7 +113,7 @@ class GenerateCommands extends Component {
     this.setState(prevState => ({
       message: {
         ...prevState.message,
-        id: generateUUID4()
+        command_id: generateUUID4()
       }
     }))
   }

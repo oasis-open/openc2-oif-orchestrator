@@ -9,6 +9,7 @@ import {
 import {
   checkSchema,
   safeGet,
+  sleep,
   titleCase
 } from './general'
 
@@ -43,6 +44,7 @@ export {
   RemotePageTable,
   safeGet,
   setMultiKey,
+  sleep,
   ThemeChooser,
   ThemeSwitcher,
   titleCase,

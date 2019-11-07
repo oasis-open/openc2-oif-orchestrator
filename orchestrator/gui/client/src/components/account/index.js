@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
+import { Helmet } from 'react-helmet'
 import { toast } from 'react-toastify'
 
 import {
@@ -72,15 +72,20 @@ class Account extends Component {
     }
 
     return (
-      <DocumentMeta { ...this.meta } extend >
+      <div >
+        <Helmet>
+          <title>{ this.meta.title }</title>
+          <link rel="canonical" href={ this.meta.canonical } />
+        </Helmet>
         { page }
-      </DocumentMeta>
+      </div>
     )
   }
 }
 
 const mapStateToProps = (state) => ({
-  errors: state.Account.errors
+  errors: state.Account.errors,
+  siteTitle: state.Util.site_title
 })
 
 export default connect(mapStateToProps)(Account)

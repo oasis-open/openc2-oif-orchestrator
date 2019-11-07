@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
 import JSONPretty from 'react-json-pretty'
 
 import {
   format,
-  fromUnixTime
+  parseISO
 } from 'date-fns'
 
 import {
@@ -49,8 +48,14 @@ class CommandInfo extends Component {
 
   render() {
     let cmd = this.props.command
-    let received = fromUnixTime(cmd.received_on)
+    let received = parseISO(cmd.received_on)
     let maxHeight = 500
+
+    try {
+      received = format(received, "EEEE, MMMM do yyyy, h:mm:ss a zzzz")
+    } catch (e) {
+      received = "..."
+    }
 
     return (
       <div className="col-md-10 mx-auto jumbotron">
@@ -58,7 +63,7 @@ class CommandInfo extends Component {
 
         <p><strong>Command ID:</strong> { cmd.command_id }</p>
 
-        <p><strong>Received:</strong> { format(received, "EEEE, MMMM do yyyy, h:mm:ss a..aaa zzzz") }</p>
+        <p><strong>Received:</strong> { received }</p>
 
         <div>
           <p><strong>Actuators:</strong></p>

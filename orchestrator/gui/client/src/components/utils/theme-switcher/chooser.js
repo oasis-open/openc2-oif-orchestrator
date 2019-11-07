@@ -1,9 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {Component } from 'react'
+import PropTypes from 'prop-types'
+
+import { sleep } from '../'
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.substring(1)
 
-class ThemeChooser extends React.Component {
+class ThemeChooser extends Component {
   constructor(props, context) {
     super(props, context);
     this.onSelect = this.onSelect.bind(this);
@@ -28,8 +30,9 @@ class ThemeChooser extends React.Component {
     this.setState({
       currentTheme: e.target.getAttribute('data-theme')
     }, () => {
-      this.context.themeSwitcher.load(this.state.currentTheme);
-      this.props.change(this.state.currentTheme)
+      let tmp = this.context.themeSwitcher.load(this.state.currentTheme).then(() => {
+        this.props.change(this.state.currentTheme)
+      })
     })
   }
 

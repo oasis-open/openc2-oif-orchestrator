@@ -25,8 +25,19 @@ const safeGet = (obj, attr, def=null) => {
   return def
 }
 
+const sleep = (milliseconds) => {
+  let timeStart = new Date().getTime();
+  while (true) {
+    let elapsedTime = new Date().getTime() - timeStart;
+    if (elapsedTime > milliseconds) {
+      break;
+    }
+  }
+}
+
 export {
   checkSchema,
   safeGet,
+  sleep,
   titleCase
 }

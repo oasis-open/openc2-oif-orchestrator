@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
+import { Helmet } from 'react-helmet'
 
 import {
   Settings,
@@ -70,29 +70,31 @@ class Admin extends Component {
 
   render() {
     return (
-      <DocumentMeta { ...this.meta } extend >
-        <div className="row mx-auto">
-          <nav className="navbar navbar-expand-lg navbar-dark bg-dark w-100">
-            <a className="navbar-brand" href="#" data-page="" onClick={ this.changePage }>Admin</a>
-            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarColor02">
-              <ul className="navbar-nav mr-auto">
-                <li className="nav-item active">
-                  <a className="nav-link" href="#" data-page="users" onClick={ this.changePage } >Users</a>
-                </li>
-                <li className="nav-item active">
-                  <a className="nav-link" href="#" data-page="settings" onClick={ this.changePage } >Settings</a>
-                </li>
-              </ul>
-            </div>
-          </nav>
+      <div className="row mx-auto">
+        <Helmet>
+          <title>{ this.meta.title }</title>
+          <link rel="canonical" href={ this.meta.canonical } />
+        </Helmet>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark w-100">
+          <a className="navbar-brand" href="#" data-page="" onClick={ this.changePage }>Admin</a>
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarColor02">
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item active">
+                <a className="nav-link" href="#" data-page="users" onClick={ this.changePage } >Users</a>
+              </li>
+              <li className="nav-item active">
+                <a className="nav-link" href="#" data-page="settings" onClick={ this.changePage } >Settings</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-          { this.getContent() }
+        { this.getContent() }
 
-        </div>
-      </DocumentMeta>
+      </div>
     )
   }
 }

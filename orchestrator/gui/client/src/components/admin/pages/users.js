@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
+import { Helmet } from 'react-helmet'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -61,37 +61,39 @@ class Users extends Component {
 
   render() {
     return (
-      <DocumentMeta { ...this.meta } extend >
-        <div className="row mx-auto">
+      <div className="row mx-auto">
+        <Helmet>
+          <title>{ this.meta.title }</title>
+          <link rel="canonical" href={ this.meta.canonical } />
+        </Helmet>
+        <div className="col-12">
           <div className="col-12">
-            <div className="col-12">
-              <UserModal register className="float-right mt-2" />
-              <h1>Users</h1>
-            </div>
-
-            <RemotePageTable
-              keyField='username'
-              dataKey='Account.accounts'
-              dataGet={ this.props.getAccounts }
-              columns={ this.tableColumns }
-              editRows
-              editOptions={ this.editOptions }
-              defaultSort={[
-                {
-                  dataField: 'username',
-                  order: 'desc'
-                },{
-                  dataField: 'last_name',
-                  order: 'desc'
-                },{
-                  dataField: 'first_name',
-                  order: 'desc'
-                }
-              ]}
-            />
+            <UserModal register className="float-right mt-2" />
+            <h1>Users</h1>
           </div>
+
+          <RemotePageTable
+            keyField='username'
+            dataKey='Account.accounts'
+            dataGet={ this.props.getAccounts }
+            columns={ this.tableColumns }
+            editRows
+            editOptions={ this.editOptions }
+            defaultSort={[
+              {
+                dataField: 'username',
+                order: 'desc'
+              },{
+                dataField: 'last_name',
+                order: 'desc'
+              },{
+                dataField: 'first_name',
+                order: 'desc'
+              }
+            ]}
+          />
         </div>
-      </DocumentMeta>
+      </div>
     )
   }
 }

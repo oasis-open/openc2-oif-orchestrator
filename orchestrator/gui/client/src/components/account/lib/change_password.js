@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
+import { Helmet } from 'react-helmet'
 import qs from 'query-string'
 import { toast } from 'react-toastify'
 
@@ -54,79 +54,81 @@ class ChangePassword extends Component {
 
   render() {
     return (
-      <DocumentMeta { ...this.meta } extend >
-        <div className='jumbotron col-md-6 mx-auto'>
-          <h1 className='text-center'>Password Change</h1>
+      <div className='jumbotron col-md-6 mx-auto'>
+        <Helmet>
+          <title>{ this.meta.title }</title>
+          <link rel="canonical" href={ this.meta.canonical } />
+        </Helmet>
+        <h1 className='text-center'>Password Change</h1>
 
-          <form className='col-md-10 mx-auto' onSubmit={ this.submitForm }>
+        <form className='col-md-10 mx-auto' onSubmit={ this.submitForm }>
+          {
+            this.state.status ? (
+              <p className="form-text text-info">{ this.state.status }</p>
+            ) : ''
+          }
+          <div className='form-group'>
+            <label htmlFor='old_password'>Old Password</label>
+            <input
+              type='password'
+              className='form-control'
+              id='old_password'
+              required=''
+              placeholder='password'
+              value={ atob(this.state.password.old) }
+              onChange={ e => this.setState({ password: { ...this.state.password, old: btoa(e.target.value) } }) }
+            />
             {
-              this.state.status ? (
-                <p className="form-text text-info">{ this.state.status }</p>
+              this.state.errors.old_password ? (
+                <small className="form-text text-danger">{ this.state.errors.old_password }</small>
               ) : ''
             }
-            <div className='form-group'>
-              <label htmlFor='old_password'>Old Password</label>
-              <input
-                type='password'
-                className='form-control'
-                id='old_password'
-                required=''
-                placeholder='password'
-                value={ atob(this.state.password.old) }
-                onChange={ e => this.setState({ password: { ...this.state.password, old: btoa(e.target.value) } }) }
-              />
-              {
-                this.state.errors.old_password ? (
-                  <small className="form-text text-danger">{ this.state.errors.old_password }</small>
-                ) : ''
-              }
-            </div>
-            <div className='form-group'>
-              <label htmlFor='new_password_1'>New Password</label>
-              <input
-                type='password'
-                className='form-control'
-                id='new_password_1'
-                required=''
-                placeholder='password'
-                value={ atob(this.state.password.new_1) }
-                onChange={ e => this.setState({ password: { ...this.state.password, new_1: btoa(e.target.value) } }) }/>
-              {
-                this.state.errors.new_password_1 ? (
-                  <small className="form-text text-danger">{ this.state.errors.new_password_1 }</small>
-                ) : ''
-              }
-            </div>
-            <div className='form-group'>
-              <label htmlFor='new_password_2'>New Password Confirmation</label>
-              <input
-                type='password'
-                className='form-control'
-                id='new_password_2'
-                required=''
-                placeholder='password'
-                value={ atob(this.state.password.new_2) }
-                onChange={ e => this.setState({ password: { ...this.state.password, new_2: btoa(e.target.value) } }) }/>
-              {
-                this.state.errors.new_password_2 ? (
-                  <small className="form-text text-danger">{ this.state.errors.new_password_2 }</small>
-                ) : ''
-              }
-            </div>
+          </div>
+          <div className='form-group'>
+            <label htmlFor='new_password_1'>New Password</label>
+            <input
+              type='password'
+              className='form-control'
+              id='new_password_1'
+              required=''
+              placeholder='password'
+              value={ atob(this.state.password.new_1) }
+              onChange={ e => this.setState({ password: { ...this.state.password, new_1: btoa(e.target.value) } }) }/>
+            {
+              this.state.errors.new_password_1 ? (
+                <small className="form-text text-danger">{ this.state.errors.new_password_1 }</small>
+              ) : ''
+            }
+          </div>
+          <div className='form-group'>
+            <label htmlFor='new_password_2'>New Password Confirmation</label>
+            <input
+              type='password'
+              className='form-control'
+              id='new_password_2'
+              required=''
+              placeholder='password'
+              value={ atob(this.state.password.new_2) }
+              onChange={ e => this.setState({ password: { ...this.state.password, new_2: btoa(e.target.value) } }) }/>
+            {
+              this.state.errors.new_password_2 ? (
+                <small className="form-text text-danger">{ this.state.errors.new_password_2 }</small>
+              ) : ''
+            }
+          </div>
 
-            <small className='form-text text-muted'>
-              <ul>
-                <li>Your password can't be too similar to your other personal information.</li>
-                <li>Your password must contain at least 8 characters.</li>
-                <li>Your password can't be a commonly used password.</li>
-                <li>Your password can't be entirely numeric.</li>
-              </ul>
-            </small>
+          <small className='form-text text-muted'>
+            <ul>
+              <li>Your password can't be too similar to your other personal information.</li>
+              <li>Your password must contain at least 8 characters.</li>
+              <li>Your password can't be a commonly used password.</li>
+              <li>Your password can't be entirely numeric.</li>
+            </ul>
+          </small>
 
-            <Button type='submit' color='primary' className="float-right">Save changes</Button>
-          </form>
-        </div>
-      </DocumentMeta>
+          <Button type='submit' color='primary' className="float-right">Save changes</Button>
+        </form>
+      </div>
     )
   }
 }
@@ -134,7 +136,8 @@ class ChangePassword extends Component {
 const mapStateToProps = (state) => ({
   username: state.Auth.access == undefined ? 'User' : state.Auth.access.username,
   errors: state.Account.errors,
-  status: state.Account.status
+  status: state.Account.status,
+  siteTitle: state.Util.site_title
 })
 
 const mapDispatchToProps = (dispatch) => ({

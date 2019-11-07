@@ -51,12 +51,14 @@ class Nav extends Component {
   }
 
   setSize() {
-    if (!this.topNav || !this.bottomNav) { return; }
-    let topHeight = this.topNav.clientHeight
-    let bottomHeight = this.bottomNav.clientHeight
+    setTimeout(() => {
+      if (!this.topNav || !this.bottomNav) { return; }
+      let topHeight = this.topNav.getBoundingClientRect().height
+      let bottomHeight = this.bottomNav.getBoundingClientRect().height
 
-    this.bottomNav.style.marginTop = topHeight + 'px'
-    document.body.style.paddingTop = (topHeight + bottomHeight + 10) + 'px'
+      this.bottomNav.style.marginTop = topHeight + 'px'
+      document.body.style.paddingTop = (topHeight + bottomHeight + 10) + 'px'
+    }, 10)
   }
 
   navigate(e) {
@@ -75,18 +77,18 @@ class Nav extends Component {
 
   NavTop() {
     return (
-      <nav className="navbar navbar-light bg-light fixed-top" ref={ (elm) => this.topNav = elm} >
+      <nav className="navbar navbar-light bg-light border-0 fixed-top" ref={ (elm) => this.topNav = elm} >
         <div className="container-fluid">
           <a href="/" className="navbar-brand" onClick={ this.navigate }>{ this.props.site_title }</a>
        <p className="navbar-text float-right m-0 p-0">OpenC2 Orchestrator<br/>GUI Prototype</p>
      </div>
     </nav>
-    );
+    )
   }
 
   NavBottom() {
     return (
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary border-0 fixed-top-2" ref={ (elm) => this.bottomNav = elm}>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" ref={ (elm) => this.bottomNav = elm}>
         <div className="container-fluid">
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
@@ -139,7 +141,7 @@ class Nav extends Component {
 
   render() {
     if (this.props.isAuthenticated) {
-      setTimeout(this.setSize, 5)
+      this.setSize()
       return (
         <div className="navbar-double fixed-top">
           { this.NavTop() }

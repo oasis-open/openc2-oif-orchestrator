@@ -21,7 +21,7 @@ const history = createBrowserHistory()
 const store = configureStore(history)
 
 // Theme Options
-const validThemes = ['cyborg', 'darkly', 'lumen', 'slate', 'solar', 'superhero']
+const validThemes = ['cyborg', 'darkly', 'flatly', 'litera', 'lumen', 'slate', 'spacelab', 'yeti']
 
 const Root = () => (
   <Provider store={ store } >

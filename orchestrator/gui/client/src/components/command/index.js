@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
+import { Helmet } from 'react-helmet'
 import qs from 'query-string'
 
 import {
@@ -138,12 +138,14 @@ class Commands extends Component {
     }
 
     return (
-      <DocumentMeta { ...meta } extend >
-        <div className="row mx-auto">
-          { this.getContent(page, command) }
-          { this.updateIntervalOptions() }
-        </div>
-      </DocumentMeta>
+      <div className="row mx-auto">
+        <Helmet>
+          <title>{ meta.title }</title>
+          <link rel="canonical" href={ meta.canonical } />
+        </Helmet>
+        { this.getContent(page, command) }
+        { this.updateIntervalOptions() }
+      </div>
     )
   }
 }
