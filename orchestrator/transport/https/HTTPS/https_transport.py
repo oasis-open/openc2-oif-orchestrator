@@ -1,7 +1,8 @@
+import re
 import urllib3
 
 from datetime import datetime
-from sb_utils import Producer, Consumer, default_encode, encode_msg, safe_json
+from sb_utils import Producer, Consumer, default_encode, decode_msg, encode_msg, safe_json
 
 
 def process_message(body, message):
@@ -29,7 +30,7 @@ def process_message(body, message):
                 print(f"Sending command to {profile}@{device_socket}")
 
                 try:
-                    r = http.request(
+                    rsp = http.request(
                         method="POST",
                         url=f"https://{device_socket}",
                         body=encode_msg(body, encoding),  # command being encoded
@@ -42,16 +43,35 @@ def process_message(body, message):
                             "Host": f"{profile}@{device_socket}",
                         }
                     )
-                    data = safe_json({
-                        "headers": dict(r.headers),
-                        "content": safe_json(r.data.decode('utf-8'))
-                    })
-                    print(f"Response from request: {r.status} - {data}")
+
+                    rsp_headers = dict(rsp.headers)
+                    if "Content-type" in rsp_headers:
+                        rsp_enc = re.sub(r"^application/openc2-(cmd|rsp)\+", "", rsp_headers["Content-type"])
+                        rsp_enc = re.sub(r"(;version=\d+\.\d+)?$", "", rsp_enc)
+                    else:
+                        rsp_enc = "json"
+
+                    rsp_headers = {
+                        "socket": device_socket,
+                        "correlationID": corr_id,
+                        "profile": profile,
+                        "encoding": rsp_enc,
+                        "transport": "https"
+                    }
+
+                    data = {
+                        "headers": rsp_headers,
+                        "content": decode_msg(rsp.data.decode("utf-8"), rsp_enc)
+                    }
+
+                    print(f"Response from request: {rsp.status} - {safe_json(data)}")
+                    producer.publish(message=data["content"], headers=rsp_headers, exchange="orchestrator", routing_key="response")
                 except Exception as err:
                     err = str(getattr(err, "message", err))
                     rcv_headers["error"] = True
                     producer.publish(message=err, headers=rcv_headers, exchange="orchestrator", routing_key="response")
                     print(f"HTTPS error: {err}")
+
         else:
             response = "Destination/Encoding/Orchestrator Socket of command not specified"
             rcv_headers["error"] = True
