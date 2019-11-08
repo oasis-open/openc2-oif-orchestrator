@@ -17,14 +17,6 @@ const config = merge(generalConfig, {
   mode: env,
   devtool: 'source-map',
   cache: false,
-  resolve: {
-    alias: {
-      'react': 'preact-compat',
-      'react-dom': 'preact-compat',
-      'create-react-class': 'preact-compat/lib/create-react-class',
-      'react-dom-factories': 'preact-compat/lib/react-dom-factories'
-    }
-  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
