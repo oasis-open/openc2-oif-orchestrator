@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
+import { HelmetProvider } from 'react-helmet-async';
 
 import registerServiceWorker from './registerServiceWorker'
 
@@ -25,9 +26,11 @@ const validThemes = ['cyborg', 'darkly', 'flatly', 'litera', 'lumen', 'slate', '
 
 const Root = () => (
   <Provider store={ store } >
-    <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeOptions={ validThemes }>
-      <App history={ history } />
-    </ThemeSwitcher>
+    <HelmetProvider>
+      <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeOptions={ validThemes }>
+        <App history={ history } />
+      </ThemeSwitcher>
+    </HelmetProvider>
   </Provider>
 )
 

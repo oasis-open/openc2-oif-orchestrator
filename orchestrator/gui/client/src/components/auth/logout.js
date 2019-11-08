@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom'
 import * as AuthActions from '../../actions/auth'
 
 class Logout extends Component {
-  componentWillMount() {
+  componentDidMount() {
     if (this.props.isAuthenticated) {
       this.props.logout()
     }

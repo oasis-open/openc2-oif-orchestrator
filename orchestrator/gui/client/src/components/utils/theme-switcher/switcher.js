@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 import PropTypes from 'prop-types'
 import validThemes from './themes'
 import './assets/css/loader.css'
