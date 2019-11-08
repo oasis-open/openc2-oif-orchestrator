@@ -58,7 +58,7 @@ class Nav extends Component {
 
       this.bottomNav.style.marginTop = topHeight + 'px'
       document.body.style.paddingTop = (topHeight + bottomHeight + 10) + 'px'
-    }, 10)
+    }, 20)
   }
 
   navigate(e) {

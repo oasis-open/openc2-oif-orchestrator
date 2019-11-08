@@ -64,7 +64,7 @@ class GenerateCommands extends Component {
     })
 
     this.state = {
-      command_record: '',
+      msg_record: '',
       channel: {
         serialization: '',
         protocol: ''
@@ -102,7 +102,14 @@ class GenerateCommands extends Component {
       if (nextState.schema.jadn_fmt) {
         nextState.schema.exports = safeGet(safeGet(nextState.schema.schema, 'meta', {}), 'exports', [])
       } else {
-        nextState.schema.exports = safeGet(nextState.schema.schema, 'oneOf', []).map(exp => exp.hasOwnProperty('$ref') ? exp['$ref'].replace(/^#\/definitions\//, '') : '')
+        if (nextState.schema.schema.hasOwnProperty('properties')) {
+          nextState.schema.exports = Object.keys(nextState.schema.schema.properties).map(k => {
+            let def = safeGet(nextState.schema.schema.properties, k, {})
+            return def.hasOwnProperty('$ref') ? def['$ref'].replace(/^#\/definitions\//, '') : ''
+          })
+        } else {
+          nextState.schema.exports = safeGet(nextState.schema.schema, 'oneOf', []).map(exp => exp.hasOwnProperty('$ref') ? exp['$ref'].replace(/^#\/definitions\//, '') : '')
+        }
       }
       nextState.schema.exports = nextState.schema.exports.filter(s => s)
     }
@@ -174,8 +181,17 @@ class GenerateCommands extends Component {
         console.log("Generated from JADN", msg)
 
       } else {
-        // console.log("Generated from JSON", msg)
-        var valid = this.json_validator.validate(this.state.schema.schema, msg)
+        // console.log("Generated from JSON", this.state.msg_record, msg)
+        let tmp_msg = msg
+        if (this.state.schema.schema.hasOwnProperty('properties')) {
+          let idx = this.state.schema.exports.indexOf(this.state.msg_record)
+          let msg_wrapper =  Object.keys(this.state.schema.schema.properties)[idx]
+          tmp_msg = {
+            [msg_wrapper]: msg
+          }
+        }
+
+        var valid = this.json_validator.validate(this.state.schema.schema, tmp_msg)
         if (!valid) {
           errors = this.json_validator.errors
         }
@@ -219,7 +235,7 @@ class GenerateCommands extends Component {
     }
 
     this.setState(prevState => ({
-      command_record: '',
+      msg_record: '',
       message: {},
       schema: {
         ...prevState.schema,
@@ -304,13 +320,13 @@ class GenerateCommands extends Component {
     if (this.props.selected.schema) {
       let record_def = {}
       if (this.state.schema.jadn_fmt) {
-        record_def = this.props.selected.schema.hasOwnProperty('types') ? this.props.selected.schema.types.filter(type => type[0] == this.state.command_record) : []
+        record_def = this.props.selected.schema.hasOwnProperty('types') ? this.props.selected.schema.types.filter(type => type[0] == this.state.msg_record) : []
         record_def = zip(keys.Structure, record_def.length == 1 ? record_def[0] : [])
         Record_Def = <JADN_Field def={ record_def } optChange={ this.optChange } />
       } else {
-        if (this.props.selected.schema.definitions && this.props.selected.schema.definitions.hasOwnProperty(this.state.command_record)) {
-          record_def = this.props.selected.schema.definitions[this.state.command_record]
-          Record_Def = <JSON_Field name={ this.state.command_record } def={ record_def } required optChange={ this.optChange } />
+        if (this.props.selected.schema.definitions && this.props.selected.schema.definitions.hasOwnProperty(this.state.msg_record)) {
+          record_def = this.props.selected.schema.definitions[this.state.msg_record]
+          Record_Def = <JSON_Field name={ this.state.msg_record } def={ record_def } required optChange={ this.optChange } />
         }
       }
     }
@@ -357,7 +373,7 @@ class GenerateCommands extends Component {
             <div className='card col-12 p-0 mx-auto'>
               <div className='card-header'>
                 <FormGroup className='col-md-6 p-0 m-0 float-left'>
-                  <Input type='select' className='form-control' value={ this.state.command_record } onChange={ (e) => { this.setState({'command_record': e.target.value, message: {}}) }}>
+                  <Input type='select' className='form-control' value={ this.state.msg_record } onChange={ (e) => { this.setState({'msg_record': e.target.value, message: {}}) }}>
                     <option value=''>Command Type</option>
                     <optgroup label="Exports">
                       { export_records }
@@ -370,7 +386,7 @@ class GenerateCommands extends Component {
               <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
                 <div id="fieldDefs">
                   {
-                    this.state.command_record == "" ?
+                    this.state.msg_record == "" ?
                       <FormText color="muted">Command Fields will appear here after selecting a type</FormText>
                     :
                       Record_Def
