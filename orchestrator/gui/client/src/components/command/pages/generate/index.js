@@ -258,7 +258,7 @@ class GenerateCommands extends Component {
 
     profile_schemas = profile_schemas.map((p, i) => <option key={ i } value={ p } field='profile' >{ p }</option>)
     return (
-      <div className='col-md-6'>
+      <div className="col-md-6">
         <div id="schema-card" className="tab-pane fade active show">
           <div className="card">
             <div className="card-header">
@@ -281,21 +281,12 @@ class GenerateCommands extends Component {
               <Editor
                 id='jadn_schema'
                 placeholder={ this.state.schema.schema }
-                onChange={ (val) => {
-                  if (val.jsObject) {
-                    this.setState(prevState => ({
-                      schema: {
-                        ...prevState.schema,
-                        schema: val.jsObject
-                      }
-                    }))
-                  }
-                }}
                 theme='light_mitsuketa_tribute'
                 locale={ locale }
                 reset={ false }
                 height='100%'
                 width='100%'
+                viewOnly={ true }
               />
             </div>
           </div>
