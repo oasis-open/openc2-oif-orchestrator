@@ -29,12 +29,6 @@ import { safeGet } from '../../../../../utils'
 
 
 class Field extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    let props_update = this.props != nextProps
-    let state_update = this.state != nextState
-    return props_update || state_update
-  }
-
   render() {
     let def = { ...this.props.def }
 
@@ -56,32 +50,39 @@ class Field extends Component {
       optChange: (k, v) => this.props.optChange(k, v, this.props.idx)
     }
 
+    // console.log(this.props.name || def.name, def)
     switch(def.type) {
       case "object":
         let min_props = safeGet(def, "minProperties")
         let max_props = safeGet(def, "maxProperties")
         if (min_props == 1 && max_props == 1) {
           // console.log("Choice - " + fieldArgs.name + ", min: "+ min_props + ", max: " + max_props)
+          // return <p><strong>Choice</strong>: { this.props.name }</p>
           return <Choice { ...fieldArgs } />
 
-        } else if (min_props == 1 && max_props == null) {
+        } else if (min_props >= 1 && max_props == null) {
           // console.log("Map - " + fieldArgs.name + ", min: "+ min_props + ", max: " + max_props)
+          // return <p><strong>Map</strong>: { this.props.name }</p>
           return <Map { ...fieldArgs } />
 
         } else if (def.hasOwnProperty('properties') || (min_props == null && max_props == null)) {
           // console.log("Record - " + fieldArgs.name + ", min: "+ min_props + ", max: " + max_props)
+          // return <p><strong>Record</strong>: { this.props.name }</p>
           return <Record { ...fieldArgs } />
         }
-        return <p>Object - { this.props.name }</p>
+        return <p><strong>Object</strong>: { this.props.name }</p>
       case 'array':
         // console.log("Array - " + fieldArgs.name)
+        // return <p><strong>Array</strong>: { this.props.name }</p>
         return <Array { ...fieldArgs } />
       default:
         if (def.hasOwnProperty('enum') || def.hasOwnProperty("oneOf")) {
           // console.log("Enum - " + fieldArgs.name)
+          // return <p><strong>Enumerated</strong>: { this.props.name }</p>
           return <Enumerated { ...fieldArgs } />
         }
         // console.log("Basic - " + fieldArgs.name)
+        // return <p><strong>Basic</strong>: { this.props.name }</p>
         return <Basic { ...fieldArgs } />
      }
   }

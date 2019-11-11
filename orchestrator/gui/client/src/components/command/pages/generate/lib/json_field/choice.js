@@ -40,8 +40,12 @@ class ChoiceField extends Component {
   }
 
   render() {
-    let name = this.props.name || this.props.def.name
-    let msgName = (this.props.parent ? [this.props.parent, name] : [name]).join('.')
+    parent = ""
+    if (this.props.parent) {
+      parent = [this.props.parent, this.props.name].join('.')
+    } else if (this.props.name.match(/^[a-z]/)) {
+      parent = this.props.name
+    }
 
     let def_opts = []
     if (this.props.def.hasOwnProperty("properties")) {
@@ -60,7 +64,7 @@ class ChoiceField extends Component {
     if (this.state.selected) {
       selectedDef = <Field
         name={ this.state.selected }
-        parent={ msgName }
+        parent={ parent }
         def={ this.props.def.properties[this.state.selected] || {} }
         required
         optChange={ this.props.optChange }
@@ -69,7 +73,7 @@ class ChoiceField extends Component {
 
     return (
       <FormGroup tag="fieldset" className="border border-dark p-2">
-        <legend>{ (isOptional_json(this.props.def) ? '' : '*') + name }</legend>
+        <legend>{ (isOptional_json(this.props.def) ? '' : '*') + this.props.name }</legend>
         { this.props.def.description ? <FormText color="muted">{ this.props.def.description }</FormText> : '' }
         <div className="col-12 my-1 px-0">
           <Input type="select" name={ name } title={ name } className="selectpicker" onChange={ this.handleChange } default={ -1 }>

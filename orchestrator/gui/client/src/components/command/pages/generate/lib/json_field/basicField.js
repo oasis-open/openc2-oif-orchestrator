@@ -51,6 +51,14 @@ class BasicField extends Component {
           type: 'number',
           placeholder: 0,
         }
+      case 'boolean':
+        return {
+          type: 'checkbox',
+          style: {
+            position: 'inherit',
+            marginLeft: 0,
+          }
+        }
       default:
         return {
           type: 'text'
@@ -70,8 +78,7 @@ class BasicField extends Component {
         <FormGroup tag="fieldset" className="border border-dark p-2">
           <legend>{ (this.props.required ? '*' : '') + name }</legend>
           <Input
-            type={ opts.type || 'text' }
-            placeholder={ opts.placeholder || '' }
+            { ...opts }
             name={ name }
             onChange={ e => this.change(e.target.value) }
           />

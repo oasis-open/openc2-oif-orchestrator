@@ -9,7 +9,7 @@ console.log('NODE_ENV: ' + env)
 const ROOT_DIR = path.join(__dirname, '..')
 const BUILD_DIR = path.join(ROOT_DIR, 'build')
 
-const config = merge(generalConfig, {
+module.exports = merge(generalConfig, {
   mode: env,
   devtool: 'eval',
   plugins: [
@@ -37,6 +37,4 @@ const config = merge(generalConfig, {
   optimization: {
     usedExports: true,
   }
-});
-
-module.exports = config
+})

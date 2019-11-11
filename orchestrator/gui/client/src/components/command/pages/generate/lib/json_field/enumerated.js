@@ -6,7 +6,7 @@ import {
   FormText,
   Label,
   Input
-} from 'reactstrap';
+} from 'reactstrap'
 
 import * as GenActions from '../../../../../../actions/generate'
 
@@ -21,12 +21,16 @@ class EnumeratedField extends Component {
         val = parseFloat(val.replace(",", ".")) || null
         break;
     }
-    this.props.optChange(this.msgName, val)
+    this.props.optChange(this.parent, val)
   }
 
   render() {
-    let name = this.props.name || this.props.def.name
-    this.msgName = (this.props.parent ? [this.props.parent, name] : [name]).join('.')
+    this.parent = ""
+    if (this.props.parent) {
+      this.parent = [this.props.parent, this.props.name].join('.')
+    } else if (this.props.name.match(/^[a-z]/)) {
+      this.parent = this.props.name
+    }
 
     let def_opts = []
 
@@ -44,7 +48,7 @@ class EnumeratedField extends Component {
 
     return (
       <FormGroup tag="fieldset" className="border border-dark p-2">
-        <legend>{ (this.props.required ? '*' : '') } { name }</legend>
+        <legend>{ (this.props.required ? '*' : '') } { this.props.name }</legend>
         { this.props.def.description ? <FormText color="muted">{ this.props.def.description }</FormText> : '' }
         <Input
           type="select"

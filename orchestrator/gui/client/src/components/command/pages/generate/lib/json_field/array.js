@@ -27,9 +27,14 @@ import * as GenActions from '../../../../../../actions/generate'
 class ArrayField extends Component {
   constructor(props, context) {
     super(props, context)
+    this.parent = this.props.name
+    if (this.props.parent) {
+      this.parent = [this.props.parent, this.props.name].join('.')
+    } else if (this.props.name.match(/^[a-z]/)) {
+      this.parent = this.props.name
+    }
 
-    this.name = this.props.name || this.props.def.name
-    this.msgName = (this.props.parent ? [this.props.parent, this.name] : [this.name]).join('.')
+    this.msgName = (this.props.parent ? [this.props.parent, this.props.name] : [this.props.name]).join('.')
 
     this.opts = {
       min: this.props.def.minItems || 0,
@@ -55,9 +60,9 @@ class ArrayField extends Component {
         max: !max_bool
       }
     }, () => {
-      this.props.optChange(this.msgName, Array.from(new Set(Object.values(this.state.opts))))
+      this.props.optChange(this.parent, Array.from(new Set(Object.values(this.state.opts))))
       if (this.state.max) {
-        toast(<div><p>Warning:</p><p>Cannot have more than { this.opts.max } items for { this.name }</p></div>, {type: toast.TYPE.WARNING})
+        toast(<div><p>Warning:</p><p>Cannot have more than { this.opts.max } items for { this.props.name }</p></div>, {type: toast.TYPE.WARNING})
       }
     })
   }
@@ -79,9 +84,9 @@ class ArrayField extends Component {
         opts: opts
       }
     }, () => {
-      this.props.optChange(this.msgName, Array.from(new Set(Object.values(this.state.opts))))
+      this.props.optChange(this.parent, Array.from(new Set(Object.values(this.state.opts))))
       if (this.state.min) {
-        toast(<div><p>Warning:</p><p>Cannot have less than { this.opts.min } items for { this.name }</p></div>, {type: toast.TYPE.WARNING})
+        toast(<div><p>Warning:</p><p>Cannot have less than { this.opts.min } items for { this.props.name }</p></div>, {type: toast.TYPE.WARNING})
       }
     })
   }
@@ -95,7 +100,7 @@ class ArrayField extends Component {
         }
       }
     }, () => {
-      this.props.optChange(this.msgName, Array.from(new Set(Object.values(this.state.opts))))
+      this.props.optChange(this.parent, Array.from(new Set(Object.values(this.state.opts))))
     })
   }
 
@@ -107,7 +112,7 @@ class ArrayField extends Component {
       if (Array.isArray(this.props.def.items)) {
         fields.push(this.props.def.items.map(field => {
           let name = field.hasOwnProperty("$ref") ? field["$ref"].replace(/^#\/definitions\//, "") : ""
-          return <Field key={ i } name={ name } parent={ this.msgName } def={ field } optChange={ this.optChange.bind(this) } idx={ i } />
+          return <Field key={ i } name={ name } parent={ this.parent } def={ field } optChange={ this.optChange.bind(this) } idx={ i } />
         }))
       } else {
         let name = "Field"
@@ -120,14 +125,14 @@ class ArrayField extends Component {
           console.log("Type")
           ref = { ...this.props.def.items }
         }
-        fields.push(<Field key={ i } name={ name } parent={ this.msgName } def={ ref } optChange={ this.optChange.bind(this) } idx={ i } />)
+        fields.push(<Field key={ i } name={ name } parent={ this.parent } def={ ref } optChange={ this.optChange.bind(this) } idx={ i } />)
       }
     }
 
     return (
       <FormGroup tag="fieldset" className="border border-dark p-2">
         <legend>
-          { (isOptional_json(this.props.def.req, this.name) ? '' : '*') + this.name }
+          { (isOptional_json(this.props.def.req, this.props.name) ? '' : '*') + this.props.name }
           <Button
             color="danger"
             className={ 'float-right p-1' + (this.state.min ? ' disabled' : '') }

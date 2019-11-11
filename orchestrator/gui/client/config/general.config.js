@@ -13,7 +13,7 @@ const BUILD_DIR = path.join(ROOT_DIR, 'build')
 const COMPONENTS_DIR = path.join(ROOT_DIR, 'src', 'components')
 const DEPEND_DIR = path.join(COMPONENTS_DIR, 'dependencies')
 
-const config  = {
+module.exports = {
   mode: 'none',
   devtool: 'inline-source-map',
   entry: {
@@ -39,10 +39,13 @@ const config  = {
   plugins: [
     new DeadCodePlugin({
       patterns: [
-        'src/**/*.(js|jsx|css)',
+        'src/**/*.(js|jsx|css|less)',
       ],
       exclude: [
-        '**/*.(stories|spec).(js|jsx)',
+        '**/*.(stories|spec).(js|jsx)$',
+        DEPEND_DIR,
+        "**/theme-switcher/download_themes.js",
+        path.join(COMPONENTS_DIR, "utils", "theme-switcher", "assets")
       ]
     }),
     new HtmlWebpackPlugin({
@@ -152,11 +155,25 @@ const config  = {
         ]
       },
       {
-        test: /\.(svg|jpe?g|gif|bmp|tiff|png|ico)$/,
+        test: /\.svg$/,
+        loader: 'svg-url-loader',
+        options: {
+          limit: 10 * 1024,
+          noquotes: true,
+          fallback: {
+              loader: 'file-loader',
+              options: {
+                name: 'assets/img/[name].[ext]'
+              }
+            }
+        },
+      },
+      {
+        test: /\.(jpe?g|gif|bmp|tiff|png|ico)$/,
         use: [{
           loader: 'url-loader',
           options: {
-            limit: 25000,
+            limit: 10*1024,
             fallback: {
               loader: 'file-loader',
               options: {
@@ -178,5 +195,3 @@ const config  = {
     ]
   }
 };
-
-module.exports = config
