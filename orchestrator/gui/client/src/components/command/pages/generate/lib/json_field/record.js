@@ -39,8 +39,8 @@ class RecordField extends Component {
       parent = this.props.name
     }
 
-    let def_opts = Object.keys(this.props.def.properties).map((field, i) => (
-      <Field
+    let def_opts = Object.keys(this.props.def.properties).map((field, i) => {
+      return <Field
         key={ i }
         parent={ parent }
         name={ field }
@@ -48,9 +48,11 @@ class RecordField extends Component {
         required={ isOptional_json(this.props.def.required, field) }
         optChange={ this.props.optChange }
       />
-    ))
+    })
 
-    if (this.props.parent) {
+    if (this.props.root) {
+      return def_opts
+    } else {
       return (
         <FormGroup tag="fieldset" className="border border-dark p-2">
           <legend>
@@ -71,8 +73,6 @@ class RecordField extends Component {
           </Collapse>
         </FormGroup>
       )
-    } else {
-      return def_opts
     }
   }
 }

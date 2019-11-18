@@ -57,11 +57,13 @@ class GenerateCommands extends Component {
 
     this.optChange = this.optChange.bind(this)
     this.selectChange = this.selectChange.bind(this)
+    this.clearCommand = this.clearCommand.bind(this)
     this.sendCommand = this.sendCommand.bind(this)
     this.jadn_keys = ["meta", "types"]
     this.json_validator = new Ajv({
       unknownFormats: "ignore"
     })
+    this.msg_form = null
 
     this.state = {
       msg_record: '',
@@ -159,6 +161,12 @@ class GenerateCommands extends Component {
         // TODO: Process responses ??
       }
     })
+  }
+
+  clearCommand() {
+    console.log("CLEAR COMMAND")
+    console.log(this.msg_form)
+    console.log(this.msg_form.getRef())
   }
 
   optChange(k, v) {
@@ -326,7 +334,7 @@ class GenerateCommands extends Component {
       } else {
         if (this.props.selected.schema.definitions && this.props.selected.schema.definitions.hasOwnProperty(this.state.msg_record)) {
           record_def = this.props.selected.schema.definitions[this.state.msg_record]
-          Record_Def = <JSON_Field name={ this.state.msg_record } def={ record_def } required optChange={ this.optChange } />
+          Record_Def = <JSON_Field name={ this.state.msg_record } def={ record_def } root={ true } optChange={ this.optChange } />
         }
       }
     }
@@ -374,7 +382,7 @@ class GenerateCommands extends Component {
               <div className='card-header'>
                 <FormGroup className='col-md-6 p-0 m-0 float-left'>
                   <Input type='select' className='form-control' value={ this.state.msg_record } onChange={ (e) => { this.setState({'msg_record': e.target.value, message: {}}) }}>
-                    <option value=''>Command Type</option>
+                    <option value=''>Message Type</option>
                     <optgroup label="Exports">
                       { export_records }
                     </optgroup>
@@ -383,11 +391,11 @@ class GenerateCommands extends Component {
                 <Button color='primary' className='float-right' onClick={ () => this.makeID() }>Generate ID</Button>
               </div>
 
-              <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
+              <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } ref={ (el) => this.msg_form = el } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
                 <div id="fieldDefs">
                   {
                     this.state.msg_record == "" ?
-                      <FormText color="muted">Command Fields will appear here after selecting a type</FormText>
+                      <FormText color="muted">Message Fields will appear here after selecting a type</FormText>
                     :
                       Record_Def
                   }
@@ -399,7 +407,10 @@ class GenerateCommands extends Component {
           <div className='tab-pane fade' id='tab-message'>
             <div className='card col-12 p-0 mx-auto'>
               <div className='card-header'>
-                <Button color='primary' className='float-right' onClick={ () => this.sendCommand() }>Send</Button>
+                <ButtonGroup className='float-right col-2' vertical={ true }>
+                  <Button color='danger' onClick={ this.clearCommand } style={{ padding: ".1rem 0" }}>Clear</Button>
+                  <Button color='primary' onClick={ this.sendCommand } style={{ padding: ".1rem 0" }}>Send</Button>
+                </ButtonGroup>
                 <div className={ 'col-10 p-0 ' + (this.state.schema.type === 'actuator' ? '' : ' d-none') }>
                   <FormGroup className='col-md-6 p-0 m-0 float-left'>
                     <Input type='select' className='form-control' value={ this.state.channel.protocol } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, protocol: e.target.value }}) }}>

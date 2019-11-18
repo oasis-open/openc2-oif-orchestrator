@@ -43,6 +43,7 @@ class Field extends Component {
     }
 
     let fieldArgs = {
+      root: this.props.root,
       parent: this.props.parent,
       name: this.props.name || def.name,
       def: def,
@@ -105,8 +106,9 @@ connectedField.propTypes = {
 
 connectedField.defaultProps = {
   idx: null,
-  parent: "",
+  root: false,
   name: "Field",
+  parent: "",
   def: {},
   required: false,
   optChange: (k, v) => console.log(k, v)

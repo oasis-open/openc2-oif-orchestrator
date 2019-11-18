@@ -32,7 +32,7 @@ export const isOptional_jadn = (def) => {
 }
 
 export const isOptional_json = (req, field) => {
-  if (req && typeof(reg) == "object") {
+  if (req && Array.isArray(req)) {
     return req.indexOf(field) >= 0
   }
   return false
