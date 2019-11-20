@@ -162,7 +162,6 @@ class GenerateCommands extends Component {
       } else {
         
         // TODO: Process responses ??
-        toast.info("Request processed");
       }
     })
   }
