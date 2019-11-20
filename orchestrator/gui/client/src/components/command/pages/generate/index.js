@@ -144,6 +144,8 @@ class GenerateCommands extends Component {
       selected: this.state.schema.selected
     })
 
+    toast.info("Request sent");
+
     Promise.resolve(this.props.sendCommand(this.state.message, actuator, this.state.channel)).then(() => {
       let errs = safeGet(this.props.errors, CommandActions.SEND_COMMAND_FAILURE, {})
 
@@ -158,7 +160,9 @@ class GenerateCommands extends Component {
           })
         }
       } else {
+        
         // TODO: Process responses ??
+        toast.info("Request processed");
       }
     })
   }
