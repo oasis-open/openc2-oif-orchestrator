@@ -296,10 +296,11 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
         if 'Actuator' not in globals():
             from actuator.models import Actuator
 
-        actuator = validated_data.pop('actuator', False)
+        actuator = validated_data.pop('multi_actuator', False)
         schema = validated_data.pop('schema', None)
         actuators = instance.actuator_set.all()
 
+        '''
         if schema and len(actuators) > 1 and not actuator:
             raise ValidationError("Cannot update schema for device set as its own actuator")
 
@@ -314,7 +315,7 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
                     device=instance,
                     schema=schema
                 )
-
+        '''
         return super().update(instance, validated_data)
 
     class Meta:
