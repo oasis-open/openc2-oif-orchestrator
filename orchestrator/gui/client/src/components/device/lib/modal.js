@@ -38,22 +38,20 @@ class DeviceModal extends Component {
     this.transportChange = this.transportChange.bind(this)
     this.transportAdd = this.transportAdd.bind(this)
     this.transportRemove = this.transportRemove.bind(this)
-    this.loadSchema = this.loadSchema.bind(this)
-    this.textAreaChange = this.textAreaChange.bind(this)
     this.jadn_keys = ["meta", "types"]
 
     this.register = this.props.register == true
     this.defaultDevice = {
       device_id: 'UUID',
       name: 'Device',
-      multi_actuator: true,
-      schema: {},
       note: '',
       transport: [
         {
           host: '127.0.0.1',
           port: 5001,
           protocol: 'HTTPS',
+          topic: "topic",
+          channel: "channel",
           serialization: ['JSON']
         }
       ]
@@ -72,11 +70,6 @@ class DeviceModal extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     let props_update = this.props != nextProps
     let state_update = this.state != nextState
-
-    if (this.state.device.schema != nextState.device.schema) {
-      let schema_keys = Object.keys(nextState.device.schema)
-      nextState.jadn_fmt = (schema_keys.length === this.jadn_keys.length && schema_keys.every(v => this.jadn_keys.indexOf(v) !== -1))
-    }
 
     return props_update || state_update
   }
@@ -178,41 +171,6 @@ class DeviceModal extends Component {
       counts[t.protocol] = (counts[t.protocol] || 0) + 1
     })
     return Object.keys(counts).map(k => counts[k] === 1).every(itm => itm)
-  }
-
-  textAreaChange(e) {
-    e.preventDefault()
-    try {
-      this.setState(prevState => ({
-        device: {
-          ...prevState.device,
-          schema: JSON.parse(e.target.value)
-        }
-      }))
-    } catch (e) {
-      toast(<p>Schema is not valid</p>, {type: toast.TYPE.WARNING})
-    }
-}
-
-  loadSchema(e) {
-    let file = e.target.files[0]
-    let fileReader = new FileReader()
-
-    fileReader.onload = e => {
-      let data = atob(fileReader.result.split(',')[1])
-      try {
-        this.setState(prevState => ({
-          device: {
-            ...prevState.device,
-            schema: JSON.parse(data)
-          }
-        }))
-      } catch(e) {
-        toast(<p>Schema cannot be loaded</p>, {type: toast.TYPE.WARNING})
-        return
-      }
-    }
-    fileReader.readAsDataURL(file)
   }
 
   registerDevice() {
@@ -320,58 +278,6 @@ class DeviceModal extends Component {
                 </legend>
                 <div style={{maxHeight: '275px', overflowY: 'scroll'}}>
                   { transports }
-                </div>
-              </fieldset>
-
-              <fieldset className='border p-2'>
-                <legend>
-                  Actuator
-                  <div className="form-group h6 mb-0 mt-3 float-right">
-                    <div className="form-check-inline">
-                      <label className="form-check-label">
-                        <input type="radio" className="form-check-input" checked={ this.state.device.multi_actuator } onChange={ (e) => this.setState(prevState => ({ device: { ...prevState.device, multi_actuator: true }}) )} />
-                        Multiple
-                      </label>
-                    </div>
-
-                    <div className="form-check-inline">
-                      <label className="form-check-label">
-                        <input type="radio" className="form-check-input" checked={ !this.state.device.multi_actuator } onChange={ (e) => this.setState(prevState => ({ device: { ...prevState.device, multi_actuator: false }}) )} />
-                        Single
-                      </label>
-                    </div>
-                  </div>
-                </legend>
-
-                <div className={ this.state.device.multi_actuator ? "" : "d-none" }>
-                  <p className="m-1">Multiple Actuators</p>
-                  <p className="m-1">Each actuator is to be registered the Actuators tab</p>
-                </div>
-
-                <div className={ (this.state.device.multi_actuator ? "d-none " : "") + "border p-0" } style={{ height: '250px' }} >
-                  <textarea
-                    style={{
-                      height: '100%',
-                      width: '100%',
-                      border: 'none',
-                      overflow: 'auto',
-                      outline: 'none',
-                      boxShadow: 'none',
-                      resize: 'none'
-                    }}
-                    value={ FormatJADN(this.state.device.schema) }
-                    onChange={ this.textAreaChange }
-                  />
-                  <div className='clearfix'>
-                    <Button color='info' size='sm' className='float-right' onClick={ () => this.schemaUpload.click() }>Upload Schema</Button>
-                    <input
-                      type='file'
-                      className='d-none'
-                      ref={ e => this.schemaUpload = e }
-                      accept="application/json, .jadn, .json"
-                      onChange={ this.loadSchema }
-                    />
-                  </div>
                 </div>
               </fieldset>
 

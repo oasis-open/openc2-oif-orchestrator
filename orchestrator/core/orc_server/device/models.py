@@ -4,14 +4,13 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.db.models.signals import m2m_changed, post_delete
 from django.db.models.query import QuerySet
 from django.db.utils import IntegrityError
 from django.dispatch import receiver
-from rest_framework.exceptions import ValidationError
 from drf_queryfields import QueryFieldsMixin
 from drf_writable_nested import WritableNestedModelSerializer
-from rest_framework import serializers, validators
+from rest_framework import serializers
 
 from orchestrator.models import Protocol, Serialization
 from utils import get_or_none, prefixUUID
@@ -66,14 +65,14 @@ class Transport(models.Model):
         Serialization,
         help_text="Serialization(s) supported by the device"
     )
-    exchange = models.CharField(
-        default="exchange",
-        help_text="Exchange for the specific device, only necessary for Pub/Sub protocols",
+    topic = models.CharField(
+        default="topic",
+        # help_text="Exchange for the specific device, only necessary for Pub/Sub protocols",
         max_length=30
     )
-    routing_key = models.CharField(
+    channel = models.CharField(
         default="routing_key",
-        help_text="Routing Key for the specific device, only necessary for Pub/Sub protocols",
+        # help_text="Routing Key for the specific device, only necessary for Pub/Sub protocols",
         max_length=30
     )
 
@@ -116,10 +115,6 @@ class Device(models.Model):
     transport = models.ManyToManyField(
         Transport,
         help_text="Transports the device supports"
-    )
-    multi_actuator = models.BooleanField(
-        default=True,
-        help_text="Device can have multiple actuators or is its own actuator"
     )
     note = models.TextField(
         blank=True,
@@ -245,6 +240,9 @@ class TransportSerializer(serializers.ModelSerializer):
         queryset=Protocol.objects.all(),
         slug_field="name"
     )
+    topic = serializers.CharField(max_length=30, default="topic")
+    channel = serializers.CharField(max_length=30, default="channel")
+    pub_sub = serializers.SerializerMethodField()
     serialization = serializers.SlugRelatedField(
         queryset=Serialization.objects.all(),
         slug_field="name",
@@ -253,7 +251,11 @@ class TransportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transport
-        fields = ("transport_id", "host", "port", "protocol", "serialization")
+        fields = ("transport_id", "host", "port", "protocol", "topic", "channel", "pub_sub", "serialization")
+
+    def get_pub_sub(self, obj):
+        ps = obj.protocol.pub_sub
+        return ps if isinstance(ps, bool) else False
 
 
 class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
@@ -262,62 +264,9 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
     """
     device_id = serializers.UUIDField(format="hex_verbose")
     transport = TransportSerializer(many=True)
-    schema = serializers.JSONField(required=False)
-    multi_actuator = serializers.BooleanField(required=False, default=False)
+    # schema = serializers.JSONField(required=False)
     note = serializers.CharField(allow_blank=True)
-
-    def __init__(self, instance=None, *args, **kwargs):
-        if instance and isinstance(instance, (list, QuerySet)):
-            for inst in instance:
-                inst.multi_actuator = inst.multi_actuator if isinstance(inst.multi_actuator, bool) else False
-
-        args = (instance, *args)
-        super().__init__(*args, **kwargs)
-
-    def create(self, validated_data):
-        if 'Actuator' not in globals():
-            from actuator.models import Actuator
-
-        actuator = validated_data.pop('multi_actuator', False)
-        schema = validated_data.pop('schema', None)
-        dev = super().create(validated_data)
-
-        if schema and not actuator:
-            dev.multi_actuator = False
-            Actuator.objects.create(
-                name=validated_data.get('name', prefixUUID("Device/Actuator", 30)),
-                device=dev,
-                schema=schema
-            )
-            dev.save()
-        return dev
-
-    def update(self, instance, validated_data):
-        if 'Actuator' not in globals():
-            from actuator.models import Actuator
-
-        actuator = validated_data.pop('multi_actuator', False)
-        schema = validated_data.pop('schema', None)
-        actuators = instance.actuator_set.all()
-
-        '''
-        if schema and len(actuators) > 1 and not actuator:
-            raise ValidationError("Cannot update schema for device set as its own actuator")
-
-        if schema and len(actuators) <= 1 and not actuator:
-            validated_data['multi_actuator'] = False
-            if len(actuators) == 1:
-                actuators[0].schema = schema
-                actuators[0].save()
-            else:
-                Actuator.objects.create(
-                    name=validated_data.get('name', prefixUUID("Device/Actuator", 30)),
-                    device=instance,
-                    schema=schema
-                )
-        '''
-        return super().update(instance, validated_data)
 
     class Meta:
         model = Device
-        fields = ("device_id", "name", "transport", "multi_actuator", "schema", "note")
+        fields = ("device_id", "name", "transport", "note")

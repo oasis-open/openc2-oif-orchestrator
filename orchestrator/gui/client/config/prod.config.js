@@ -46,8 +46,8 @@ module.exports = merge(generalConfig, {
     minimizer: [
       new TerserPlugin({
         cache: true,
-        parallel: true,
         sourceMap: false,
+        parallel: true,
         terserOptions: {
           output: {
             comments: false

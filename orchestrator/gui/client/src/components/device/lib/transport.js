@@ -24,6 +24,7 @@ class Transport extends Component {
     this.transportRemove = this.transportRemove.bind(this)
     this.transportChange = this.transportChange.bind(this)
 
+
     this.state = {
       host: '127.0.0.1',
       port: 8080,
@@ -93,10 +94,42 @@ class Transport extends Component {
     )
   }
 
+  transportPubSub() {
+    let protocols = Object.keys(this.props.orchestrator.protocols).map((p, i) => <option key={ i } value={ p }>{ p }</option> )
+    let pub_sub = this.props.orchestrator.protocols[this.state.protocol]
+    let chan_top = ''
+    let columns = 'col-6'
+
+    if (pub_sub) {
+      columns = 'col-md-4 col-sm-12'
+      chan_top = [(
+        <div key={ 0 } className={ "form-group " + columns }>
+          <label htmlFor="topic">Topic</label>
+          <input type="text" className="form-control" name='topic' value={ this.state.topic } onChange={ this.transportChange } />
+        </div>), (
+        <div key={ 1 } className={ "form-group " + columns }>
+          <label htmlFor="channel">Channel</label>
+          <input type="text" className="form-control" name='channel' value={ this.state.channel } onChange={ this.transportChange } />
+        </div>
+      )]
+    }
+
+    return (
+      <div className="form-row">
+        <div className={ "form-group " + columns }>
+          <label htmlFor="protocol">Protocol</label>
+          <select className="form-control" name='protocol' value={ this.state.protocol } onChange={ this.transportChange } >
+            { protocols }
+          </select>
+        </div>
+        { chan_top }
+      </div>
+    )
+  }
+
   render() {
-    let protocols = this.props.orchestrator.protocols.map((p, i) => <option key={ i } value={ p }>{ p }</option> )
     let serializations = this.props.orchestrator.serializations.map((s, i) => (
-      <div key={ i } className="form-check">
+      <div key={ i } className="form-check-inline">
         <label className="form-check-label">
           <input id={ `checkbox_${i}_${s}` } className="form-check-input" name='serialization' type="checkbox" checked={ this.state.serialization.indexOf(s) >= 0 } onChange={ this.checkboxChange } />
           { s }
@@ -123,19 +156,13 @@ class Transport extends Component {
           </div>
         </div>
 
-        <div className="form-row">
-          <div className="form-group col-lg-6">
-            <label htmlFor="protocol">Protocol</label>
-            <select className="form-control" name='protocol' value={ this.state.protocol } onChange={ this.transportChange } >
-              { protocols }
-            </select>
-          </div>
+        { this.transportPubSub() }
 
-          <div className="form-group col-lg-6">
-            <p style={{
-              display: 'inline-block',
-              marginBottom: '0.5rem'
-            }}>Serializations</p>
+        <div className="form-row">
+          <div className="form-group col-12">
+            <div>
+              <p>Serializations</p>
+            </div>
             { serializations }
           </div>
         </div>

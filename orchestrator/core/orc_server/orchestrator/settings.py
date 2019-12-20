@@ -322,5 +322,8 @@ SCHEMA_FORMATS = (
     'json'
 )
 
+# App stats function
+STATS_FUN = 'app_stats'
+
 # GUI Configuration
 ADMIN_GUI = True
