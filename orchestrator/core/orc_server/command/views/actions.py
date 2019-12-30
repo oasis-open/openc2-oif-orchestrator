@@ -214,12 +214,15 @@ def action_send(usr=None, cmd={}, actuator="", channel={}):
                     header["destination"][idx]["profile"].append(profile)
 
                 else:
-                    header["destination"].append(dict(
+                    dest = dict(
                         deviceID=str(act.device.device_id),
                         socket=f"{trans.host}:{trans.port}",
                         profile=[profile],
                         encoding=encoding
-                    ))
+                    )
+                    if trans.protocol.pub_sub:
+                        print("PUB SUB")
+                    header["destination"].append(dest)
 
             # Send command to transport
             log.info(usr=usr, msg=f"Send command {com.command_id}/{com.coap_id.hex()} to buffer")

@@ -1,6 +1,6 @@
 from django.forms import ValidationError
 
-from dynamic_preferences.types import ChoicePreference, IntegerPreference, LongStringPreference, StringPreference
+from dynamic_preferences.types import IntegerPreference
 from dynamic_preferences.preferences import Section
 from dynamic_preferences.registries import global_preferences_registry as global_registry
 

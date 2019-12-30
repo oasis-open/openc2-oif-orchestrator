@@ -11,6 +11,7 @@ djangorestframework-msgpack==1.0.2
 djangorestframework-queryfields==1.0.0
 djangorestframework-xml==1.4.0
 drf-writable-nested==0.5.1
+elasticsearch>=7.0.0
 jsonfield==2.0.2
 mysql-connector-python==8.0.18
 pyexcel-xls==0.5.8

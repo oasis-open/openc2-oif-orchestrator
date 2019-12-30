@@ -1,10 +1,18 @@
 import atexit
 import sys
 
+from datetime import datetime
 from django.apps import AppConfig
 from django.conf import settings
+# from elasticsearch import Elasticsearch
+# from functools import partial
 
 from utils import MessageQueue
+
+
+def es_idx(g_prefs, doc_type: str) -> str:
+    orc_id = g_prefs.get("orchestrator__id", "")
+    return f"{orc_id}-{doc_type}_{datetime.now():%Y-%m-%d}"
 
 
 class OrchestratorConfig(AppConfig):
@@ -25,6 +33,17 @@ class OrchestratorConfig(AppConfig):
 
         from command.processors import command_response
         settings.MESSAGE_QUEUE = MessageQueue(**settings.QUEUE, callbacks=[command_response])
+        '''
+        from dynamic_preferences.registries import global_preferences_registry
+        global_preferences = global_preferences_registry.manager()
+        es_host = global_preferences.get("elastic__host", "")
+        if es_host:
+            settings.ES_CONFIG = {
+                "cmd_idx": partial(es_idx, global_preferences, "cmd"),
+                "rsp_idx": partial(es_idx, global_preferences, "rsp"),
+            }
+            settings.ES_DB = Elasticsearch(es_host)
+        '''
 
 
 @atexit.register
