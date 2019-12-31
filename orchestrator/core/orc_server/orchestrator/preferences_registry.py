@@ -14,7 +14,6 @@ GlobalPreferenceAdmin.has_delete_permission = lambda *args, **kwargs: False
 PerInstancePreferenceAdmin.has_add_permission = lambda *args, **kwargs: False
 PerInstancePreferenceAdmin.has_delete_permission = lambda *args, **kwargs: False
 
-elastic = Section("elastic")
 orchestrator = Section("orchestrator")
 
 
@@ -56,21 +55,6 @@ def is_valid_ipv6_address(address):
         ipaddress.IPv6Address(address)
     except Exception:  # not a valid address
         return False
-    return True
-
-
-def is_valid_elastic_host(socket):
-    if socket:
-        scheme, path = socket.split('://', 1) if '://' in socket else ('', socket)
-        host, path = path.split(':', 1) if ':' in path else ('', path)
-        port, path = path.split('/', 1) if '/' in path else (path, '')
-
-        if not any([is_valid_hostname(host), is_valid_ipv4_address(host), is_valid_ipv6_address(host)]):
-            return False
-
-        if 0 > port or port > 65535:
-            return False
-
     return True
 
 
@@ -137,25 +121,3 @@ class OrchestratorHost(StringPreference):
         """
         if not any([is_valid_hostname(value), is_valid_ipv4_address(value), is_valid_ipv6_address(value)]):
             raise ValidationError("The host is not a valid Hostname/IPv4/IPv6")
-
-
-# Elastic forwarder section
-@global_registry.register
-class ElasticHost(StringPreference):
-    """
-    Dynamic Preference for Elasticsearch Hostname/IP & Port
-    """
-    section = elastic
-    name = "host"
-    help_text = "The hostname/ip of the Elasticsearch to forward commands/responses, leave blank to disable forwarding"
-    _default = os.environ.get("ELASTIC_HOST", "")
-    default = _default if is_valid_elastic_host(_default) else ""
-
-    def validate(self, value):
-        """
-        Validate the Hostname/IP when updated
-        :param value: new value to validate
-        :return: None/exception
-        """
-        if not is_valid_elastic_host(value):
-            raise ValidationError("The host is not a Elasticsearch address")

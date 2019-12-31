@@ -4,10 +4,7 @@ import time
 import uuid
 
 from django.conf import settings
-
 from dynamic_preferences.registries import global_preferences_registry
-
-# from oc2.codec import Codec, jadn_check
 
 from ..models import SentHistory, ResponseHistory
 

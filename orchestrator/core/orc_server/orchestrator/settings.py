@@ -66,6 +66,18 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
+# Elasticsearch cmd/rsp export
+es_host = os.environ.get("ELASTIC_URL", "")
+if es_host != "":
+    INSTALLED_APPS.append('django_elasticsearch_dsl')
+
+    ELASTICSEARCH_DSL = {
+        'default': {
+            'hosts': es_host
+        }
+    }
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
