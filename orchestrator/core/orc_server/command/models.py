@@ -3,16 +3,18 @@ import uuid
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db import models
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save
 from django.utils import timezone
 from jsonfield import JSONField
 from rest_framework import serializers
 
 from tracking import log
 from actuator.models import Actuator, ActuatorSerializer
-from utils import randBytes, get_or_none
+from utils import randBytes, get_or_none  # , ElasticModel
+# from .documents import CommandDocument, ResponseDocument
 
 
+# @ElasticModel(doc=CommandDocument)
 class SentHistory(models.Model):
     """
     Command Sent History model
@@ -83,6 +85,7 @@ class SentHistory(models.Model):
         return "Sent History: {} - {}".format(self.command_id, self.user)
 
 
+# @ElasticModel(doc=ResponseDocument)
 class ResponseHistory(models.Model):
     """
     Command Response History model

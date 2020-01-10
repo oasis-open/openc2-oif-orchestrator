@@ -2,10 +2,9 @@
 Django View Schema Utilities
 """
 from django.urls import resolve
-from django.utils.six.moves.urllib import parse as urlparse
-
 from rest_framework.compat import coreapi
 from rest_framework.schemas import AutoSchema
+from urllib import parse as urlparse
 
 
 class OrcSchema(AutoSchema):

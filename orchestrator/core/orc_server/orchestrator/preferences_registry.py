@@ -9,11 +9,14 @@ from dynamic_preferences.types import StringPreference
 from dynamic_preferences.preferences import Section
 from dynamic_preferences.registries import global_preferences_registry as global_registry
 
+from utils import safe_cast
+
 GlobalPreferenceAdmin.has_add_permission = lambda *args, **kwargs: False
 GlobalPreferenceAdmin.has_delete_permission = lambda *args, **kwargs: False
 PerInstancePreferenceAdmin.has_add_permission = lambda *args, **kwargs: False
 PerInstancePreferenceAdmin.has_delete_permission = lambda *args, **kwargs: False
 
+elastic = Section("elastic")
 orchestrator = Section("orchestrator")
 
 
@@ -56,6 +59,22 @@ def is_valid_ipv6_address(address):
     except Exception:  # not a valid address
         return False
     return True
+
+
+def is_valid_elastic_host(socket):
+    if socket:
+        scheme, path = socket.split('://', 1) if '://' in socket else ('', socket)
+        host, path = path.split(':', 1) if ':' in path else ('', path)
+        port, path = path.split('/', 1) if '/' in path else (path, '')
+        port = safe_cast(port, int, -1)
+
+        if not any([is_valid_hostname(host), is_valid_ipv4_address(host), is_valid_ipv6_address(host)]):
+            return False, ValidationError("The host is not a IPv4/IPv6/Hostname")
+
+        if 0 > port or port > 65535:
+            return False, ValidationError("The port is not a valid")
+
+    return True, None
 
 
 # Orchestrator section
@@ -121,3 +140,27 @@ class OrchestratorHost(StringPreference):
         """
         if not any([is_valid_hostname(value), is_valid_ipv4_address(value), is_valid_ipv6_address(value)]):
             raise ValidationError("The host is not a valid Hostname/IPv4/IPv6")
+
+
+# Elastic forwarder section
+@global_registry.register
+class ElasticHost(StringPreference):
+    """
+    Dynamic Preference for Elasticsearch Hostname/IP & Port
+    """
+    section = elastic
+    name = "host"
+    help_text = "The hostname/ip of the Elasticsearch to forward commands/responses, leave blank to disable forwarding"
+    _default = os.environ.get("ELASTIC_URL", "")
+    default = _default if is_valid_elastic_host(_default)[0] else ""
+
+    def validate(self, value):
+        """
+        Validate the Hostname/IP when updated
+        :param value: new value to validate
+        :return: None/exception
+        """
+        err, exc = is_valid_elastic_host(value)
+
+        if exc:
+            raise exc
