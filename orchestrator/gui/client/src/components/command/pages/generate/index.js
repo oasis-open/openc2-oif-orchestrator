@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
 import JSONPretty from 'react-json-pretty'
+import classnames from 'classnames'
 
 import {
   Button,
@@ -11,6 +12,11 @@ import {
   FormText,
   Input,
   Label,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
   Tooltip
 } from 'reactstrap'
 
@@ -66,6 +72,7 @@ class GenerateCommands extends Component {
     this.msg_form = null
 
     this.state = {
+      active_tab: 'creator',
       msg_record: '',
       channel: {
         serialization: '',
@@ -125,6 +132,12 @@ class GenerateCommands extends Component {
         command_id: generateUUID4()
       }
     }))
+  }
+
+  toggleTab(tab) {
+    this.setState({
+      active_tab: tab
+    })
   }
 
   sendCommand() {
@@ -367,20 +380,20 @@ class GenerateCommands extends Component {
 
     return (
       <div className='col-md-6'>
-        <ul className='nav nav-tabs'>
-          <li className='nav-item'>
-            <a className='nav-link active show' data-toggle='tab' href='#tab-creator'>Creator</a>
-          </li>
-          <li id='msg-tab' className='nav-item' >
-            <a className='nav-link' data-toggle='tab' href='#tab-message'>Message</a>
-          </li>
-          <li id='msg-tab' className='nav-item' >
-            <a className='nav-link' data-toggle='tab' href='#tab-warning'>Warnings <span className={ "badge badge-" + ( this.state.message_warnings.length > 0 ? "warning" : "success")}>{ this.state.message_warnings.length }</span></a>
-          </li>
-        </ul>
+        <Nav tabs>
+          <NavItem>
+            <NavLink className={classnames({ active: this.state.active_tab === 'creator' })} onClick={() => this.toggleTab('creator') }>Creator</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink className={classnames({ active: this.state.active_tab === 'message' })} onClick={() => this.toggleTab('message') }>Message</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink className={classnames({ active: this.state.active_tab === 'warning' })} onClick={() => this.toggleTab('warning') }>Warnings <span className={ "badge badge-" + ( this.state.message_warnings.length > 0 ? "warning" : "success")}>{ this.state.message_warnings.length }</span></NavLink>
+          </NavItem>
+        </Nav>
 
-        <div className='tab-content'>
-          <div className='tab-pane fade active show' id='tab-creator'>
+        <TabContent activeTab={ this.state.active_tab }>
+          <TabPane tabId='creator'>
             <div className='card col-12 p-0 mx-auto'>
               <div className='card-header'>
                 <FormGroup className='col-md-6 p-0 m-0 float-left'>
@@ -405,9 +418,9 @@ class GenerateCommands extends Component {
                 </div>
               </Form>
             </div>
-          </div>
+          </TabPane>
 
-          <div className='tab-pane fade' id='tab-message'>
+          <TabPane tabId='message'>
             <div className='card col-12 p-0 mx-auto'>
               <div className='card-header'>
                 <ButtonGroup className='float-right col-2' vertical={ true }>
@@ -439,9 +452,9 @@ class GenerateCommands extends Component {
                 />
               </div>
             </div>
-          </div>
+          </TabPane>
 
-          <div className='tab-pane fade' id='tab-warning'>
+          <TabPane tabId='warning'>
             <div className='card col-12 p-0 mx-auto'>
               <div className='card-header h3'>
                 Message Warnings
@@ -468,8 +481,8 @@ class GenerateCommands extends Component {
                 }
               </div>
             </div>
-          </div>
-        </div>
+          </TabPane>
+        </TabContent>
       </div>
     )
   }
