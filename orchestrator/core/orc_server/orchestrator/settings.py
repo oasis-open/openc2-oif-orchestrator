@@ -38,6 +38,7 @@ APPEND_SLASH = True
 INSTALLED_APPS = [
     # Custom Modules - MUST BE IN DEPENDENCY ORDER!!
     'orchestrator',
+    'es_mirror',
     'device',
     'actuator',
     'account',
@@ -301,7 +302,13 @@ TRACKING = {
     ]
 }
 
-# Queue
+# Elasticsearch Model Mirroring
+ES_MIRROR = {
+    'host': os.environ.get('ES_HOST', None),
+    'prefix': os.environ.get('ES_PREFIX', ''),
+}
+
+# Message Queue
 QUEUE = {
     'hostname': os.environ.get('QUEUE_HOST', 'localhost'),
     'port': os.environ.get('QUEUE_PORT', 5672),
@@ -315,10 +322,6 @@ QUEUE = {
 }
 
 MESSAGE_QUEUE = None
-
-# Elasticsearch
-# from utils import ElasticHooks
-# ELASTIC_HOOKS = ElasticHooks()
 
 # Valid Schema Formats
 SCHEMA_FORMATS = (

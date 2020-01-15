@@ -10,11 +10,13 @@ from rest_framework import serializers
 
 from tracking import log
 from actuator.models import Actuator, ActuatorSerializer
-from utils import randBytes, get_or_none  # , ElasticModel
-# from .documents import CommandDocument, ResponseDocument
+from utils import randBytes, get_or_none
+
+from .documents import CommandDocument, ResponseDocument
+from es_mirror.decorators import ElasticModel
 
 
-# @ElasticModel(doc=CommandDocument)
+@ElasticModel(doc=CommandDocument)
 class SentHistory(models.Model):
     """
     Command Sent History model
@@ -85,7 +87,7 @@ class SentHistory(models.Model):
         return "Sent History: {} - {}".format(self.command_id, self.user)
 
 
-# @ElasticModel(doc=ResponseDocument)
+@ElasticModel(doc=ResponseDocument)
 class ResponseHistory(models.Model):
     """
     Command Response History model

@@ -1,70 +1,73 @@
-from django_elasticsearch_dsl import fields, Document, InnerDoc, Nested, Object
-from dynamic_preferences.registries import global_preferences_registry
+from es_mirror.field import (
+    Date,
+    Integer,
+    Nested,
+    Object,
+    Text
+)
 
-global_preferences = global_preferences_registry.manager()
+from es_mirror.document import Document, InnerDoc
 
 
-class Actuator(InnerDoc):
-    name = fields.TextField(),
-    actuator_id = fields.TextField(),
-    device = fields.ObjectField(properties={
-        'name': fields.TextField(),
-        'device_id': fields.TextField(),
-    })
+class UserDocument(InnerDoc):
+    username = Text()
+    email = Text()
+
+
+class DeviceDocument(InnerDoc):
+    name = Text()
+    device_id = Text()
+
+
+class ActuatorDocument(InnerDoc):
+    name = Text()
+    actuator_id = Text()
+    device = Object(DeviceDocument)
+
+
+class OpenC2_CommandDocument(InnerDoc):
+    action = Text()
+    target = Object(dynamic=True)
+    args = Object(dynamic=True)
+    actuator = Object(dynamic=True)
+    command_id = Text()
+
+
+class OpenC2_ResponseDocument(InnerDoc):
+    status = Integer()
+    status_text = Text()
+    results = Object(dynamic=True)
 
 
 class CommandDocument(Document):
-    command_id = fields.TextField()
-    user = fields.ObjectField(properties={
-        'username': fields.TextField(),
-        'email': fields.TextField()
-    })
-    received_on = fields.DateField()
-    actuators = Nested(Actuator)
-    command = fields.ObjectField(properties={
-        'action': fields.TextField(),
-        'target': fields.ObjectField(dynamic=True),
-        'args': fields.ObjectField(dynamic=True),
-        'actuator': fields.ObjectField(dynamic=True),
-        'command_id': fields.TextField()
-    })
+    command_id = Text()
+    user = Object(UserDocument)
+    received_on = Date(default_timezone='UTC')
+    actuators = Nested(ActuatorDocument)
+    command = Object(OpenC2_CommandDocument)
 
     class Index:
-        @property
-        def name(self):
-            # Name of the Elasticsearch index
-            _orc_name = global_preferences.get("orchestrator__name", "").lower().replace(" ", "-")
-            return f"{_orc_name}_commands"
+        name = 'commands'
 
-    # def prepare_received_on(self, instance):
-    #     return int(instance.received_on.timestamp())
-
-    def prepare_command(self, instance):
-        return dict(instance.command)
+        settings = {
+            'number_of_shards': 1,
+            'number_of_replicas': 0
+        }
 
 
 class ResponseDocument(Document):
-    command = fields.TextField()
-    received_on = fields.DateField()
-    actuator = Object(Actuator)
-    response = fields.ObjectField(properties={
-        'status': fields.IntegerField(),
-        'status_text': fields.TextField(),
-        'results': fields.ObjectField(dynamic=True)
-    })
+    command = Text()
+    received_on = Date(default_timezone='UTC')
+    actuator = Object(ActuatorDocument)
+    response = Object(OpenC2_ResponseDocument)
 
     class Index:
-        @property
-        def name(self):
-            # Name of the Elasticsearch index
-            _orc_name = global_preferences.get("orchestrator__name", "").lower().replace(" ", "-")
-            return f"{_orc_name}_responses"
+        name = 'responses'
+
+        settings = {
+            'number_of_shards': 1,
+            'number_of_replicas': 0
+        }
 
     def prepare_command(self, instance):
-        return str(instance.command.command_id)
-
-    # def prepare_received_on(self, instance):
-    #     return int(instance.received_on.timestamp())
-
-    def prepare_response(self, instance):
-        return dict(instance.response)
+        return instance.command.command_id

@@ -12,8 +12,8 @@ djangorestframework-queryfields==1.0.0
 djangorestframework-xml==1.4.0
 drf-writable-nested==0.5.4
 elasticsearch-dsl==7.1.0
-jsonfield==2.0.2
-mysql-connector-python==8.0.18
+jsonfield2==3.1.0
+mysql-connector-python==8.0.19
 pyexcel-xls==0.5.8
 uwsgi==2.0.18
 whitenoise==5.0.1
