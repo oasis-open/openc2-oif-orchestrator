@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
 import JSONPretty from 'react-json-pretty'
@@ -54,7 +55,7 @@ import * as GenerateActions from '../../../../actions/generate'
 import * as CommandActions from '../../../../actions/command'
 
 const str_fmt = require('string-format')
-const Ajv = require('ajv');
+const Ajv = require('ajv')
 
 
 class GenerateCommands extends Component {
@@ -71,6 +72,28 @@ class GenerateCommands extends Component {
     })
     this.msg_form = null
 
+    this.theme = {
+      schema: { // Theming for JADN/JSON input
+        default: '#D4D4D4',
+        background: '#FCFDFD',
+        background_warning: '#FEECEB',
+        string: '#FA7921',
+        number: '#70CE35',
+        colon: '#49B8F7',
+        keys: '#59A5D8',
+        keys_whiteSpace: '#835FB6',
+        primitive: '#386FA4'
+      },
+      message: { // Theming for JSONPretty
+        main: 'color:#D4D4D4;background:#FCFDFD;overflow:auto;',
+        error: 'color:#f92672;background:#FEECEB;overflow:auto;',
+        key: 'color:#59A5D8;',
+        string: 'color:#FA7921;',
+        value: 'color:#386FA4;',
+        boolean: 'color:#386FA4;',
+      }
+    }
+
     this.state = {
       active_tab: 'creator',
       msg_record: '',
@@ -79,12 +102,12 @@ class GenerateCommands extends Component {
         protocol: ''
       },
       schema: {
-      schema: {},
-      selected: 'empty',
-      type: '',
-      jadn_fmt: false,
-      exports: []
-     },
+        schema: {},
+        selected: 'empty',
+        type: '',
+        jadn_fmt: false,
+        exports: []
+      },
       message: {},
       message_warnings: []
     }
@@ -180,9 +203,10 @@ class GenerateCommands extends Component {
   }
 
   clearCommand() {
-    console.log("CLEAR COMMAND")
-    console.log(this.msg_form)
-    console.log(this.msg_form.getRef())
+    ReactDOM.findDOMNode(this.msg_form).reset()
+    this.setState({
+      message: {}
+    })
   }
 
   optChange(k, v) {
@@ -319,9 +343,9 @@ class GenerateCommands extends Component {
 
             <div className="form-control border card-body p-0" style={{ height: maxHeight+'px' }}>
               <Editor
-                id='jadn_schema'
+                id='schema'
                 placeholder={ this.state.schema.schema }
-                theme='light_mitsuketa_tribute'
+                colors={ this.theme.schema }
                 locale={ locale }
                 reset={ false }
                 height='100%'
@@ -397,7 +421,7 @@ class GenerateCommands extends Component {
             <div className='card col-12 p-0 mx-auto'>
               <div className='card-header'>
                 <FormGroup className='col-md-6 p-0 m-0 float-left'>
-                  <Input type='select' className='form-control' value={ this.state.msg_record } onChange={ (e) => { this.setState({'msg_record': e.target.value, message: {}}) }}>
+                  <Input type='select' className='form-control' value={ this.state.msg_record } onChange={e => { this.setState({'msg_record': e.target.value, message: {}}) }}>
                     <option value=''>Message Type</option>
                     <optgroup label="Exports">
                       { export_records }
@@ -407,7 +431,7 @@ class GenerateCommands extends Component {
                 <Button color='primary' className='float-right' onClick={ () => this.makeID() }>Generate ID</Button>
               </div>
 
-              <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } ref={ (el) => this.msg_form = el } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
+              <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } ref={el => this.msg_form = el } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
                 <div id="fieldDefs">
                   {
                     this.state.msg_record == "" ?
@@ -448,7 +472,8 @@ class GenerateCommands extends Component {
                   id='message'
                   className='scroll-xl'
                   style={{ minHeight: 2.5+'em' }}
-                  json={ this.state.message }
+                  data={ this.state.message }
+                  theme={ this.theme.message }
                 />
               </div>
             </div>

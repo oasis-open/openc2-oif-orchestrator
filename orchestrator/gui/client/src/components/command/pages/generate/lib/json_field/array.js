@@ -122,7 +122,6 @@ class ArrayField extends Component {
           name = this.props.def.items["$ref"].replace("#/definitions/", "")
           ref = safeGet(safeGet(this.props.schema, "definitions", {}), name, {})
         } else if (this.props.def.items.hasOwnProperty("type")) {
-          console.log("Type")
           ref = { ...this.props.def.items }
         }
         fields.push(<Field key={ i } name={ name } parent={ this.parent } def={ ref } optChange={ this.optChange.bind(this) } idx={ i } />)
