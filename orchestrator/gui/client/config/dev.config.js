@@ -9,12 +9,12 @@ console.log('NODE_ENV: ' + env)
 const ROOT_DIR = path.join(__dirname, '..')
 const BUILD_DIR = path.join(ROOT_DIR, 'build')
 
-module.exports = merge(generalConfig, {
+module.exports = merge.smart(generalConfig, {
   mode: env,
   devtool: 'eval',
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(env)
+      NODE_ENV: env
     }),
     new webpack.NoEmitOnErrorsPlugin(),
   ],
