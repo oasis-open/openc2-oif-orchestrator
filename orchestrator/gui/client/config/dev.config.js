@@ -9,36 +9,30 @@ console.log('NODE_ENV: ' + env)
 const ROOT_DIR = path.join(__dirname, '..')
 const BUILD_DIR = path.join(ROOT_DIR, 'build')
 
-const config = merge(generalConfig, {
-    mode: env,
-    devtool: 'eval',
-    plugins: [
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify(env),
-            },
-        }),
-        new webpack.NoEmitOnErrorsPlugin(),
-    ],
-    devServer: {
-        contentBase: BUILD_DIR,
-        compress: true,
-        port: 3000,
-        hot: true,
-        open: false,
-        historyApiFallback: true,
-        proxy: {
-            '/api': {
-                target: 'http://localhost:8081',
-                //pathRewrite: {"^/api/v1" : ""},
-                secure: false
-            }
-        }
-    },
-    optimization: {
-        usedExports: true,
+module.exports = merge.smart(generalConfig, {
+  mode: env,
+  devtool: 'eval',
+  plugins: [
+    new webpack.DefinePlugin({
+      NODE_ENV: env
+    }),
+    new webpack.NoEmitOnErrorsPlugin(),
+  ],
+  devServer: {
+    contentBase: BUILD_DIR,
+    compress: true,
+    port: 3000,
+    hot: true,
+    open: false,
+    historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8081',
+        secure: false
+      }
     }
-});
-
-
-module.exports = config
+  },
+  optimization: {
+    usedExports: true,
+  }
+})

@@ -3,7 +3,7 @@ import Logout from './logout'
 import PrivateRoute from './privateRoute'
 
 export {
-    Login,
-    Logout,
-    PrivateRoute
+  Login,
+  Logout,
+  PrivateRoute
 }

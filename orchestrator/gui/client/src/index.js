@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
+import { HelmetProvider } from 'react-helmet-async'
 
 import registerServiceWorker from './registerServiceWorker'
 
@@ -21,14 +22,16 @@ const history = createBrowserHistory()
 const store = configureStore(history)
 
 // Theme Options
-const validThemes = ['cyborg', 'darkly', 'lumen', 'slate', 'solar', 'superhero']
+const validThemes = ['cyborg', 'darkly', 'flatly', 'litera', 'lumen', 'slate', 'spacelab', 'yeti']
 
 const Root = () => (
-    <Provider store={ store } >
-        <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeOptions={ validThemes }>
-            <App history={ history } />
-        </ThemeSwitcher>
-    </Provider>
+  <Provider store={ store } >
+    <HelmetProvider>
+      <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeOptions={ validThemes }>
+        <App history={ history } />
+      </ThemeSwitcher>
+    </HelmetProvider>
+  </Provider>
 )
 
 ReactDOM.render(<Root />, document.getElementById('root'));

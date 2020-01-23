@@ -5,26 +5,26 @@ import { Redirect } from 'react-router-dom'
 import * as AuthActions from '../../actions/auth'
 
 class Logout extends Component {
-    componentWillMount() {
-        if (this.props.isAuthenticated) {
-            this.props.logout()
-        }
+  componentDidMount() {
+    if (this.props.isAuthenticated) {
+      this.props.logout()
     }
+  }
 
-    render() {
-        return (
-            <Redirect to='/' />
-        )
-    }
+  render() {
+    return (
+      <Redirect to='/' />
+    )
+  }
 }
 
 const mapStateToProps = (state) => ({
-    authErrors: state.Auth.errors,
-    isAuthenticated: AuthActions.isAuthenticated(state.Auth)
+  authErrors: state.Auth.errors,
+  isAuthenticated: AuthActions.isAuthenticated(state.Auth)
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    logout: () => dispatch(AuthActions.logout())
+  logout: () => dispatch(AuthActions.logout())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Logout)
