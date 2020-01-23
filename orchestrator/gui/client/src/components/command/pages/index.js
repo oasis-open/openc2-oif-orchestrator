@@ -4,7 +4,7 @@ import CommandInfo from './info'
 import GenerateCommands from './generate'
 
 export {
-    CommandTable,
-    CommandInfo,
-    GenerateCommands
+  CommandTable,
+  CommandInfo,
+  GenerateCommands
 }

@@ -6,8 +6,8 @@ from .. import views
 
 
 router = routers.DefaultRouter()
-router.register(r'event', views.EventLogViewSet)
-router.register(r'request', views.RequestLogViewSet)
+router.register('event', views.EventLogViewSet)
+router.register('request', views.RequestLogViewSet)
 
 urlpatterns = [
     # Routers

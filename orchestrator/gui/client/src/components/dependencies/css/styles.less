@@ -46,17 +46,26 @@ nav > .container-fluid,
 	white-space: pre-wrap;
 	padding: 0.5em;
 }
+fieldset {
+	legend {
+		margin-bottom: 0 !important;
+	}
+	legend + .form-text {
+		margin-top: 0 !important;
+	}
+}
+
 div {
     &.scroll {
         max-height: @max-scroll;
-        overflow: scroll;
+        overflow: auto;
 		&-lg {
 			max-height: @max-scroll*2;
-			overflow: scroll;
+			overflow: auto;
 		}
 		&-xl {
 			max-height: @max-scroll*3;
-			overflow: scroll;
+			overflow: auto;
 		}
     }
 }
@@ -83,6 +92,13 @@ div {
 			color: #FA7921;
 		}
 	}
+}
+
+/* react-jsonschema-form */
+.ReactModalPortal {
+    .ReactModal__Overlay {
+        z-index: 1100;
+    }
 }
 
 // Extra small devices (portrait phones, less than 576px)

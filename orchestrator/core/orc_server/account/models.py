@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib.auth.models import User
-
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+
+from .exceptions import EditException
 
 from actuator.models import ActuatorGroup
 from device.models import DeviceGroup
@@ -12,7 +10,7 @@ from device.models import DeviceGroup
 
 class UserSerializer(serializers.ModelSerializer):
     """
-    Model Serializer for Users
+    Users API Serializer
     """
     auth_groups = serializers.SerializerMethodField()
     actuator_groups = serializers.SerializerMethodField()
@@ -24,8 +22,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'password', 'email', 'first_name', 'last_name', 'token', 'is_active', 'is_staff', 'auth_groups', 'actuator_groups', 'device_groups')
         extra_kwargs = {
             'password': {'write_only': True},
-            'is_active': {'default': 0, 'write_only': True},
-            'is_staff': {'default': 0, 'write_only': True},
+            'is_active': {'default': False},
+            'is_staff': {'default': False}
         }
 
     def get_auth_groups(self, obj):
@@ -42,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
         return token.key if token is not None and hasattr(token, 'key') else 'N/A'
 
     def create(self, validated_data):
+        validated_data.setdefault('is_superuser', False)
         user = super(UserSerializer, self).create(validated_data)
         if 'password' in validated_data:
             user.set_password(validated_data['password'])
@@ -49,6 +48,19 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
+        validated_data.setdefault('is_superuser', False)
+
+        super_users = list(User.objects.filter(is_superuser=True))
+        staff_users = list(User.objects.filter(is_staff=True))
+
+        if instance in super_users:
+            if len(super_users) == 1:
+                raise EditException("Cannot edit last super user")
+
+        if instance in staff_users:
+            if len(staff_users) == 1:
+                raise EditException("Cannot edit last admin user")
+
         if 'password' in validated_data:
             password = validated_data.pop('password')
             instance.set_password(password)
@@ -57,13 +69,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PasswordSerializer(serializers.Serializer):
     """
-    Serializer for password change endpoint.
+    Serializer for password change endpoint
     """
     old_password = serializers.CharField(required=True)
     new_password_1 = serializers.CharField(required=True)
     new_password_2 = serializers.CharField(required=True)
 
     def validate(self, data):
+        """
+        Validate the old password given is correct adn the two new passwords match
+        :param data: data to validate
+        :return: data/exception
+        """
         if data['new_password_1'] != data['new_password_2']:
             raise serializers.ValidationError("New Passwords do not match")
         return data

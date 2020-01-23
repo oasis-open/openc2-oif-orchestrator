@@ -1,15 +1,21 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DocumentMeta from 'react-document-meta'
-
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import { Helmet } from 'react-helmet-async'
 
 import {
-    DeviceModal
+  Button,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader
+} from 'reactstrap'
+
+import {
+  DeviceModal
 } from './lib'
 
 import {
-    RemotePageTable
+  RemotePageTable
 } from '../utils'
 
 import * as DeviceActions from '../../actions/device'
@@ -17,86 +23,83 @@ import * as DeviceActions from '../../actions/device'
 const str_fmt = require('string-format')
 
 class Devices extends Component {
-    constructor(props, context) {
-        super(props, context)
+  constructor(props, context) {
+    super(props, context)
 
-        this.meta = {
-            title: str_fmt('{base} | {page}', {base: this.props.siteTitle, page: 'Devices'}),
-            canonical: str_fmt('{origin}{path}', {origin: window.location.origin, path: window.location.pathname})
-        }
+    this.meta = {
+      title: str_fmt('{base} | {page}', {base: this.props.siteTitle, page: 'Devices'}),
+      canonical: str_fmt('{origin}{path}', {origin: window.location.origin, path: window.location.pathname})
+    }
 
-        this.tableColumns = [
-            {
-                text: 'Name',
+    this.tableColumns = [
+      {
+        text: 'Name',
+        dataField: 'name',
+        sort: true
+      }, {
+        text: 'Transport',
+        dataField: 'transport',
+        formatter: (cell) => ( <span>{ cell.map(t => str_fmt('{serialization} via {protocol}', t)).join(' | ') }</span> ),
+        sort: true
+      }
+    ]
+
+    this.editOptions = {
+      modal: DeviceModal,
+      delete: this.props.deleteDevice
+    }
+    // this.props.getDevices()
+  }
+
+  render() {
+    return (
+      <div className="row mx-auto">
+        <Helmet>
+          <title>{ this.meta.title }</title>
+          <link rel="canonical" href={ this.meta.canonical } />
+        </Helmet>
+        <div className="col-12">
+          <div className="col-12">
+            { this.props.admin ? <DeviceModal register className="float-right" /> : '' }
+            <h1>{ this.props.orchestrator.name } Devices</h1>
+          </div>
+
+          <RemotePageTable
+            keyField='device_id'
+            dataKey='Device.devices'
+            dataGet={ this.props.getDevices }
+            columns={ this.tableColumns }
+            editRows
+            editOptions={ this.editOptions }
+            defaultSort={[
+              {
                 dataField: 'name',
-                sort: true
-            }, {
-                text: 'Transport',
+                order: 'desc'
+              },
+              {
                 dataField: 'transport',
-                formatter: (cell) => ( <span>{ cell.map(t => str_fmt('{serialization} via {protocol}', t)).join(' | ') }</span> ),
-                sort: true
-            }
-        ]
-
-        this.editOptions = {
-            modal: DeviceModal,
-            delete: this.props.deleteDevice
-        }
-
-        this.props.getDevices()
-    }
-
-    render() {
-        return (
-            <DocumentMeta { ...this.meta } extend >
-                <div className="row mx-auto">
-                    <div className="col-12">
-                         <div className="col-12">
-                            { this.props.admin ? <DeviceModal register className="float-right" /> : '' }
-                            <h1>{ this.props.orchestrator.name } Devices</h1>
-                        </div>
-
-                        <RemotePageTable
-                            keyField='device_id'
-                            dataKey='Device.devices'
-                            dataGet={ this.props.getDevices }
-                            columns={ this.tableColumns }
-                            editRows
-                            editOptions={ this.editOptions }
-                            defaultSort={[
-                                {
-                                    dataField: 'name',
-                                    order: 'desc'
-                                },
-                                {
-                                    dataField: 'transport',
-                                    order: 'desc'
-                                }
-                            ]}
-                        />
-                    </div>
-                </div>
-            </DocumentMeta>
-        )
-    }
+                order: 'desc'
+              }
+            ]}
+          />
+        </div>
+      </div>
+    )
+  }
 }
 
-function mapStateToProps(state) {
-    return {
-        siteTitle: state.Util.site_title,
-        orchestrator: {
-            name: state.Util.name || 'N/A'
-        },
-        admin: state.Auth.access.admin
-    }
-}
+const mapStateToProps = (state) => ({
+  siteTitle: state.Util.site_title,
+  orchestrator: {
+    name: state.Util.name || 'N/A'
+  },
+  admin: state.Auth.access.admin
+})
 
 
-function mapDispatchToProps(dispatch) {
-    return {
-        getDevices: (page, sizePerPage, sort) => dispatch(DeviceActions.getDevices(page, sizePerPage, sort)),
-        deleteDevice: (dev) => dispatch(DeviceActions.deleteDevice(dev))
-    }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getDevices: (page, sizePerPage, sort) => dispatch(DeviceActions.getDevices(page, sizePerPage, sort)),
+  deleteDevice: (dev) => dispatch(DeviceActions.deleteDevice(dev))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Devices)

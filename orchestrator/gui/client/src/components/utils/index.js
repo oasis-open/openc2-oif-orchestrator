@@ -1,57 +1,53 @@
 import InputField from './inputField'
-import loadURL, { validURL } from './loadURL'
 import RemotePageTable from './remotePageTable'
 
 import {
-    mergeByProperty
+  mergeByProperty,
+  updateArray
 } from './array'
 
 import {
-    escaped2cbor,
-    hexify
-} from './cbor'
-
-import {
-    checkSchema,
-    titleCase
+  checkSchema,
+  safeGet,
+  sleep,
+  titleCase
 } from './general'
 
 import {
-    FormatJADN
+  FormatJADN
 } from './jadn'
 
 import {
-    delMultiKey,
-    getMultiKey,
-    setMultiKey
+  delMultiKey,
+  getMultiKey,
+  setMultiKey
 } from './multiKey'
 
 import {
-    ThemeChooser,
-    ThemeSwitcher
+  ThemeChooser,
+  ThemeSwitcher
 } from './theme-switcher'
 
 import {
-    generateUUID4,
-    validateUUID4
+  generateUUID4,
+  validateUUID4
 } from './uuid'
 
 export {
-    checkSchema,
-    delMultiKey,
-    escaped2cbor,
-    FormatJADN,
-    generateUUID4,
-    getMultiKey,
-    hexify,
-    InputField,
-    loadURL,
-    mergeByProperty,
-    RemotePageTable,
-    setMultiKey,
-    ThemeChooser,
-    ThemeSwitcher,
-    titleCase,
-    validateUUID4,
-    validURL
+  checkSchema,
+  delMultiKey,
+  FormatJADN,
+  generateUUID4,
+  getMultiKey,
+  InputField,
+  mergeByProperty,
+  RemotePageTable,
+  safeGet,
+  setMultiKey,
+  sleep,
+  ThemeChooser,
+  ThemeSwitcher,
+  titleCase,
+  updateArray,
+  validateUUID4
 }

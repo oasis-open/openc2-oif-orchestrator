@@ -1,20 +1,17 @@
 # mqtt_transport.py
 
-import paho.mqtt.client as mqtt
-import os
-import ssl
-from sb_utils import Consumer, safe_cast
+from sb_utils import Consumer
 from callbacks import Callbacks
 
 # Begin consuming messages from internal message queue
+print("Connecting to RabbitMQ...")
 try:
     consumer = Consumer(
-        exchange='transport',
+        exchange="transport",
         routing_key="mqtt",
-        callbacks=[Callbacks.send_mqtt]
+        callbacks=[Callbacks.send_mqtt],
+        debug=True
     )
-except:
+except Exception as err:
+    print(f"Consumer Error: {err}")
     consumer.shutdown()
-
-
-    

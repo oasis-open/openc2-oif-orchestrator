@@ -1,13 +1,12 @@
 {
     "plugins": [
-        "plugin-syntax-dynamic-import",
         "transform-object-rest-spread"
     ],
     "presets": [
         [
             "env",
             {
-                modules: false
+                "modules": false
             }
         ]
     ]

@@ -6,8 +6,8 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify
 from . import views
 
 router = routers.DefaultRouter()
-router.register(r'', views.UserViewSet)
-router.register(r'(?P<username>[^/.]+)/history', views.UserHistoryViewSet)
+router.register('', views.UserViewSet)
+router.register('(?P<username>[^/.]+)/history', views.UserHistoryViewSet)
 
 urlpatterns = [
     # JWT Tokens
@@ -21,6 +21,8 @@ urlpatterns = [
     path('',  include(router.urls)),
 
     # Actuator Access
-    path('<str:username>/actuator/', views.ActuatorAccess.as_view()),
-    path('<str:username>/actuator/<str:actuator>/', views.actuatorDelete),
+    path('<str:username>/actuator/', include([
+        path('', views.ActuatorAccess.as_view()),
+        path('<str:actuator_id>/', views.actuatorDelete)
+    ]))
 ]
