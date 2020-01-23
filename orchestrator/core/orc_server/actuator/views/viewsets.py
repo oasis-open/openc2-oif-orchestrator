@@ -1,7 +1,7 @@
 import bleach
 
 from rest_framework import permissions, viewsets, filters
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
@@ -76,7 +76,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(actuator)
         return Response(serializer.data)
 
-    @detail_route(['PATCH'])
+    @action(methods=['PATCH'], detail=False)
     def refresh(self, request, *args, **kwargs):
         """
         API endpoint that allows Actuator data to be refreshed
@@ -97,7 +97,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
             'refresh': refresh
         })
 
-    @detail_route(['GET'])
+    @action(methods=['GET'], detail=False)
     def profile(self, request, *args, **kwargs):
         """
         API endpoint that allows for Actuator profile retrieval
@@ -116,7 +116,7 @@ class ActuatorViewSet(viewsets.ModelViewSet):
 
         return Response(rtn)
 
-    @detail_route(['GET'])
+    @action(methods=['GET'], detail=False)
     def users(self, request, *args, **kwargs):
         """
         API endpoint that allows for Actuator user retrieval

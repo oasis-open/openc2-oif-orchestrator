@@ -4,9 +4,8 @@ import re
 import uuid
 
 from django.forms import ValidationError
-
 from dynamic_preferences.admin import GlobalPreferenceAdmin, PerInstancePreferenceAdmin
-from dynamic_preferences.types import ChoicePreference, IntegerPreference, LongStringPreference, StringPreference
+from dynamic_preferences.types import StringPreference
 from dynamic_preferences.preferences import Section
 from dynamic_preferences.registries import global_preferences_registry as global_registry
 
@@ -15,7 +14,6 @@ GlobalPreferenceAdmin.has_delete_permission = lambda *args, **kwargs: False
 PerInstancePreferenceAdmin.has_add_permission = lambda *args, **kwargs: False
 PerInstancePreferenceAdmin.has_delete_permission = lambda *args, **kwargs: False
 
-site = Section("site")
 orchestrator = Section("orchestrator")
 
 
@@ -60,6 +58,7 @@ def is_valid_ipv6_address(address):
     return True
 
 
+# Orchestrator section
 @global_registry.register
 class OrchestratorName(StringPreference):
     """
@@ -116,7 +115,7 @@ class OrchestratorHost(StringPreference):
 
     def validate(self, value):
         """
-        Validate the Hostnae/IP when updated
+        Validate the Hostname/IP when updated
         :param value: new value to validate
         :return: None/exception
         """

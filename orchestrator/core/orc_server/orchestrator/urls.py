@@ -70,7 +70,7 @@ if settings.ADMIN_GUI is True:
     gui_patterns.append(path('admin/', admin.site.urls))
 else:
     # Admin GUI Redirect
-    gui_patterns.append(path(r'admin/', views.gui_redirect))
+    gui_patterns.append(path('admin/', views.gui_redirect))
 
 
 urlpatterns = [
@@ -78,5 +78,8 @@ urlpatterns = [
     path('api/', include(api_patterns), name='api'),
 
     # GUI Patterns
-    path('', include(gui_patterns), name='gui')
+    path('', include(gui_patterns), name='gui'),
+
+    # Default favicon
+    path('favicon.ico', views.api_favicon, name='api.favicon')
 ]

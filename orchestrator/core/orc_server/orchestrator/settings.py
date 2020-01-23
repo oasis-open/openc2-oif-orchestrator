@@ -1,7 +1,6 @@
 import datetime
 import os
 import re
-import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,6 +38,7 @@ APPEND_SLASH = True
 INSTALLED_APPS = [
     # Custom Modules - MUST BE IN DEPENDENCY ORDER!!
     'orchestrator',
+    'es_mirror',
     'device',
     'actuator',
     'account',
@@ -118,7 +118,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', '0Rch35Tr@t0r'),
         'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
         'PORT': os.environ.get('DATABASE_PORT', '3306'),
-        'CON_MAX_AGE': 3600
+        'CON_MAX_AGE': 5
     }
 }
 
@@ -228,6 +228,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
     'PAGE_SIZE': 10,
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S.%fZ"
 }
 
 
@@ -300,7 +302,13 @@ TRACKING = {
     ]
 }
 
-# Queue
+# Elasticsearch Model Mirroring
+ES_MIRROR = {
+    'host': os.environ.get('ES_HOST', None),
+    'prefix': os.environ.get('ES_PREFIX', ''),
+}
+
+# Message Queue
 QUEUE = {
     'hostname': os.environ.get('QUEUE_HOST', 'localhost'),
     'port': os.environ.get('QUEUE_PORT', 5672),
@@ -320,6 +328,9 @@ SCHEMA_FORMATS = (
     'jadn',
     'json'
 )
+
+# App stats function
+STATS_FUN = 'app_stats'
 
 # GUI Configuration
 ADMIN_GUI = True
