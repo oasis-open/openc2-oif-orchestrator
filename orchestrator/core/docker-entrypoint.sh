@@ -18,16 +18,6 @@ migrate() {
 
     python3 manage.py migrate --noinput
 
-: << EOF
-    if [[ -z "${ELASTIC_URL}" ]]; then
-        echo "Elasticsearch not enabled"
-    else
-      dockerize -wait $ELASTIC_URL -timeout 30s
-      [[ $( python3 manage.py search_index --create 2>&1) -ne 0 ]] || echo "Indices exist"
-      python3 manage.py search_index --populate
-    fi
-EOF
-
     if [[ $init -eq 1 ]]; then
         python3 manage.py loaddata_apps
 

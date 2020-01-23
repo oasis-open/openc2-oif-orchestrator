@@ -67,12 +67,12 @@ class Transport(models.Model):
     )
     topic = models.CharField(
         default="topic",
-        # help_text="Exchange for the specific device, only necessary for Pub/Sub protocols",
+        help_text="Topic for the specific device, only necessary for Pub/Sub protocols",
         max_length=30
     )
     channel = models.CharField(
-        default="routing_key",
-        # help_text="Routing Key for the specific device, only necessary for Pub/Sub protocols",
+        default="channel",
+        help_text="Channel for the specific device, only necessary for Pub/Sub protocols",
         max_length=30
     )
 
