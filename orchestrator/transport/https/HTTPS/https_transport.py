@@ -1,7 +1,7 @@
-import urllib3
+import requests
 
 from datetime import datetime
-from sb_utils import Producer, Consumer, default_encode, encode_msg, safe_json
+from sb_utils import Producer, Consumer, decode_msg, encode_msg, safe_json
 
 
 def process_message(body, message):
@@ -10,7 +10,6 @@ def process_message(body, message):
     :param body: Contains the message to be sent.
     :param message: Contains data about the message as well as headers
     """
-    http = urllib3.PoolManager(cert_reqs="CERT_NONE")
     producer = Producer()
 
     body = body if isinstance(body, dict) else safe_json(body)
@@ -27,12 +26,18 @@ def process_message(body, message):
         if device_socket and encoding and orc_socket:
             for profile in device["profile"]:
                 print(f"Sending command to {profile}@{device_socket}")
+                rtn_headers = {
+                    "socket": device_socket,
+                    "correlationID": corr_id,
+                    "profile": profile,
+                    "encoding": encoding,
+                    "transport": "https"
+                }
 
                 try:
-                    r = http.request(
-                        method="POST",
+                    r = requests.post(
                         url=f"https://{device_socket}",
-                        body=encode_msg(body, encoding),  # command being encoded
+                        data=encode_msg(body, encoding),  # command being encoded
                         headers={
                             "Content-type": f"application/openc2-cmd+{encoding};version=1.0",
                             # "Status": ...,  # Numeric status code supplied by Actuator's OpenC2-Response
@@ -42,21 +47,30 @@ def process_message(body, message):
                             "Host": f"{profile}@{device_socket}",
                         }
                     )
-                    data = safe_json({
+                    data = {
                         "headers": dict(r.headers),
-                        "content": safe_json(r.data.decode('utf-8'))
-                    })
-                    print(f"Response from request: {r.status} - {data}")
+                        "content": decode_msg(r.content.decode('utf-8'), encoding)
+                    }
+                    print(f"Response from request: {r.status_code} - {data}")
+                    # TODO: UPDATE HEADERS WITH RESPONSE INFO
+                    response = safe_json(data['content']) if isinstance(data['content'], dict) else data['content']
+
                 except Exception as err:
-                    err = str(getattr(err, "message", err))
-                    rcv_headers["error"] = True
-                    producer.publish(message=err, headers=rcv_headers, exchange="orchestrator", routing_key="response")
+                    response = str(getattr(err, "message", err))
+                    rtn_headers["error"] = True
                     print(f"HTTPS error: {err}")
+
+                producer.publish(
+                    message=response,
+                    headers=rtn_headers,
+                    exchange="orchestrator",
+                    routing_key="response"
+                )
         else:
             response = "Destination/Encoding/Orchestrator Socket of command not specified"
             rcv_headers["error"] = True
-            producer.publish(message=str(response), headers=rcv_headers, exchange="orchestrator", routing_key="response")
             print(response)
+            producer.publish(message=str(response), headers=rcv_headers, exchange="orchestrator", routing_key="response")
 
 
 if __name__ == "__main__":
