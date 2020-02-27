@@ -25,4 +25,5 @@ tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz && \
 #
 # Cleanup
 apk del tar && \
-rm -rf /var/cache/apk/* *.tar.gz* /usr/src /root/.gnupg /tmp/*
+rm /var/cache/apk/* && \
+rm -rf *.tar.gz* /usr/src /root/.gnupg /tmp/*
