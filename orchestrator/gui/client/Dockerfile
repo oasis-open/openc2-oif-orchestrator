@@ -7,7 +7,7 @@ ADD . /tmp/gui
 RUN apk add --update nodejs nodejs-npm && \
 cd /tmp/gui && \
 npm install  && \
-npm run init  && \
+npm run download-themes  && \
 npm run build  && \
 mkdir -p /opt/orchestrator/gui && \
 cp -r build/* /opt/orchestrator/gui

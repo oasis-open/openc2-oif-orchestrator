@@ -1,6 +1,8 @@
 """
 Django View Schema Utilities
 """
+import copy
+
 from django.urls import resolve
 from rest_framework.compat import coreapi
 from rest_framework.schemas import AutoSchema
@@ -13,7 +15,7 @@ class OrcSchema(AutoSchema):
     """
     def __init__(self, manual_fields=(), **kwargs):
         super(OrcSchema, self).__init__(manual_fields=manual_fields)
-        self.methods_fields = {k: v for k, v in kwargs.items()}
+        self.methods_fields = copy.deepcopy(kwargs)
         self.all_fields = kwargs.get('fields', [])
 
         for _, fields in self.methods_fields.items():
@@ -47,8 +49,7 @@ class OrcSchema(AutoSchema):
                 url_name = '_'.join(url_name.split('-')[1:]).lower()
                 view_method_fields = tuple(self.methods_fields.get(f"{url_name}_fields", []))
                 fields = self.update_fields(fields, view_method_fields)
-        except Exception as e:
-            # print(f"URL Error: {e}")
+        except Exception:  # pylint: disable=broad-except
             pass
 
         path = path[1:] if base_url and path.startswith('/') else path

@@ -3,6 +3,7 @@ import json
 from django.http import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
 from django.template import loader
 
+# Local imports
 from tracking import log
 
 
@@ -102,5 +103,3 @@ def server_error(request, *args, **kwargs):
     :param request: request instance
     """
     return HttpResponseServerError(**exception_response(request, 400, Exception('Server Error')))
-
-

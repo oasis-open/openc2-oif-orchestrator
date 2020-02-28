@@ -6,12 +6,13 @@ from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from drf_queryfields import QueryFieldsMixin
-from rest_framework.exceptions import ValidationError
 from jsonfield import JSONField
-from rest_framework import serializers, validators
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
+# Local imports
 from device.models import Device
-from utils import get_or_none, prefixUUID
+from utils import prefixUUID
 
 
 def defaultName():
@@ -90,7 +91,7 @@ class AbstractGroup(models.Model):
         return self.name
 
     def natural_key(self):
-        return self.name,
+        return self.name
 
     class Meta:
         abstract = True
@@ -186,7 +187,7 @@ def actuator_post_save(sender, instance=None, **kwargs):
                 old_profile.delete()
 
         # Create Profile Group
-        profile_group, created = ActuatorProfile.objects.get_or_create(name=profile_name)
+        profile_group, _ = ActuatorProfile.objects.get_or_create(name=profile_name)
 
         # Add Actuator
         profile_group.actuators.add(instance)

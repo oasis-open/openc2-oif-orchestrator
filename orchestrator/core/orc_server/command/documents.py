@@ -1,3 +1,4 @@
+from es_mirror.document import Document, InnerDoc
 from es_mirror.field import (
     Date,
     Integer,
@@ -5,8 +6,6 @@ from es_mirror.field import (
     Object,
     Text
 )
-
-from es_mirror.document import Document, InnerDoc
 
 
 class UserDocument(InnerDoc):

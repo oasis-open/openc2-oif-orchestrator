@@ -1,7 +1,6 @@
 import bleach
 import coreapi
 import coreschema
-import utils
 
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions
@@ -9,10 +8,13 @@ from rest_framework.decorators import api_view, permission_classes, schema
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
+# Local imports
+from utils import OrcSchema
+
 
 @api_view(['DELETE'])
 @permission_classes((permissions.IsAdminUser,))
-@schema(utils.OrcSchema(
+@schema(OrcSchema(
     fields=[
         coreapi.Field(
             "username",
@@ -32,7 +34,7 @@ from rest_framework.response import Response
         )
     ]
 ))
-def actuatorDelete(request, username, actuator_id, *args, **kwargs):
+def actuatorDelete(request, username, actuator_id, *args, **kwargs):  # pylint: disable=unused-argument
     """
     API endpoint that removes an actuator from a users access.
     """

@@ -1,5 +1,5 @@
-import ActuatorModal from './modal'
+import ActuatorModal from './modal';
 
 export {
  ActuatorModal
-}
+};

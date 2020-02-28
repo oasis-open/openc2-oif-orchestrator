@@ -2,10 +2,10 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
-from .exceptions import EditException
-
+# Local imports
 from actuator.models import ActuatorGroup
 from device.models import DeviceGroup
+from .exceptions import EditException
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,7 +19,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'email', 'first_name', 'last_name', 'token', 'is_active', 'is_staff', 'auth_groups', 'actuator_groups', 'device_groups')
+        fields = ('username', 'password', 'email', 'first_name', 'last_name', 'token', 'is_active', 'is_staff',
+                  'auth_groups', 'actuator_groups', 'device_groups')
         extra_kwargs = {
             'password': {'write_only': True},
             'is_active': {'default': False},
@@ -75,12 +76,18 @@ class PasswordSerializer(serializers.Serializer):
     new_password_1 = serializers.CharField(required=True)
     new_password_2 = serializers.CharField(required=True)
 
-    def validate(self, data):
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+    def validate(self, attrs):
         """
         Validate the old password given is correct adn the two new passwords match
-        :param data: data to validate
+        :param attrs: data to validate
         :return: data/exception
         """
-        if data['new_password_1'] != data['new_password_2']:
+        if attrs['new_password_1'] != attrs['new_password_2']:
             raise serializers.ValidationError("New Passwords do not match")
-        return data
+        return attrs

@@ -290,7 +290,7 @@ LOGGING = {
 }
 
 # Tracking
-from tracking import REQUEST_LEVELS
+from tracking import REQUEST_LEVELS  # pylint: disable=wrong-import-position
 TRACKING = {
     'URL_PREFIXES': [
         '^/(?!admin)'  # Don't log /admin/*

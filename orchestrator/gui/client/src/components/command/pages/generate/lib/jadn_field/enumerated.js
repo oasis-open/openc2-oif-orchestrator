@@ -1,47 +1,44 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { FormGroup, FormText, Input } from 'reactstrap';
 
-import {
-  FormGroup,
-  FormText,
-  Label,
-  Input
-} from 'reactstrap';
+import { isOptionalJADN } from '../utils';
 
-import { isOptional_jadn } from './'
+const EnumeratedField = props =>  {
+  const name = props.name || props.def.name;
+  const msgName = (props.parent ? [props.parent, name] : [name]).join('.');
+  const defOpts = props.def.fields.map(opt => <option key={ opt[0] } data-subtext={ opt[2] }>{ opt[1] }</option>);
 
-import * as GenActions from '../../../../../../actions/generate'
+  return (
+    <FormGroup tag="fieldset" className="border border-dark p-2">
+      <legend>{ (isOptionalJADN(props.def) ? '' : '*') + name }</legend>
+      { props.def.desc !== '' ? <FormText color="muted">{ props.def.desc }</FormText> : '' }
+      <Input
+        type="select"
+        name={ name }
+        title={ name }
+        className="selectpicker"
+        onChange={ e => props.optChange(msgName, e.target.value) }
+      >
+        <option data-subtext={ `${name} options` } value='' >{ `${name} options` }</option>
+        { defOpts }
+      </Input>
+    </FormGroup>
+  );
+};
 
-class EnumeratedField extends Component {
-  render() {
-    let name = this.props.name || this.props.def.name
-    let msgName = (this.props.parent ? [this.props.parent, name] : [name]).join('.')
-    let def_opts = this.props.def.fields.map(opt => <option key={ opt[0] } data-subtext={ opt[2] }>{ opt[1] }</option>)
+EnumeratedField.propTypes = {
+  def: PropTypes.object,
+  name: PropTypes.string,
+  optChange: PropTypes.func,
+  parent: PropTypes.string
+};
 
-    return (
-      <FormGroup tag="fieldset" className="border border-dark p-2">
-        <legend>{ (isOptional_jadn(this.props.def) ? '' : '*') + name }</legend>
-        { this.props.def.desc != '' ? <FormText color="muted">{ this.props.def.desc }</FormText> : '' }
-        <Input
-          type="select"
-          name={ name }
-          title={ name }
-          className="selectpicker"
-          onChange={ e => this.props.optChange(msgName, e.target.value) }
-        >
-          <option data-subtext={ name + ' options' } value='' >{ name + ' options' }</option>
-          { def_opts }
-        </Input>
-      </FormGroup>
-    )
-  }
-}
+EnumeratedField.defaultProps = {
+  def: {},
+  name: '',
+  optChange: null,
+  parent: ''
+};
 
-const mapStateToProps = (state) => ({
-  schema: state.Generate.selectedSchema
-})
-
-const mapDispatchToProps = (dispatch) => ({
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(EnumeratedField)
+export default EnumeratedField;

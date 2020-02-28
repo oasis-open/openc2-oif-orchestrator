@@ -1,51 +1,54 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Helmet } from 'react-helmet-async'
-import { toast } from 'react-toastify'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { createBrowserHistory } from 'history';
+import { Helmet } from 'react-helmet-async';
+import { toast } from 'react-toastify';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCog } from '@fortawesome/free-solid-svg-icons'
+import { Button } from 'reactstrap';
 
-const str_fmt = require('string-format')
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
 
 class Error extends Component {
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
+
+    this.goBack = this.goBack.bind(this);
 
     this.meta = {
-      title: str_fmt('{base} | {page}', {base: this.props.siteTitle, page: 'Oops...'}),
-      canonical: str_fmt('{origin}{path}', {origin: window.location.origin, path: window.location.pathname})
-    }
+      title: `${this.props.siteTitle} | Oops...`,
+      canonical: `${window.location.origin}${window.location.pathname}`
+    };
 
     this.iconGeneral = {
       display: 'inline-block',
-      width: 1+'em',
-      height: 1+'em',
-      fontSize: 4+'em',
+      width: '1em',
+      height: '1em',
+      fontSize: '4em',
       textAlign: 'center',
       position: 'absolute',
       top: 0,
       left: 0,
-      MozAnimationDuration: 5+'s',
-      OAnimationDuration: 5+'s',
-      WebkitAnimationDuration: 5+'s',
-      animationDuration: 5+'s'
-    }
+      MozAnimationDuration: '5s',
+      OAnimationDuration: '5s',
+      WebkitAnimationDuration: '5s',
+      animationDuration: '5s'
+    };
 
     this.reverseAnimation = {
       MozAnimationDirection: 'reverse',
       OAnimationDirection: 'reverse',
       WebkitAnimationDirection: 'reverse',
       animationDirection: 'reverse'
-    }
+    };
   }
 
   goBack() {
     if (this.props.history.length === 1) {
-      toast(<p>Looks like this is a new tab, try closing it instead of going back</p>, {type: toast.TYPE.WARNING})
+      toast(<p>Looks like this is a new tab, try closing it instead of going back</p>, {type: toast.TYPE.WARNING});
     } else {
-      this.props.history.goBack()
+      this.props.history.goBack();
     }
   }
 
@@ -57,11 +60,11 @@ class Error extends Component {
           <link rel="canonical" href={ this.meta.canonical } />
         </Helmet>
         <h1>Whoops</h1>
-        <h3>This isn't a valid page, are you sure this is where you wanted to go?</h3>
+        <h3>This isn&apos;t a valid page, are you sure this is where you wanted to go?</h3>
         <div className='mx-auto' style={{
-          height: 9+'em',
-          width: 9+'em',
-          fontSize: 1+'em',
+          height: '9em',
+          width: '9em',
+          fontSize: '1em',
           position: 'relative'
         }}>
           <FontAwesomeIcon
@@ -75,9 +78,9 @@ class Error extends Component {
             style={{
               ...this.iconGeneral,
               ...this.reverseAnimation,
-              fontSize: 6+'em',
-              top: 0.53+'em',
-              left: 0.25+'em'
+              fontSize: '6em',
+              top: '0.53em',
+              left: '0.25em'
             }}
           />
           <FontAwesomeIcon
@@ -85,20 +88,25 @@ class Error extends Component {
             spin
             style={{
               ...this.iconGeneral,
-              fontSize: 3+'em',
-              top: 0.25+'em',
-              left: 1.7+'em'
+              fontSize: '3em',
+              top: '0.25em',
+              left: '1.7em'
             }}
           />
         </div>
-        <button className='btn btn-primary' onClick={ () => { this.goBack() } }>Go Back</button>
+        <Button color="primary" onClick={ this.goBack }>Go Back</Button>
       </div>
-    )
+    );
   }
 }
 
+Error.propTypes = {
+  history: PropTypes.objectOf(createBrowserHistory).isRequired,
+  siteTitle: PropTypes.string.isRequired
+};
+
 const mapStateToProps = (state) => ({
   siteTitle: state.Util.site_title
-})
+});
 
-export default connect(mapStateToProps)(Error)
+export default connect(mapStateToProps)(Error);

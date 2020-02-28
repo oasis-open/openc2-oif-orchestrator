@@ -68,7 +68,6 @@ class LoggingMiddleware(MiddlewareMixin):
         :return:
         """
         print(f"Tracking Exception - {exception.__class__.__name__} - {exception}")
-        return None
 
     def _should_log(self, request, response):
         """

@@ -23,16 +23,9 @@ ENV DJANGO_SETTINGS_MODULE=orchestrator.settings \
 # System packages
 RUN apk add --no-cache --virtual .build-deps \
     gcc \
-    make \
     libc-dev \
-    libffi-dev \
-    musl-dev \
     python3-dev \
-    pcre-dev \
-    openssl-dev \
-    linux-headers \
-    pcre-dev && \
-apk add --no-cache pcre mailcap && \
+    linux-headers && \
 # python/pip packages
 pip3 install -r /tmp/requirements.txt && \
 #

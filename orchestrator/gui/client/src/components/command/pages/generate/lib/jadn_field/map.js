@@ -1,47 +1,41 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { FormGroup, FormText } from 'reactstrap';
 
-import {
-  Button,
-  Form,
-  FormGroup,
-  FormText,
-  Input,
-  Label,
-} from 'reactstrap'
-
-import {
-  isOptional_jadn,
-  keys,
-  zip,
-  Field
-} from './'
-
-import * as GenActions from '../../../../../../actions/generate'
+import Field from '.';
+import { isOptionalJADN, JADN_KEYS, zip } from '../utils';
 
 
-class MapField extends Component {
-  render() {
-    let name = this.props.name || this.props.def.name
-    let msgName = (this.props.parent ? [this.props.parent, name] : [name]).join('.')
-    let fields = this.props.def.fields.map((field, i) => {
-      return <Field key={ i } def={ zip(keys.Gen_Def, field) } parent={ msgName } optChange={ this.props.optChange } />
-    })
+const MapField = props => {
+  const name = props.name || props.def.name;
+  const msgName = (props.parent ? [props.parent, name] : [name]).join('.');
+  const fields = props.def.fields.map(field => (
+    <Field key={ field[0] } def={ zip(JADN_KEYS.Gen_Def, field) } parent={ msgName } optChange={ props.optChange } />
+  ));
 
-    return (
-      <FormGroup tag="fieldset" className="border border-dark p-2">
-        <legend>{ (isOptional_jadn(this.props.def) ? '' : '*') + name }</legend>
-        { this.props.def.desc != '' ? <FormText color="muted">{ this.props.def.desc }</FormText> : '' }
-        <div className="col-12 my-1 px-0">
-          { fields }
-        </div>
-      </FormGroup>
-    )
-  }
-}
+  return (
+    <FormGroup tag="fieldset" className="border border-dark p-2">
+      <legend>{ (isOptionalJADN(props.def) ? '' : '*') + name }</legend>
+      { props.def.desc !== '' ? <FormText color="muted">{ props.def.desc }</FormText> : '' }
+      <div className="col-12 my-1 px-0">
+        { fields }
+      </div>
+    </FormGroup>
+  );
+};
 
-const mapStateToProps = (state) => ({
-  schema: state.Generate.selectedSchema
-})
+MapField.propTypes = {
+  def: PropTypes.object,
+  name: PropTypes.string,
+  optChange: PropTypes.func,
+  parent: PropTypes.string
+};
 
-export default connect(mapStateToProps)(MapField)
+MapField.defaultProps = {
+  def: {},
+  name: '',
+  optChange: null,
+  parent: ''
+};
+
+export default MapField;

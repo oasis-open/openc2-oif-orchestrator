@@ -1,9 +1,8 @@
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
-import { connect } from 'react-redux'
-import { toast } from 'react-toastify'
-import JSONPretty from 'react-json-pretty'
-import classnames from 'classnames'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
+import JSONPretty from 'react-json-pretty';
 
 import {
   Button,
@@ -12,65 +11,55 @@ import {
   FormGroup,
   FormText,
   Input,
-  Label,
   Nav,
   NavItem,
   NavLink,
   TabContent,
-  TabPane,
-  Tooltip
-} from 'reactstrap'
+  TabPane
+} from 'reactstrap';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons'
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons';
 
 import {
-  JADN_Field,
-  JSON_Field,
-  keys,
-  zip
-} from './lib'
+  zip,
+  JADN_FIELD,
+  JSON_FIELD,
+  JADN_KEYS
+} from './lib';
 
 import {
   delMultiKey,
-  escaped2cbor,
-  format,
-  getMultiKey,
   generateUUID4,
-  hexify,
-  loadURL,
-  minify,
   safeGet,
-  setMultiKey,
-  validateUUID4,
-  validURL
-} from '../../../utils'
+  setMultiKey
+} from '../../../utils';
 
-import JADNInput from '../../../utils/jadn-editor'
-import JSONInput from 'react-json-editor-ajrm'
-import locale from 'react-json-editor-ajrm/locale/en'
+import JADNInput from '../../../utils/jadn-editor';
+import * as GenerateActions from '../../../../actions/generate';
+import * as CommandActions from '../../../../actions/command';
 
-import * as UtilActions from '../../../../actions/util'
-import * as GenerateActions from '../../../../actions/generate'
-import * as CommandActions from '../../../../actions/command'
-
-const str_fmt = require('string-format')
-const Ajv = require('ajv')
+const Ajv = require('ajv');
 
 
 class GenerateCommands extends Component {
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
 
-    this.optChange = this.optChange.bind(this)
-    this.selectChange = this.selectChange.bind(this)
-    this.clearCommand = this.clearCommand.bind(this)
-    this.sendCommand = this.sendCommand.bind(this)
-    this.jadn_keys = ["meta", "types"]
+    this.optChange = this.optChange.bind(this);
+    this.selectChange = this.selectChange.bind(this);
+    this.clearCommand = this.clearCommand.bind(this);
+    this.sendCommand = this.sendCommand.bind(this);
+    this.updateChannel = this.updateChannel.bind(this);
+
+    this.jadn_keys = ['meta', 'types'];
     this.json_validator = new Ajv({
-      unknownFormats: "ignore"
-    })
-    this.msg_form = null
+      unknownFormats: 'ignore'
+    });
+    this.msg_form = React.createRef();
 
     this.theme = {
       schema: { // Theming for JADN/JSON input
@@ -90,9 +79,9 @@ class GenerateCommands extends Component {
         key: 'color:#59A5D8;',
         string: 'color:#FA7921;',
         value: 'color:#386FA4;',
-        boolean: 'color:#386FA4;',
+        boolean: 'color:#386FA4;'
       }
-    }
+    };
 
     this.state = {
       active_tab: 'creator',
@@ -110,42 +99,64 @@ class GenerateCommands extends Component {
       },
       message: {},
       message_warnings: []
-    }
+    };
 
-    this.props.actuatorInfo()
-    this.props.deviceInfo()
+    this.props.actuatorInfo();
+    this.props.deviceInfo();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    let props_update = this.props != nextProps
-    let state_update = this.state != nextState
+    const propsUpdate = this.props !== nextProps;
+    const stateUpdate = this.state !== nextState;
 
-    if (this.state.schema.schema != nextState.schema.schema) {
-      this.props.setSchema(nextState.schema.schema)
-      nextState.message = {}
+    if (this.state.schema.schema !== nextState.schema.schema) {
+      this.props.setSchema(nextState.schema.schema);
+      // eslint-disable-next-line no-param-reassign
+      nextState.message = {};
+      // eslint-disable-next-line no-param-reassign
       nextState.channel = {
         serialization: '',
         protocol: ''
-      }
-
-      let schema_keys = Object.keys(nextState.schema.schema)
-      nextState.schema.jadn_fmt = (schema_keys.length === this.jadn_keys.length && schema_keys.every(v => this.jadn_keys.indexOf(v) !== -1))
-
-      if (nextState.schema.jadn_fmt) {
-        nextState.schema.exports = safeGet(safeGet(nextState.schema.schema, 'meta', {}), 'exports', [])
-      } else {
-        if (nextState.schema.schema.hasOwnProperty('properties')) {
-          nextState.schema.exports = Object.keys(nextState.schema.schema.properties).map(k => {
-            let def = safeGet(nextState.schema.schema.properties, k, {})
-            return def.hasOwnProperty('$ref') ? def['$ref'].replace(/^#\/definitions\//, '') : ''
-          })
-        } else {
-          nextState.schema.exports = safeGet(nextState.schema.schema, 'oneOf', []).map(exp => exp.hasOwnProperty('$ref') ? exp['$ref'].replace(/^#\/definitions\//, '') : '')
-        }
-      }
-      nextState.schema.exports = nextState.schema.exports.filter(s => s)
+      };
+    } else if (this.state.schema.schema !== nextProps.selected.schema) {
+      // eslint-disable-next-line no-param-reassign
+      nextState.schema = {
+        ... nextState.schema,
+        schema: nextProps.selected.schema,
+        profile: nextProps.selected.profile
+      };
+      this.props.setSchema(nextState.schema.schema);
+      // eslint-disable-next-line no-param-reassign
+      nextState.message = {};
+      // eslint-disable-next-line no-param-reassign
+      nextState.channel = {
+        serialization: '',
+        protocol: ''
+      };
     }
-    return props_update || state_update
+
+    const schemaKeys = Object.keys(nextState.schema.schema);
+    // eslint-disable-next-line no-param-reassign
+    nextState.schema.jadn_fmt = schemaKeys.length === this.jadn_keys.length
+      && schemaKeys.every(v => this.jadn_keys.indexOf(v) !== -1);
+
+    if (nextState.schema.jadn_fmt) {
+      // eslint-disable-next-line no-param-reassign
+      nextState.schema.exports = safeGet(safeGet(nextState.schema.schema, 'meta', {}), 'exports', []);
+    } else if (!nextState.schema.jadn_fmt && 'properties' in nextState.schema.schema) {
+      // eslint-disable-next-line no-param-reassign
+      nextState.schema.exports = Object.keys(nextState.schema.schema.properties).map(k => {
+        const def = safeGet(nextState.schema.schema.properties, k, {});
+        return '$ref' in def ? def.$ref.replace(/^#\/definitions\//, '') : '';
+      });
+    } else if (!nextState.schema.jadn_fmt) {
+      // eslint-disable-next-line no-param-reassign
+      nextState.schema.exports = safeGet(nextState.schema.schema, 'oneOf', [])
+        .map(exp => '$ref' in exp ? exp.$ref.replace(/^#\/definitions\//, '') : '');
+    }
+    // eslint-disable-next-line no-param-reassign
+    nextState.schema.exports = nextState.schema.exports.filter(s => s);
+    return propsUpdate || stateUpdate;
   }
 
   makeID() {
@@ -154,132 +165,139 @@ class GenerateCommands extends Component {
         ...prevState.message,
         command_id: generateUUID4()
       }
-    }))
+    }));
   }
 
   toggleTab(tab) {
     this.setState({
       active_tab: tab
-    })
+    });
+  }
+
+  updateChannel(e) {
+    const target = e.currentTarget;
+    this.setState(prevState => ({
+      channel: {
+        ...prevState.channel,
+        [target.id]: target.value
+      }
+    }));
   }
 
   sendCommand() {
-    if (this.state.schema.type == 'actuator') {
-      if (this.state.channel.protocol == '') {
-        toast(<div><p>Error:</p><p>Actuator protocol not set</p></div>, {type: toast.TYPE.WARNING})
-        return
+    if (this.state.schema.type === 'actuator') {
+      if (this.state.channel.protocol === '') {
+        toast(<div><p>Error:</p><p>Actuator protocol not set</p></div>, {type: toast.TYPE.WARNING});
+        return;
       }
-      if (this.state.channel.serialization == '') {
-        toast(<div><p>Error:</p><p>Actuator serialization not set</p></div>, {type: toast.TYPE.WARNING})
-        return
+      if (this.state.channel.serialization === '') {
+        toast(<div><p>Error:</p><p>Actuator serialization not set</p></div>, {type: toast.TYPE.WARNING});
+        return;
       }
     }
 
-    let actuator = str_fmt('{type}/{selected}', {
-      type: this.state.schema.type,
-      selected: this.state.schema.selected
-    })
-
-    toast.info("Request sent");
+    const actuator = `${this.state.schema.type}/${this.state.schema.selected}`;
+    toast.info('Request sent');
+    // this.props.sendCommand(this.state.message, actuator, this.state.channel);
 
     Promise.resolve(this.props.sendCommand(this.state.message, actuator, this.state.channel)).then(() => {
-      let errs = safeGet(this.props.errors, CommandActions.SEND_COMMAND_FAILURE, {})
+      const errs = safeGet(this.props.errors, CommandActions.SEND_COMMAND_FAILURE, {});
 
       if (Object.keys(errs).length !== 0) {
-        if (errs.hasOwnProperty('non_field_errors')) {
+        if ('non_field_errors' in errs) {
           Object.values(errs).forEach((err) => {
-            toast(<p>Error: { err }</p>, {type: toast.TYPE.WARNING})
-          })
+            toast(<p>Error: { err }</p>, {type: toast.TYPE.WARNING});
+          });
         } else {
           Object.keys(errs).forEach((err) => {
-            toast(<div><p>Error { err }:</p><p>{ errs[err] }</p></div>, {type: toast.TYPE.WARNING})
-          })
+            toast(<div><p>Error { err }:</p><p>{ errs[err] }</p></div>, {type: toast.TYPE.WARNING});
+          });
         }
       } else {
-        
         // TODO: Process responses ??
       }
-    })
+    });
   }
 
   clearCommand() {
-    ReactDOM.findDOMNode(this.msg_form).reset()
+    this.msg_form.current.reset();
     this.setState({
       message: {}
-    })
+    });
   }
 
   optChange(k, v) {
     this.setState(prevState => {
-      let msg = prevState.message || {}
-      let keys = k.split('.')
-      let errors = []
-      keys = this.state.schema.exports.indexOf(keys[0]) == -1 ? keys : keys.slice(1)
+      const msg = prevState.message || {};
+      let keys = k.split('.');
+      let errors = [];
+      keys = prevState.schema.exports.indexOf(keys[0]) === -1 ? keys : keys.slice(1);
 
       if (keys.length > 1 && msg[keys[0]] && !msg[keys[0]][keys[1]]) {
-        delMultiKey(msg, keys[0])
+        delMultiKey(msg, keys[0]);
       }
-      if (['', ' ', null, undefined, [], {}].indexOf(v) == -1) {
-        setMultiKey(msg, k, v)
+      if (['', ' ', null, undefined, [], {}].indexOf(v) === -1) {
+        setMultiKey(msg, k, v);
       } else {
-        delMultiKey(msg, k)
+        delMultiKey(msg, k);
       }
       // TODO: Validate message - errors to state.message_warnings as array
-      if (this.state.schema.jadn_fmt) {
-        console.log("Generated from JADN", msg)
+      if (prevState.schema.jadn_fmt) {
+        console.log('Generated from JADN', msg);
 
       } else {
-        // console.log("Generated from JSON", this.state.msg_record, msg)
-        let tmp_msg = msg
-        if (this.state.schema.schema.hasOwnProperty('properties')) {
-          let idx = this.state.schema.exports.indexOf(this.state.msg_record)
-          let msg_wrapper =  Object.keys(this.state.schema.schema.properties)[idx]
-          tmp_msg = {
-            [msg_wrapper]: msg
-          }
+        // console.log('Generated from JSON', prevState.msg_record, msg)
+        let tmpMsg = msg;
+        if ('properties' in prevState.schema.schema) {
+          const idx = prevState.schema.exports.indexOf(prevState.msg_record);
+          const msgWrapper = Object.keys(prevState.schema.schema.properties)[idx];
+          tmpMsg = {
+            [msgWrapper]: msg
+          };
         }
-
-        var valid = this.json_validator.validate(this.state.schema.schema, tmp_msg)
-        if (!valid) {
-          errors = this.json_validator.errors
+        try {
+          const valid = this.json_validator.validate(prevState.schema.schema, tmpMsg);
+          if (!valid) {
+            errors = this.json_validator.errors;
+          }
+        } catch (err) {
+          console.log(err);
+          errors = [ JSON.stringify(err) ];
         }
       }
 
       return {
         message: msg,
         message_warnings: errors
-      }
-    })
+      };
+    });
   }
 
   selectChange(e) {
-    let type = e.target.id.split('-')[0]
-    let selected = e.target.value
-    let idx = e.nativeEvent.target.selectedIndex
-    let field = e.nativeEvent.target[idx].getAttribute('field')
-    let schema_act = ''
+    const selected = e.target.value;
+    const idx = e.nativeEvent.target.selectedIndex;
+    const field = e.nativeEvent.target[idx].getAttribute('field');
+    let schemaAct = '';
 
-    if (field == 'profile') {
-      let act_profile = this.props.actuators.filter((act) => act.profile == selected)
+    if (field === 'profile') {
+      let actProfile = this.props.actuators.filter((act) => act.profile === selected);
 
-      if (act_profile.length == 0) {
-        toast(<p>Something happened, invalid profile</p>, {type: toast.TYPE.WARNING})
-        return
-      } else {
-        act_profile = act_profile[Math.floor(Math.random()*act_profile.length)]
+      if (actProfile.length === 0) {
+        toast(<p>Something happened, invalid profile</p>, {type: toast.TYPE.WARNING});
+        return;
       }
-      schema_act = act_profile.actuator_id
+      actProfile = actProfile[Math.floor(Math.random()*actProfile.length)];
+      schemaAct = actProfile.actuator_id;
 
-    } else if (field == 'actuator') {
-      let act_name = this.props.actuators.filter((act) => act.actuator_id == selected)
+    } else if (field === 'actuator') {
+      let actName = this.props.actuators.filter((act) => act.actuator_id === selected);
 
-      if (act_name.length == 0 || act_name.length > 1) {
-        toast(<p>Something happened, invalid actuator</p>, {type: toast.TYPE.WARNING})
-        return
-      } else {
-        act_name = act_name[0]
+      if (actName.length === 0 || actName.length > 1) {
+        toast(<p>Something happened, invalid actuator</p>, {type: toast.TYPE.WARNING});
+        return;
       }
-      schema_act = act_name.actuator_id
+      actName = actName[0];
+      schemaAct = actName.actuator_id;
     }
 
     this.setState(prevState => ({
@@ -287,40 +305,30 @@ class GenerateCommands extends Component {
       message: {},
       schema: {
         ...prevState.schema,
-        selected: selected,
+        selected,
         type: field
       }
     }), () => {
-      Promise.resolve(this.props.actuatorSelect(schema_act, field)).then(() => {
-        if (Object.keys(this.props.selected.schema).length === 0) {
-          toast(<p>No schema defined</p>, {type: toast.TYPE.INFO})
-        }
-        this.setState(prevState => ({
-          schema: {
-            ...prevState.schema,
-            schema: this.props.selected.schema,
-            profile: this.props.selected.profile
-          }
-        }))
-      })
-    })
+      this.props.actuatorSelect(schemaAct, field);
+    });
   }
 
   schema(maxHeight) {
-    let profile_schemas = []
-    let actuator_schemas = []
-    let Editor = this.state.schema.jadn_fmt ? JADNInput : JSONInput
+    const Editor = this.state.schema.jadn_fmt ? JADNInput : JSONInput;
+    const actuatorSchemas = [];
+    let profileSchemas = [];
 
-    this.props.actuators.forEach((act, i) => {
-      let dev = this.props.devices.filter(d => d.device_id == act.device)
-      dev = dev.length == 1 ? dev[0] : {}
-      actuator_schemas.push(<option key={ i } value={ act.actuator_id } field='actuator' >{ dev ? dev.name + ' - ' : '' }{ act.name }</option>)
-      if (profile_schemas.indexOf(act.profile) === -1) {
-        profile_schemas.push(act.profile)
+    this.props.actuators.forEach(act => {
+      let dev = this.props.devices.filter(d => d.device_id === act.device);
+      dev = dev.length === 1 ? dev[0] : {};
+      actuatorSchemas.push(<option key={ act.actuator_id } value={ act.actuator_id } field='actuator' >{ dev ? `${dev.name} - ` : '' }{ act.name }</option>);
+      if (profileSchemas.indexOf(act.profile) === -1) {
+        profileSchemas.push(act.profile);
       }
-    })
+    });
 
-    profile_schemas = profile_schemas.map((p, i) => <option key={ i } value={ p } field='profile' >{ p }</option>)
+    profileSchemas = profileSchemas.map(p => <option key={ p } value={ p } field='profile' >{ p }</option>);
+
     return (
       <div className="col-md-6">
         <div id="schema-card" className="tab-pane fade active show">
@@ -331,17 +339,17 @@ class GenerateCommands extends Component {
                   <select id="schema-list" name="schema-list" className="form-control" default="empty" onChange={ this.selectChange }>
                     <option value="empty">Schema</option>
                     <optgroup label="Profiles">
-                      { profile_schemas }
+                      { profileSchemas }
                     </optgroup>
                     <optgroup label="Actuators">
-                      { actuator_schemas }
+                      { actuatorSchemas }
                     </optgroup>
                   </select>
                 </div>
               </div>
             </div>
 
-            <div className="form-control border card-body p-0" style={{ height: maxHeight+'px' }}>
+            <div className="form-control border card-body p-0" style={{ height: `${maxHeight}px` }}>
               <Editor
                 id='schema'
                 placeholder={ this.state.schema.schema }
@@ -350,69 +358,83 @@ class GenerateCommands extends Component {
                 reset={ false }
                 height='100%'
                 width='100%'
-                viewOnly={ true }
+                viewOnly
               />
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   cmdCreator(maxHeight) {
-    let export_records = this.state.schema.exports.map((rec, i) => <option key={ i } value={ rec }>{ rec }</option>)
-    let Record_Def = ""
-    let act_protos = []
-    let act_serials = []
+    const exportRecords = this.state.schema.exports.map(rec => <option key={ rec } value={ rec }>{ rec }</option>);
+    let RecordDef = '';
+    let actProtos = [];
+    let actSerials = [];
+    let warnings = <p>Warnings for the generated message will appear here if available</p>;
 
     if (this.props.selected.schema) {
-      let record_def = {}
+      let recordDef = {};
       if (this.state.schema.jadn_fmt) {
-        record_def = this.props.selected.schema.hasOwnProperty('types') ? this.props.selected.schema.types.filter(type => type[0] == this.state.msg_record) : []
-        record_def = zip(keys.Structure, record_def.length == 1 ? record_def[0] : [])
-        Record_Def = <JADN_Field def={ record_def } optChange={ this.optChange } />
-      } else {
-        if (this.props.selected.schema.definitions && this.props.selected.schema.definitions.hasOwnProperty(this.state.msg_record)) {
-          record_def = this.props.selected.schema.definitions[this.state.msg_record]
-          Record_Def = <JSON_Field name={ this.state.msg_record } def={ record_def } root={ true } optChange={ this.optChange } />
-        }
+        recordDef = 'types' in this.props.selected.schema ? this.props.selected.schema.types.filter(type => type[0] === this.state.msg_record) : [];
+        recordDef = zip(JADN_KEYS.Structure, recordDef.length === 1 ? recordDef[0] : []);
+        RecordDef = <JADN_FIELD def={ recordDef } optChange={ this.optChange } />;
+      } else if (this.props.selected.schema.definitions && this.state.msg_record in this.props.selected.schema.definitions) {
+        recordDef = this.props.selected.schema.definitions[this.state.msg_record];
+        RecordDef = <JSON_FIELD name={ this.state.msg_record } def={ recordDef } root optChange={ this.optChange } />;
       }
     }
 
     if (this.state.schema.type === 'actuator') {
-      let act = this.props.actuators.filter(act => act.actuator_id === this.state.schema.selected)
-      act = act.length == 1 ? act[0] : {}
-      let dev = this.props.devices.filter(dev => dev.device_id === act.device)
-      dev = dev.length == 1 ? dev[0] : {}
+      let act = this.props.actuators.filter(a => a.actuator_id === this.state.schema.selected);
+      act = act.length === 1 ? act[0] : {};
+      let dev = this.props.devices.filter(d => d.device_id === act.device);
+      dev = dev.length === 1 ? dev[0] : {};
 
-      act_protos = dev.transport.map((trans, i) => {
-        if (trans.protocol == this.state.channel.protocol) {
-          act_serials = trans.serialization.map((serial, i) => <option key={ i } value={ serial }>{ serial }</option>)
+      actProtos = dev.transport.map(trans => {
+        if (trans.protocol === this.state.channel.protocol) {
+          actSerials = trans.serialization.map(serial => <option key={ serial } value={ serial }>{ serial }</option>);
 
-          if (trans.serialization.indexOf(this.state.channel.serialization) == -1 && this.state.channel.serialization !== '') {
+          if (trans.serialization.indexOf(this.state.channel.serialization) === -1 && this.state.channel.serialization !== '') {
             this.setState(prevState => ({
               channel: {
                 ...prevState.channel,
                 serialization: ''
               }
-            }))
+            }));
           }
         }
-        return (<option key={ i } value={ trans.protocol }>{ trans.protocol }</option>)
-      })
+        return (<option key={ trans.transport_id } value={ trans.protocol }>{ trans.protocol }</option>);
+      });
     }
+
+    if (this.state.message_warnings.length !== 0) {
+      warnings = this.state.message_warnings.map((err, i) => (
+        <div key={ i } className="border border-warning mb-2 px-2 pt-2">
+          <p>Warning from message `{ err.dataPath || '.' }`
+            <FontAwesomeIcon
+              icon={ faLongArrowAltRight }
+              className="mx-2"
+            />
+            &quot;{ err.keyword }&quot;
+          </p>
+          <p className="text-warning">{ err.message }</p>
+        </div>
+      ));
+     }
 
     return (
       <div className='col-md-6'>
         <Nav tabs>
           <NavItem>
-            <NavLink className={classnames({ active: this.state.active_tab === 'creator' })} onClick={() => this.toggleTab('creator') }>Creator</NavLink>
+            <NavLink className={ this.state.active_tab === 'creator' ? 'active' : '' } onClick={() => this.toggleTab('creator') }>Creator</NavLink>
           </NavItem>
           <NavItem>
-            <NavLink className={classnames({ active: this.state.active_tab === 'message' })} onClick={() => this.toggleTab('message') }>Message</NavLink>
+            <NavLink className={ this.state.active_tab === 'message' ? 'active' : '' } onClick={() => this.toggleTab('message') }>Message</NavLink>
           </NavItem>
           <NavItem>
-            <NavLink className={classnames({ active: this.state.active_tab === 'warning' })} onClick={() => this.toggleTab('warning') }>Warnings <span className={ "badge badge-" + ( this.state.message_warnings.length > 0 ? "warning" : "success")}>{ this.state.message_warnings.length }</span></NavLink>
+            <NavLink className={ this.state.active_tab === 'warning' ? 'active' : ''} onClick={() => this.toggleTab('warning') }>Warnings <span className={ `badge badge-${this.state.message_warnings.length > 0 ? 'warning' : 'success'}` }>{ this.state.message_warnings.length }</span></NavLink>
           </NavItem>
         </Nav>
 
@@ -421,24 +443,19 @@ class GenerateCommands extends Component {
             <div className='card col-12 p-0 mx-auto'>
               <div className='card-header'>
                 <FormGroup className='col-md-6 p-0 m-0 float-left'>
-                  <Input type='select' className='form-control' value={ this.state.msg_record } onChange={e => { this.setState({'msg_record': e.target.value, message: {}}) }}>
+                  <Input type='select' className='form-control' value={ this.state.msg_record } onChange={e => { this.setState({'msg_record': e.target.value, message: {}}); }}>
                     <option value=''>Message Type</option>
                     <optgroup label="Exports">
-                      { export_records }
+                      { exportRecords }
                     </optgroup>
                   </Input>
                 </FormGroup>
                 <Button color='primary' className='float-right' onClick={ () => this.makeID() }>Generate ID</Button>
               </div>
 
-              <Form id='command-fields' className='card-body' onSubmit={ () => { return false; } } ref={el => this.msg_form = el } style={{ height: maxHeight-30+'px', overflowY: 'scroll' }}>
+              <Form id='command-fields' className='card-body' onSubmit={ () => false } innerRef={ this.msg_form } style={{ height: `${maxHeight-30}px`, overflowY: 'scroll' }}>
                 <div id="fieldDefs">
-                  {
-                    this.state.msg_record == "" ?
-                      <FormText color="muted">Message Fields will appear here after selecting a type</FormText>
-                    :
-                      Record_Def
-                  }
+                  { this.state.msg_record === '' ? <FormText color="muted">Message Fields will appear here after selecting a type</FormText> : RecordDef }
                 </div>
               </Form>
             </div>
@@ -447,31 +464,31 @@ class GenerateCommands extends Component {
           <TabPane tabId='message'>
             <div className='card col-12 p-0 mx-auto'>
               <div className='card-header'>
-                <ButtonGroup className='float-right col-2' vertical={ true }>
-                  <Button color='danger' onClick={ this.clearCommand } style={{ padding: ".1rem 0" }}>Clear</Button>
-                  <Button color='primary' onClick={ this.sendCommand } style={{ padding: ".1rem 0" }}>Send</Button>
+                <ButtonGroup className='float-right col-2' vertical>
+                  <Button color='danger' onClick={ this.clearCommand } style={{ padding: '.1rem 0' }}>Clear</Button>
+                  <Button color='primary' onClick={ this.sendCommand } style={{ padding: '.1rem 0' }}>Send</Button>
                 </ButtonGroup>
-                <div className={ 'col-10 p-0 ' + (this.state.schema.type === 'actuator' ? '' : ' d-none') }>
+                <div className={ `col-10 p-0 ${this.state.schema.type === 'actuator' ? '' : ' d-none'}` }>
                   <FormGroup className='col-md-6 p-0 m-0 float-left'>
-                    <Input type='select' className='form-control' value={ this.state.channel.protocol } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, protocol: e.target.value }}) }}>
+                    <Input id="protocol" type='select' className='form-control' value={ this.state.channel.protocol } onChange={ this.updateChannel }>
                       <option value=''>Protocol</option>
-                      { act_protos }
+                      { actProtos }
                     </Input>
                   </FormGroup>
                   <FormGroup className='col-md-6 p-0 m-0 float-left'>
-                    <Input type='select' className='form-control' value={ this.state.channel.serialization } onChange={ (e) => { this.setState({ channel: { ...this.state.channel, serialization: e.target.value }}) }}>
+                    <Input id='serialization' type='select' className='form-control' value={ this.state.channel.serialization } onChange={ this.updateChannel }>
                       <option value=''>Serialization</option>
-                      { act_serials }
+                      { actSerials }
                     </Input>
                   </FormGroup>
                 </div>
               </div>
 
-              <div className='card-body p-1 position-relative' style={{ height: maxHeight-25+'px', overflowY: 'scroll' }}>
+              <div className='card-body p-1 position-relative' style={{ height: `${maxHeight-25}px`, overflowY: 'scroll' }}>
                 <JSONPretty
                   id='message'
                   className='scroll-xl'
-                  style={{ minHeight: 2.5+'em' }}
+                  style={{ minHeight: '2.5em' }}
                   data={ this.state.message }
                   theme={ this.theme.message }
                 />
@@ -484,57 +501,36 @@ class GenerateCommands extends Component {
               <div className='card-header h3'>
                 Message Warnings
               </div>
-              <div className='card-body p-2 position-relative' style={{ height: maxHeight-25+'px', overflowY: 'scroll' }}>
-                {
-                  this.state.message_warnings.length == 0 ?
-                    <p>Warnings for the generated message will appear here if available</p>
-                  :
-                    this.state.message_warnings.map((err, i) => {
-                      return (
-                        <div key={ i } className="border border-warning mb-2 px-2 pt-2">
-                          <p>Warning from message `{ err.dataPath || "." }`
-                            <FontAwesomeIcon
-                              icon={ faLongArrowAltRight }
-                              className="mx-2"
-                            />
-                            "{ err.keyword }"
-                          </p>
-                          <p className="text-warning">{ err.message }</p>
-                        </div>
-                      )
-                    })
-                }
+              <div className='card-body p-2 position-relative' style={{ height: `${maxHeight-25}px`, overflowY: 'scroll' }}>
+                { warnings }
               </div>
             </div>
           </TabPane>
         </TabContent>
       </div>
-    )
+    );
   }
 
   render() {
-    let maxHeight = window.innerHeight - (parseInt(document.body.style.paddingTop, 10) || 0) - 260
+    const maxHeight = window.innerHeight - (parseInt(document.body.style.paddingTop, 10) || 0) - 260;
 
     return (
       <div className='row mt-3'>
         { this.schema(maxHeight) }
-
         <div className='col-12 m-2 d-md-none' />
-
         { this.cmdCreator(maxHeight) }
-
         <div id='cmd-status' className='modal'>
           <div className='modal-dialog h-100 d-flex flex-column justify-content-center my-0' role='document'>
             <div className='modal-content'>
               <div className='modal-header'>
-                <h5 className='modal-title'>Command: <span></span></h5>
+                <h5 className='modal-title'>Command: <span/></h5>
                 <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                   <span aria-hidden='true'>&times;</span>
                 </button>
               </div>
 
               <div className='modal-body'>
-                <p className='cmd-details'><b>Details:</b> <span></span></p>
+                <p className='cmd-details'><b>Details:</b> <span/></p>
                 <p className='mb-1'><b>Command:</b></p>
                 <pre className='border code command' />
                 <p className='mb-1'><b>Responses:</b></p>
@@ -548,24 +544,38 @@ class GenerateCommands extends Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
+GenerateCommands.propTypes = {
+  actuators: PropTypes.array.isRequired,
+  actuatorInfo: PropTypes.func.isRequired,
+  actuatorSelect: PropTypes.func.isRequired,
+  devices: PropTypes.array.isRequired,
+  deviceInfo: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired,
+  selected: PropTypes.shape({
+    profile: PropTypes.string,
+    schema: PropTypes.object
+  }).isRequired,
+  sendCommand: PropTypes.func.isRequired,
+  setSchema: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
   actuators: state.Generate.actuators || [],
   devices: state.Generate.devices || [],
   selected: state.Generate.selected || {},
-  message: state.Generate.message,
   errors: state.Command.errors
-})
+});
 
-const mapDispatchToProps = (dispatch) => ({
-  setSchema: (schema) => dispatch(GenerateActions.setSchema(schema)),
+const mapDispatchToProps = dispatch => ({
+  setSchema: schema => dispatch(GenerateActions.setSchema(schema)),
   actuatorInfo: () => dispatch(GenerateActions.actuatorInfo()),
   actuatorSelect: (act, t) => dispatch(GenerateActions.actuatorSelect(act, t)),
   deviceInfo: () => dispatch(GenerateActions.deviceInfo()),
   sendCommand: (cmd, act, chan) => dispatch(CommandActions.sendCommand(cmd, act, chan))
-})
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(GenerateCommands)
+export default connect(mapStateToProps, mapDispatchToProps)(GenerateCommands);

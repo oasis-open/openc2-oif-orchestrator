@@ -10,7 +10,7 @@ class Document(DSL_Document):
         fields = dict(
             _id=model.pk
         )
-        for f_name, f_type, f_req in cls._ObjectBase__list_fields():
+        for f_name, f_type, _ in cls._ObjectBase__list_fields():
             prepare = getattr(cls, f'prepare_{f_name}', None)
             if prepare:
                 val = prepare(cls, model)

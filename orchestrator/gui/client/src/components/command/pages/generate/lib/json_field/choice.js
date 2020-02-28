@@ -1,66 +1,54 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { FormGroup, FormText, Input } from 'reactstrap';
 
-import {
-  Button,
-  Form,
-  FormGroup,
-  FormText,
-  Input,
-  Label,
-} from 'reactstrap'
-
-import {
-  isOptional_json,
-  Field
-} from './'
-
-import * as GenActions from '../../../../../../actions/generate'
+import Field from '.';
+import { isOptionalJSON } from '../utils';
 
 
 class ChoiceField extends Component {
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
 
-    this.handleChange = this.handleChange.bind(this)
+    this.handleChange = this.handleChange.bind(this);
 
     this.state = {
-      selected: ""
-    }
+      selected: ''
+    };
   }
 
   handleChange(e) {
     this.setState({
       selected: e.target.value
     }, () => {
-      if (this.state.selected == -1) {
-       this.props.optChange(this.props.def[1], undefined)
+      if (this.state.selected === -1) {
+       this.props.optChange(this.props.def[1], undefined);
       }
-    })
+    });
   }
 
   render() {
-    parent = ""
+    let parent = '';
     if (this.props.parent) {
-      parent = [this.props.parent, this.props.name].join('.')
+      parent = [this.props.parent, this.props.name].join('.');
     } else if (this.props.name.match(/^[a-z]/)) {
-      parent = this.props.name
+      parent = this.props.name;
     }
 
-    let def_opts = []
-    if (this.props.def.hasOwnProperty("properties")) {
+    const defOpts = [];
+    if ('properties' in this.props.def) {
       Object.keys(this.props.def.properties).forEach((field, i) => {
-        let def = this.props.def.properties[field]
-        def_opts.push(<option key={ i } data-subtext={ def.desc || "" } value={ field }>{ field }</option>)
-      })
+        const def = this.props.def.properties[field];
+        defOpts.push(<option key={ i } data-subtext={ def.desc || '' } value={ field }>{ field }</option>);
+      });
     }
 
-    if (this.props.def.hasOwnProperty("patternProperties")) {
+    if ('patternProperties' in this.props.def) {
       // TODO: Pattern Properties
-      console.log("Choice Pattern Props", this.props.def.patternProperties)
+      console.log('Choice Pattern Props', this.props.def.patternProperties);
     }
 
-    let selectedDef = ""
+    let selectedDef = '';
     if (this.state.selected) {
       selectedDef = <Field
         name={ this.state.selected }
@@ -68,17 +56,17 @@ class ChoiceField extends Component {
         def={ this.props.def.properties[this.state.selected] || {} }
         required
         optChange={ this.props.optChange }
-      />
+      />;
     }
 
     return (
       <FormGroup tag="fieldset" className="border border-dark p-2">
-        <legend>{ (isOptional_json(this.props.def) ? '' : '*') + this.props.name }</legend>
+        <legend>{ (isOptionalJSON(this.props.def) ? '' : '*') + this.props.name }</legend>
         { this.props.def.description ? <FormText color="muted">{ this.props.def.description }</FormText> : '' }
         <div className="col-12 my-1 px-0">
-          <Input type="select" name={ name } title={ name } className="selectpicker" onChange={ this.handleChange } default={ -1 }>
-            <option data-subtext={ name + ' options' } value={ "" }>{ name } options</option>
-            { def_opts }
+          <Input type="select" name={ this.props.name } title={ this.props.name } className="selectpicker" onChange={ this.handleChange } default={ -1 }>
+            <option data-subtext={ `${this.props.name} options` } value="" >{ this.props.name } options</option>
+            { defOpts }
           </Input>
 
           <div className="col-12 py-2">
@@ -86,12 +74,27 @@ class ChoiceField extends Component {
           </div>
         </div>
       </FormGroup>
-    )
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
-  schema: state.Generate.selectedSchema
-})
 
-export default connect(mapStateToProps)(ChoiceField)
+ChoiceField.propTypes = {
+  def: PropTypes.shape({
+    name: PropTypes.string,
+    type: PropTypes.string,
+    description: PropTypes.string,
+    properties: PropTypes.object,
+    patternProperties: PropTypes.object
+  }).isRequired,
+  optChange: PropTypes.func.isRequired,
+  name: PropTypes.string,
+  parent: PropTypes.string
+};
+
+ChoiceField.defaultProps = {
+  name: 'ChoiceField',
+  parent: ''
+};
+
+export default ChoiceField;

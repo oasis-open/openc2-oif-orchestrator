@@ -1,7 +1,6 @@
 import base64
 import bleach
 import coreschema
-import utils
 
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
@@ -11,11 +10,10 @@ from rest_framework.compat import coreapi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from ..models import UserSerializer, PasswordSerializer
-
+# Local imports
 from command.models import SentHistory, HistorySerializer
-
-from utils import IsAdminOrIsSelf
+from utils import get_or_none, IsAdminOrIsSelf, OrcSchema
+from ..models import UserSerializer, PasswordSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -31,7 +29,7 @@ class UserViewSet(viewsets.ModelViewSet):
     ordering_fields = ('last_name', 'first_name', 'username', 'email_address', 'active')
 
     @action(methods=['POST'], detail=False, permission_classes=[IsAdminOrIsSelf], serializer_class=PasswordSerializer)
-    def change_password(self, request, username=None):
+    def change_password(self, request, username=None):  # pylint: disable=unused-argument
         """
         Change user password, passwords sent as base64 encoded strings
         """
@@ -59,7 +57,7 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SentHistory.objects.order_by('-received_on')
 
-    schema = utils.OrcSchema(
+    schema = OrcSchema(
         manual_fields=[
             coreapi.Field(
                 "username",
@@ -68,14 +66,15 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
                 schema=coreschema.String(
                     description='Username to list the command history'
                 )
-            ),
+            )
         ]
     )
 
-    def list(self, request, username, *args, **kwargs):
+    def list(self, request, *args, **kwargs):  # pylint: disable=unused-argument
         """
         Return a list of a users command history
         """
+        username = kwargs.get('username', None)
         self.pagination_class.page_size_query_param = 'length'
         self.pagination_class.max_page_size = 100
         queryset = self.filter_queryset(self.get_queryset())
@@ -83,11 +82,10 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
         username = bleach.clean(username)
 
         if request.user.is_staff:  # Admin User
-            user = utils.get_or_none(User, username=username)
+            user = get_or_none(User, username=username)
             if user is None:
                 raise Http404
-            else:
-                queryset = queryset.filter(user=user)
+            queryset = queryset.filter(user=user)
 
         else:  # Standard User
             if request.user.username == username:
@@ -103,10 +101,11 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, username, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         Return a specific user's command
         """
+        username = kwargs.get('username', None)
         instance = self.get_object()
 
         if not request.user.is_staff:  # Standard User
@@ -116,4 +115,3 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-

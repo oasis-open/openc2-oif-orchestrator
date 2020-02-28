@@ -1,16 +1,14 @@
 // Actions for utility endpoints
 import { RSAA } from 'redux-api-middleware';
 
-const str_fmt = require('string-format')
-
 // Helper Functions
 export const withGUIAuth = (headers={}) => {
   return (state) => ({
     ...headers,
-    'Authorization': str_fmt('JWT {token}', {token: state.Auth.access.token || ''}),
+    'Authorization': `JWT ${ state.Auth.access.token || '' }`,
     'Content-Type': 'application/json'
-  })
-}
+  });
+};
 
 // API Calls
 // GET - /api/
@@ -25,4 +23,4 @@ export const info = () => ({
       INFO_REQUEST, INFO_SUCCESS, INFO_FAILURE
     ]
   }
-})
+});

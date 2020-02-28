@@ -23,7 +23,7 @@ class OrchestratorConfig(AppConfig):
         if all(state not in sys.argv for state in self._FALSE_READY):
             return
 
-        from command.processors import command_response
+        from command.processors import command_response  # pylint: disable=import-outside-toplevel
         settings.MESSAGE_QUEUE = MessageQueue(**settings.QUEUE, callbacks=[command_response])
 
 
@@ -34,11 +34,11 @@ def shutdown(*args, **kwargs):
     :return: None
     """
 
-    if type(settings.MESSAGE_QUEUE) is MessageQueue:
+    if isinstance(settings.MESSAGE_QUEUE, MessageQueue):
         settings.MESSAGE_QUEUE.shutdown()
 
     try:
-        import uwsgi
+        import uwsgi  # pylint: disable=import-outside-toplevel
         print(f"worker {uwsgi.worker_id()} has passed")
     except ModuleNotFoundError:
         pass

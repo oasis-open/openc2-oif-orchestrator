@@ -1,10 +1,11 @@
-import React, { Component } from 'react'
-import { Helmet } from 'react-helmet-async'
-import PropTypes from 'prop-types'
-import validThemes from './themes'
-import './assets/css/loader.css'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
+import validThemes from './themes';
+import './assets/css/loader.css';
 
-import { sleep } from '../'
+import * as themeActions from './theme-actions';
 
 const setItem = (key, obj) => {
   if (!key) return null;
@@ -13,17 +14,17 @@ const setItem = (key, obj) => {
   } catch (err) {
     return null;
   }
-}
+};
 
-const getItem = (key) => {
+const getItem = key => {
   if (!key) return null;
   try {
-    let item = localStorage.getItem(key)
+    const item = localStorage.getItem(key);
     return item ? JSON.parse(item) : null;
   } catch (err) {
     return null;
   }
-}
+};
 
 //------------------------------------------------------------------------------
 // Top level ThemeSwitcher Component
@@ -34,63 +35,32 @@ class ThemeSwitcher extends Component {
     this.load = this.load.bind(this);
     this.loadTheme = this.loadTheme.bind(this);
 
-    let validThemes = new Set(this.props.themeOptions)
+    const themeOptions = new Set(this.props.themeOptions.filter(t => validThemes.includes(t)));
 
-    let defaultTheme = getItem(this.props.storeThemeKey)
-    defaultTheme = defaultTheme ? defaultTheme : this.props.defaultTheme
-    validThemes.add(defaultTheme)
+    let defaultTheme = getItem(this.props.storeThemeKey);
+    defaultTheme = defaultTheme || this.props.defaultTheme;
+    themeOptions.add(defaultTheme);
 
     this.state = {
       currentTheme: defaultTheme,
-      themes: {},
-      validThemes: validThemes
-    }
+      themes: this.props.themes || {},
+      themeOptions
+    };
 
-    this.loadTheme(defaultTheme)
+    this.loadTheme(defaultTheme);
     setTimeout(() => {
-      for (let theme of validThemes) {
-        this.loadTheme(theme)
+      themeOptions.forEach(theme => this.loadTheme(theme));
+    }, 100);
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return {
+      ...prevState,
+      themes: {
+        ...prevState.themes,
+        ...nextProps.loadedThemes
       }
-    }, 100)
-  }
-
-  async loadTheme(theme) {
-    if (!this.state.validThemes.has(theme)) {
-      return
-    }
-
-    if (Object.keys(this.state.themes).indexOf(theme) == -1) {
-      return await fetch(window.location.origin + "/assets/css/" + theme + ".css")
-        .then(rsp => rsp.text())
-        .then(data => {
-          this.setState(prevState => ({
-            themes: {
-              ...prevState.themes,
-              [theme]: data
-            }
-          }))
-        }).catch(err => {
-          console.error(err)
-        })
-    }
-  }
-
-  async load(theme) {
-    if (!theme) {
-      let storedTheme = getItem(this.props.storeThemeKey)
-      // see if a theme was previously stored, will return null if storedThemeKey not set
-      theme = storedTheme ? storedTheme : this.props.defaultTheme
-    }
-
-    if (!this.state.validThemes.has(theme)) { return }
-
-    setItem(this.props.storeThemeKey, theme)
-    this.setState({
-      currentTheme: theme
-    })
-    if (Object.keys(this.state.themes).indexOf(theme) == -1) {
-      return await this.loadTheme(theme)
-    }
+    };
   }
 
   // pass reference to this down to ThemeChooser component
@@ -98,8 +68,36 @@ class ThemeSwitcher extends Component {
     return {
       defaultTheme: this.props.defaultTheme,
       themeSwitcher: this,
-      themes: [...this.state.validThemes],
+      themes: [ ...this.state.themeOptions ],
       currentTheme: this.state.currentTheme
+    };
+  }
+
+  async loadTheme(theme) {
+    if (!this.state.themeOptions.has(theme)) { return; }
+
+    if (!(theme in this.state.themes)) {
+      this.props.loadTheme(theme);
+    }
+  }
+
+  async load(theme) {
+    if (!theme) {
+      const storedTheme = getItem(this.props.storeThemeKey);
+      // see if a theme was previously stored, will return null if storedThemeKey not set
+      // eslint-disable-next-line no-param-reassign
+      theme = storedTheme || this.props.defaultTheme;
+    }
+
+    if (!this.state.themeOptions.has(theme)) { return; }
+
+    setItem(this.props.storeThemeKey, theme);
+    this.setState({
+      currentTheme: theme
+    });
+
+    if (Object.keys(this.state.themes).indexOf(theme) === -1) {
+      return this.loadTheme(theme);
     }
   }
 
@@ -122,10 +120,9 @@ class ThemeSwitcher extends Component {
             <p className='pt-0 mt-0'>Loading...</p>
           </div>
         </div>
-      )
-    } else {
-      return this.props.children || <span />
+      );
     }
+    return this.props.children || <span />;
   }
 
   render() {
@@ -133,18 +130,18 @@ class ThemeSwitcher extends Component {
       <div>
         <Helmet>
           <style type="text/css" data-type="theme">
-            { this.state.themes[this.state.currentTheme] || "" }
+            { this.state.themes[this.state.currentTheme] || '' }
           </style>
         </Helmet>
         { this.getContents() }
       </div>
-    )
+    );
   }
 }
 
 ThemeSwitcher.childContextTypes = {
   defaultTheme: PropTypes.string,
-  themeSwitcher: PropTypes.object,
+  themeSwitcher: PropTypes.instanceOf(ThemeSwitcher),
   themes: PropTypes.array,
   currentTheme: PropTypes.string
 };
@@ -153,14 +150,27 @@ ThemeSwitcher.propTypes = {
   defaultTheme: PropTypes.string,
   storeThemeKey: PropTypes.string,
   themes: PropTypes.object,
-  themeOptions: PropTypes.array
+  themeOptions: PropTypes.array,
+  children: PropTypes.element,
+  // State/Action props
+  loadTheme: PropTypes.func.isRequired,
+  loadedThemes: PropTypes.object.isRequired
 };
 
 ThemeSwitcher.defaultProps = {
   defaultTheme: 'lumen',
   storeThemeKey: null,
   themes: null,
-  themeOptions: ['cerulean', 'cosmo', 'cyborg', 'darkly', 'flatly', 'journal', 'litera', 'lumen', 'lux', 'materia', 'minty', 'pulse', 'sandstone', 'simplex', 'sketchy', 'slate', 'solar', 'spacelab', 'superhero', 'united', 'yeti']
+  themeOptions: validThemes,
+  children: null
 };
 
-export default ThemeSwitcher;
+const mapStateToProps = (state, props) => ({
+  loadedThemes: { ...(props.themes || {}), ...state.theme }
+});
+
+const mapDispatchToProps = dispatch => ({
+  loadTheme: theme => dispatch(themeActions.loadTheme(theme))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ThemeSwitcher);

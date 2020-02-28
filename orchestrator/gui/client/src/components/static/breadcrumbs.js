@@ -1,83 +1,89 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { createBrowserHistory } from 'history';
+import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
 
-import * as AuthActions from '../../actions/auth'
+import * as AuthActions from '../../actions/auth';
 
 class Breadcrumbs extends Component {
   constructor(props, context) {
-    super(props, context)
-    this.pathname = this.props.history.location.pathname
-    this.crumbs = this.pathname.replace(/|\/$/g, '').split('/')
+    super(props, context);
+    this.navigate = this.navigate.bind(this);
+    this.pathname = this.props.history.location.pathname;
+    this.crumbs = this.pathname.replace(/|\/$/g, '').split('/').filter(s => s);
+  }
+
+  shouldComponentUpdate(nextProps) {
+    const pathname = nextProps.history.location.pathname;
+    if (pathname === this.pathname) return false;
+    this.pathname = pathname;
+    this.crumbs = this.pathname.replace(/^\/|\/$/g, '').split('/');
+    return true;
   }
 
   navigate(e) {
-    e.preventDefault()
+    e.preventDefault();
     if (e.target.href === null || e.target.href === undefined ) return;
-    let href = e.target.href.replace(window.location.origin, '')
+    const href = e.target.href.replace(window.location.origin, '');
 
     this.props.navigate({
       pathname: href
-    })
-
-    this.setState({
-      active: href
-    })
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    let pathname = nextProps.history.location.pathname
-    if (pathname == this.pathname) return false;
-    this.pathname = pathname
-    this.crumbs = this.pathname.replace(/^\/|\/$/g, '').split('/')
-    return true;
+    });
   }
 
   render() {
     if (this.props.isAuthenticated) {
-      let crumbs = this.crumbs.map((crumb, i) => {
-        if (crumb == '') { return }
-        let crumbName = crumb.split(/[\s-_]/g).map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ')
-        let crumbURL = this.crumbs.slice(0, i+1).join('/')
-        crumbURL = crumbURL.charAt(0) == '/' ? crumbURL : '/' + crumbURL
+      const crumbs = this.crumbs.map((crumb, i) => {
+        if (crumb === '') { return; }
+        const active = i === this.crumbs.length-1;
+        const crumbURL = this.crumbs.slice(0, i+1).join('/');
 
         return (
-          <li
-            key={ i }
-            className={ "breadcrumb-item" + (i == (this.crumbs.length-1) ? ' active' : '') }
-            aria-current={ i == (this.crumbs.length-1) ? 'page' : undefined }
+          <BreadcrumbItem
+            key={ crumb }
+            tag={ active ? 'span' : 'a' }
+            href={ crumbURL.charAt(0) === '/' ? crumbURL : `/${crumbURL}` }
+            onClick={ active ? null : this.navigate }
+            active={ active }
           >
-            {
-              i == this.crumbs.length-1 ?
-                crumbName
-              :
-                <a href={ crumbURL } onClick={ this.navigate.bind(this) } >{ crumbName }</a>
-            }
-          </li>
-        )
-      })
+            { crumb.split(/[\s-_]/g).map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ') }
+          </BreadcrumbItem>
+        );
+      }).filter(b => b);
+      const home = crumbs.length === 0;
 
       return (
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <li
-              className={ "breadcrumb-item" + (this.crumbs[0] == '' ? ' active' : '') }
-              aria-current={ this.crumbs[0] == '' ? 'page' : undefined }
-            >
-              { this.crumbs[0] == '' ? 'Home' : <a href='/' onClick={ this.navigate.bind(this) } >Home</a> }
-            </li>
-
-            { crumbs }
-          </ol>
-        </nav>
-      )
+        <Breadcrumb tag="nav" listTag="div">
+          <BreadcrumbItem
+            tag={ home ? 'span' : 'a' }
+            href="/"
+            onClick={ home ? null : this.navigate }
+            active={ home }
+          >
+            Home
+          </BreadcrumbItem>
+          { crumbs }
+        </Breadcrumb>
+      );
     }
-    return (<div></div>)
+    return (<div />);
   }
 }
+
+Breadcrumbs.propTypes = {
+  history: PropTypes.objectOf(createBrowserHistory).isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
+  navigate: PropTypes.func
+};
+
+Breadcrumbs.defaultProps = {
+  navigate: null
+};
 
 const mapStateToProps = (state) => ({
   history: state.Router || state.router,
   isAuthenticated: AuthActions.isAuthenticated(state.Auth)
-})
+});
 
-export default connect(mapStateToProps)(Breadcrumbs)
+export default connect(mapStateToProps)(Breadcrumbs);

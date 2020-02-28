@@ -1,94 +1,93 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { toast } from 'react-toastify'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Button, FormGroup, FormText } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinusSquare, faPlusSquare } from '@fortawesome/free-solid-svg-icons';
 
-import {
-  Button,
-  Form,
-  FormGroup,
-  FormText,
-  Input,
-  Label,
-} from 'reactstrap'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMinusSquare, faPlusSquare } from '@fortawesome/free-solid-svg-icons'
-
-import {
-  isOptional_json,
-  Field
-} from './'
-
-import { safeGet } from '../../../../../utils'
-
-import * as GenActions from '../../../../../../actions/generate'
+import Field from '.';
+import { isOptionalJSON } from '../utils';
+import { safeGet } from '../../../../../utils';
 
 
 class ArrayField extends Component {
   constructor(props, context) {
-    super(props, context)
-    this.parent = this.props.name
+    super(props, context);
+    this.parent = this.props.name;
     if (this.props.parent) {
-      this.parent = [this.props.parent, this.props.name].join('.')
+      this.parent = [this.props.parent, this.props.name].join('.');
     } else if (this.props.name.match(/^[a-z]/)) {
-      this.parent = this.props.name
+      this.parent = this.props.name;
     }
 
-    this.msgName = (this.props.parent ? [this.props.parent, this.props.name] : [this.props.name]).join('.')
+    this.msgName = (this.props.parent ? [this.props.parent, this.props.name] : [this.props.name]).join('.');
 
     this.opts = {
       min: this.props.def.minItems || 0,
       max: this.props.def.maxItems || 100
-    }
+    };
 
     this.state = {
       min: false,
       max: false,
       count: 1,
       opts: {}
-    }
+    };
   }
 
   addOpt(e) {
-    e.preventDefault()
-    let max = this.opts.max
+    e.preventDefault();
+    const max = this.opts.max;
 
     this.setState((prevState) => {
-      let max_bool = prevState.count < max
+      const maxBool = prevState.count < max;
       return {
-        count: max_bool ? ++prevState.count : prevState.count,
-        max: !max_bool
-      }
+        count: maxBool ? prevState.count+1 : prevState.count,
+        max: !maxBool
+      };
     }, () => {
-      this.props.optChange(this.parent, Array.from(new Set(Object.values(this.state.opts))))
+      this.props.optChange(this.parent, [ ...new Set(Object.values(this.state.opts)) ]);
       if (this.state.max) {
-        toast(<div><p>Warning:</p><p>Cannot have more than { this.opts.max } items for { this.props.name }</p></div>, {type: toast.TYPE.WARNING})
+        const toastNode = (
+          <div>
+            <p>Warning:</p>
+            <p>Cannot have more than { this.opts.max } items for { this.props.name }</p>
+          </div>
+        );
+        toast(toastNode, {type: toast.TYPE.WARNING});
       }
-    })
+    });
   }
 
   removeOpt(e) {
-    e.preventDefault()
-    let min = this.opts.min
+    e.preventDefault();
+    const min = this.opts.min;
 
-    this.setState((prevState) => {
-      let min_bool = prevState.count > min
-      let opts = prevState.opts
-      if (min_bool) {
-        delete opts[Math.max.apply(Math, Object.keys(opts))]
+    this.setState(prevState => {
+      const minBool = prevState.count > min;
+      const opts = prevState.opts;
+      if (minBool) {
+        delete opts[Math.max(...Object.keys(opts))];
       }
 
       return {
-        count: min_bool ? --prevState.count : prevState.count,
-        min: !min_bool,
-        opts: opts
-      }
+        opts,
+        count: minBool ? prevState.count-1 : prevState.count,
+        min: !minBool
+      };
     }, () => {
-      this.props.optChange(this.parent, Array.from(new Set(Object.values(this.state.opts))))
+      this.props.optChange(this.parent, [ ...new Set(Object.values(this.state.opts)) ]);
       if (this.state.min) {
-        toast(<div><p>Warning:</p><p>Cannot have less than { this.opts.min } items for { this.props.name }</p></div>, {type: toast.TYPE.WARNING})
+        const toastNode = (
+          <div>
+            <p>Warning:</p>
+            <p>Cannot have less than { this.opts.min } items for { this.props.name }</p>
+          </div>
+        );
+        toast(toastNode, {type: toast.TYPE.WARNING});
       }
-    })
+    });
   }
 
   optChange(k, v, i) {
@@ -98,50 +97,68 @@ class ArrayField extends Component {
           ...prevState.opts,
           [i]: v
         }
-      }
+      };
     }, () => {
-      this.props.optChange(this.parent, Array.from(new Set(Object.values(this.state.opts))))
-    })
+      this.props.optChange(this.parent, [ ...new Set(Object.values(this.state.opts)) ]);
+    });
   }
 
   render() {
-    this.desc = safeGet(this.props.def, "description", "")
+    this.desc = safeGet(this.props.def, 'description', '');
+    const fields = [];
 
-    let fields = []
     for (let i=0; i < this.state.count; ++i) {
       if (Array.isArray(this.props.def.items)) {
         fields.push(this.props.def.items.map(field => {
-          let name = field.hasOwnProperty("$ref") ? field["$ref"].replace(/^#\/definitions\//, "") : ""
-          return <Field key={ i } name={ name } parent={ this.parent } def={ field } optChange={ this.optChange.bind(this) } idx={ i } />
-        }))
+          const name = '$ref' in field ? field.$ref.replace(/^#\/definitions\//, '') : '';
+          return (
+            <Field
+              key={ i }
+              name={ name }
+              idx={ i }
+              parent={ this.parent }
+              def={ field }
+              optChange={ this.optChange.bind(this) }
+            />
+          );
+        }));
       } else {
-        let name = "Field"
-        let ref = {}
+        let name = 'Field';
+        let ref = {};
 
-        if (this.props.def.items.hasOwnProperty("$ref")) {
-          name = this.props.def.items["$ref"].replace("#/definitions/", "")
-          ref = safeGet(safeGet(this.props.schema, "definitions", {}), name, {})
-        } else if (this.props.def.items.hasOwnProperty("type")) {
-          ref = { ...this.props.def.items }
+        if ('$ref' in this.props.def.items) {
+          name = this.props.def.items.$ref.replace(/^#\/definitions\//, '');
+          ref = safeGet(safeGet(this.props.schema, 'definitions', {}), name, {});
+        } else if ('type' in this.props.def.items) {
+          ref = { ...this.props.def.items };
         }
-        fields.push(<Field key={ i } name={ name } parent={ this.parent } def={ ref } optChange={ this.optChange.bind(this) } idx={ i } />)
+        fields.push(
+          <Field
+            key={ i }
+            name={ name }
+            idx={ i }
+            parent={ this.parent }
+            def={ ref }
+            optChange={ this.optChange.bind(this) }
+          />
+        );
       }
     }
 
     return (
       <FormGroup tag="fieldset" className="border border-dark p-2">
         <legend>
-          { (isOptional_json(this.props.def.req, this.props.name) ? '' : '*') + this.props.name }
+          { (isOptionalJSON(this.props.def.req, this.props.name) ? '' : '*') + this.props.name }
           <Button
             color="danger"
-            className={ 'float-right p-1' + (this.state.min ? ' disabled' : '') }
+            className={ `float-right p-1 ${this.state.min ? 'disabled' : ''}` }
             onClick={ this.removeOpt.bind(this) }
           >
             <FontAwesomeIcon icon={ faMinusSquare } size="lg"/>
           </Button>
           <Button
             color="primary"
-            className={ 'float-right p-1' + (this.state.max ? ' disabled' : '') }
+            className={ `float-right p-1 ${this.state.max ? 'disabled' : ''}` }
             onClick={ this.addOpt.bind(this) }
           >
             <FontAwesomeIcon icon={ faPlusSquare } size="lg"/>
@@ -150,14 +167,32 @@ class ArrayField extends Component {
         { this.desc ? <FormText color="muted">{ this.desc }</FormText> : '' }
         { fields }
       </FormGroup>
-    )
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
-  schema: state.Generate.selectedSchema,
-  baseTypes: state.Generate.types.base
-})
+ArrayField.propTypes = {
+  def: PropTypes.shape({
+    items: PropTypes.object.isRequired,
+    minItems: PropTypes.number,
+    maxItems: PropTypes.number,
+    req: PropTypes.arrayOf(PropTypes.string)
+  }).isRequired,
+  optChange: PropTypes.func.isRequired,
+  name: PropTypes.string,
+  parent: PropTypes.string,
+  schema: PropTypes.object
+};
+
+ArrayField.defaultProps = {
+  name: '',
+  parent: '',
+  schema: {}
+};
+
+const mapStateToProps = state => ({
+  schema: state.Generate.selectedSchema
+});
 
 
-export default connect(mapStateToProps)(ArrayField)
+export default connect(mapStateToProps)(ArrayField);

@@ -1,49 +1,48 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-
-import {
-  FormGroup,
-  FormText,
-  Label,
-  Input
-} from 'reactstrap'
-
-import * as GenActions from '../../../../../../actions/generate'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { FormGroup, FormText, Input } from 'reactstrap';
 
 class EnumeratedField extends Component {
   change(val) {
-    let def_type = this.props.def.type
-    switch(def_type) {
-      case "integer":
-        val = parseInt(val, 10) || null
+    let v = val;
+    switch (this.props.def.type) {
+      case 'integer':
+        v = parseInt(val, 10) || null;
         break;
-      case "number":
-        val = parseFloat(val.replace(",", ".")) || null
+      case 'number':
+        v = parseFloat(val.replace(',', '.')) || null;
         break;
+      // no default
     }
-    this.props.optChange(this.parent, val)
+    this.props.optChange(this.parent, v);
   }
 
   render() {
-    this.parent = ""
+    this.parent = '';
     if (this.props.parent) {
-      this.parent = [this.props.parent, this.props.name].join('.')
+      this.parent = [this.props.parent, this.props.name].join('.');
     } else if (this.props.name.match(/^[a-z]/)) {
-      this.parent = this.props.name
+      this.parent = this.props.name;
     }
 
-    let def_opts = []
+    let defOpts = [];
 
-    if (this.props.def.hasOwnProperty("enum")) {
-      if (this.props.def.hasOwnProperty("options")) {
-        def_opts = this.props.def.options.map((opt, i) => <option key={ i } value={ opt.value } data-subtext={ opt.description }>{ opt.label }</option>)
+    if ('enum' in this.props.def) {
+      if ('options' in this.props.def) {
+        defOpts = this.props.def.options.map(opt => (
+          <option key={ opt.value } value={ opt.value } data-subtext={ opt.description }>{ opt.label }</option>
+        ));
       } else {
-        def_opts = this.props.def.enum.map(opt => <option key={ opt } value={ opt } data-subtext={ opt }>{ opt }</option>)
+        defOpts = this.props.def.enum.map(opt => (
+          <option key={ opt } value={ opt } data-subtext={ opt }>{ opt }</option>
+        ));
       }
-    } else if (this.props.def.hasOwnProperty("oneOf")) {
-        def_opts = this.props.def.oneOf.map((opt, i) => <option key={ i } value={ opt.const } data-subtext={ opt.description }>{ opt.const }</option>)
+    } else if ('oneOf' in this.props.def) {
+        defOpts = this.props.def.oneOf.map(opt => (
+          <option key={ opt.const } value={ opt.const } data-subtext={ opt.description }>{ opt.const }</option>
+        ));
     } else {
-      def_opts = [<option key={ 0 } value="">Unknown Enumerated format</option>]
+      defOpts = [<option key={ 0 } value="">Unknown Enumerated format</option>];
     }
 
     return (
@@ -52,21 +51,48 @@ class EnumeratedField extends Component {
         { this.props.def.description ? <FormText color="muted">{ this.props.def.description }</FormText> : '' }
         <Input
           type="select"
-          name={ name }
-          title={ name }
+          name={ this.props.name }
+          title={ this.props.name }
           className="selectpicker"
           onChange={ e => this.change(e.target.value) }
         >
-          <option data-subtext={ name + ' options' } value='' >{ name + ' options' }</option>
-          { def_opts }
+          <option data-subtext={ `${this.props.name} options` } value='' >{ `${this.props.name} options` }</option>
+          { defOpts }
         </Input>
       </FormGroup>
-    )
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
-  schema: state.Generate.selectedSchema
-})
+EnumeratedField.propTypes = {
+  def: PropTypes.shape({
+    name: PropTypes.string,
+    type: PropTypes.string,
+    description: PropTypes.string,
+    oneOf: PropTypes.arrayOf(PropTypes.shape({
+      const: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      description: PropTypes.string
+    })),
+    options: PropTypes.arrayOf(PropTypes.shape({
+      description: PropTypes.string,
+      label: PropTypes.string,
+      value: PropTypes.string
+    })),
+    enum: PropTypes.arrayOf(PropTypes.oneOf([
+      PropTypes.string,
+      PropTypes.number
+    ]))
+  }).isRequired,
+  optChange: PropTypes.func.isRequired,
+  name: PropTypes.string,
+  required: PropTypes.bool,
+  parent: PropTypes.string
+};
 
-export default connect(mapStateToProps)(EnumeratedField)
+EnumeratedField.defaultProps = {
+  name: 'EnumeratedField',
+  required: false,
+  parent: ''
+};
+
+export default EnumeratedField;

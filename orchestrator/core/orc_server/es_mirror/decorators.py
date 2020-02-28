@@ -1,5 +1,5 @@
 from django.db.models import Model
-from elasticsearch_dsl import connections, Document, Search
+from elasticsearch_dsl import Document
 
 from .apps import ES_Hooks
 

@@ -1,41 +1,43 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import {
   RemotePageTable
-} from '../../utils'
+} from '../../utils';
 
-import * as CommandActions from '../../../actions/command'
-
-const str_fmt = require('string-format')
+import * as CommandActions from '../../../actions/command';
 
 class CommandTable extends Component {
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
 
     this.tableColumns = [
       {
         text: 'Command ID',
         dataField: 'command_id',
         sort: true
-      },{
+      },
+      {
         text: 'Received',
         dataField: 'received_on',
         sort: true
-      },{
+      },
+      {
         text: 'Status',
         dataField: 'status',
         sort: true
-      },{
+      },
+      {
         text: 'Command',
         dataField: 'command',
-        formatter: (cell, row) => <span>{ cell.action }  - { Object.keys(cell.target || {})[0] || '' }</span>
+        formatter: cell => <span>{ cell.action }  - { Object.keys(cell.target || {})[0] || '' }</span>
       }
-    ]
+    ];
 
     this.editOptions = {
       info: this.props.cmdInfo
-    }
+    };
 
   }
 
@@ -55,20 +57,21 @@ class CommandTable extends Component {
         editRows
         editOptions={ this.editOptions }
       />
-    )
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
-  siteTitle: state.Util.site_title,
-  orchestrator: {
-    name: state.Util.name || 'N/A'
-  },
-  admin: state.Auth.access.admin
-})
+CommandTable.propTypes = {
+  getCommands: PropTypes.func.isRequired,
+  cmdInfo: PropTypes.func
+};
 
-const mapDispatchToProps = (dispatch) => ({
-  getCommands: (page, sizePerPage, sort) => dispatch(CommandActions.getCommands(page, sizePerPage, sort)),
-})
+CommandTable.defaultProps = {
+  cmdInfo: null
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(CommandTable)
+const mapDispatchToProps = dispatch => ({
+  getCommands: (page, sizePerPage, sort) => dispatch(CommandActions.getCommands(page, sizePerPage, sort))
+});
+
+export default connect(null, mapDispatchToProps)(CommandTable);

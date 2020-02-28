@@ -1,42 +1,35 @@
-import InputField from './inputField'
-import RemotePageTable from './remotePageTable'
+import InputField from './inputField';
+import RemotePageTable from './remotePageTable';
 
 import {
-  mergeByProperty,
-  updateArray
-} from './array'
+  mergeByProperty
+} from './array';
 
 import {
   checkSchema,
   safeGet,
-  sleep,
   titleCase
-} from './general'
-
-import {
-  FormatJADN
-} from './jadn'
+} from './general';
 
 import {
   delMultiKey,
   getMultiKey,
   setMultiKey
-} from './multiKey'
+} from './multiKey';
 
 import {
   ThemeChooser,
   ThemeSwitcher
-} from './theme-switcher'
+} from './theme-switcher';
 
 import {
   generateUUID4,
   validateUUID4
-} from './uuid'
+} from './uuid';
 
 export {
   checkSchema,
   delMultiKey,
-  FormatJADN,
   generateUUID4,
   getMultiKey,
   InputField,
@@ -44,10 +37,8 @@ export {
   RemotePageTable,
   safeGet,
   setMultiKey,
-  sleep,
   ThemeChooser,
   ThemeSwitcher,
   titleCase,
-  updateArray,
   validateUUID4
-}
+};

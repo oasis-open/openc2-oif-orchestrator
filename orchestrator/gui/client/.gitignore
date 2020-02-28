@@ -60,6 +60,7 @@ fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
+
 ### Node template
 # Logs
 logs
@@ -135,10 +136,16 @@ typings/
 # Serverless directories
 .serverless
 
+# OSX
+.DS_Store
 
-# Custom Ignore
+# flow-typed
+flow-typed/npm/*
+!flow-typed/npm/module_vx.x.x.js
+
+### Custom Ignore
 !src/components/***/lib/
-analyzer.stats.html
-analyzer.stats.json
-webpack.stats.json
+!/internals/*
+analyzer.stats.*
+webpack.stats.*
 package-lock.json
