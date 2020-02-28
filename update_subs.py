@@ -60,7 +60,7 @@ else:
 CONFIG = FrozenDict(
     RootDir=os.path.dirname(os.path.realpath(__file__)),
     Requirements=(
-        ('git', 'gitpython==2.1.11'),
+        ('git', 'gitpython'),
         ('colorama', 'colorama')
     ),
     BaseRepo=f"{Base_URL}ScreamingBunny",
