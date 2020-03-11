@@ -47,7 +47,7 @@ class Breadcrumbs extends Component {
             onClick={ active ? null : this.navigate }
             active={ active }
           >
-            { crumb.split(/[\s-_]/g).map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ') }
+            { crumb.split(/[\s_]/g).map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ') }
           </BreadcrumbItem>
         );
       }).filter(b => b);

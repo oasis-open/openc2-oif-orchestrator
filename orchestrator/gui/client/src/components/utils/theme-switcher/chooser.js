@@ -56,6 +56,7 @@ class ThemeChooser extends Component {
           data-toggle='dropdown'
           aria-haspopup='true'
           aria-expanded='true'
+          onClick={ () => { console.log('THEME CLICK'); }}
         >
           Theme
         </button>

@@ -7,6 +7,7 @@ import {
 
 import {
   checkSchema,
+  iso2local,
   safeGet,
   titleCase
 } from './general';
@@ -32,6 +33,7 @@ export {
   delMultiKey,
   generateUUID4,
   getMultiKey,
+  iso2local,
   InputField,
   mergeByProperty,
   RemotePageTable,

@@ -100,7 +100,6 @@ const mapStateToProps = state => ({
   admin: state.Auth.access.admin
 });
 
-
 const mapDispatchToProps = dispatch => ({
   getDevices: (page, sizePerPage, sort) => dispatch(DeviceActions.getDevices(page, sizePerPage, sort)),
   deleteDevice: (dev) => dispatch(DeviceActions.deleteDevice(dev))

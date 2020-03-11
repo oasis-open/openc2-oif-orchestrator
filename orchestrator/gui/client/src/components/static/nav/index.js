@@ -85,8 +85,29 @@ class DoubleNav extends Component {
               <NavItem href="/" text="Home" active={ this.state.active } click={ this.navigate }/>
               <NavItem href="/device" text="Devices" active={ this.state.active } click={ this.navigate } />
               <NavItem href="/actuator" text="Actuators" active={ this.state.active } click={ this.navigate } />
-              <NavItem href="/command" text="Commands" active={ this.state.active } click={ this.navigate } />
-              <NavItem href="/command/generate" text="Command Generator" active={ this.state.active } click={ this.navigate } />
+
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  Command
+                </DropdownToggle>
+                <DropdownMenu>
+                  <NavItem dropdown href="/command" text="Commands" active={ this.state.active } click={ this.navigate } />
+                  <NavItem dropdown href="/command/generate" text="Command Generator" active={ this.state.active } click={ this.navigate } />
+                </DropdownMenu>
+              </UncontrolledDropdown>
+
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  Conformance
+                </DropdownToggle>
+                <DropdownMenu>
+                  <NavItem dropdown href="/conformance" text="Conformance Tests" active={ this.state.active } click={ this.navigate } />
+                  <NavItem dropdown href="/conformance/test" text="New Conformance Tests" active={ this.state.active } click={ this.navigate } />
+                  <NavItem dropdown href="/conformance/unittests" text="Conformance Unittests" active={ this.state.active } click={ this.navigate } />
+                </DropdownMenu>
+              </UncontrolledDropdown>
+
+
             </ul>
             <ul className="nav navbar-nav ml-auto">
               <UncontrolledDropdown nav inNavbar>

@@ -8,6 +8,7 @@ import registerServiceWorker from './registerServiceWorker';
 
 // Styles
 import { ThemeSwitcher } from './components/utils';
+import 'bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import './components/dependencies/css/styles.less';
 

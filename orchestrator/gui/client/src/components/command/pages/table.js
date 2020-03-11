@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import {
-  RemotePageTable
+  RemotePageTable,
+  iso2local
 } from '../../utils';
 
 import * as CommandActions from '../../../actions/command';
@@ -21,6 +22,7 @@ class CommandTable extends Component {
       {
         text: 'Received',
         dataField: 'received_on',
+        formatter: cell => <span>{ iso2local(cell) }</span>,
         sort: true
       },
       {

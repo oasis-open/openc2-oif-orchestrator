@@ -23,6 +23,7 @@ import Account from './components/account';
 import Device from './components/device';
 import Actuator from './components/actuator';
 import Command from './components/command';
+import Conformance from './components/conformance';
 
 import * as UtilActions from './actions/util';
 
@@ -50,6 +51,7 @@ class App extends Component {
                 <PrivateRoute path="/device/" component={ Device } />
                 <PrivateRoute path="/actuator/" component={ Actuator } />
                 <PrivateRoute path="/command/:page?/:command?" component={ Command } />
+                <PrivateRoute path="/conformance/:page?/:id?" component={ Conformance } />
                 <PrivateRoute component={ Error } /> // This should always be last route
               </Switch>
             </div>

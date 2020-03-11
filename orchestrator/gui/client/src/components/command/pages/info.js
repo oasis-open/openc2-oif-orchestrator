@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import JSONPretty from 'react-json-pretty';
-import { format, parseISO } from 'date-fns';
 
+import { iso2local } from '../../utils';
 import * as CommandActions from '../../../actions/command';
 
 class CommandInfo extends Component {
@@ -19,6 +19,7 @@ class CommandInfo extends Component {
       {
         text: 'Received',
         dataField: 'received_on',
+        formatter: cell => <span>{ iso2local(cell) }</span>,
         sort: true
       },
       {
@@ -43,13 +44,6 @@ class CommandInfo extends Component {
   render() {
     const cmd = this.props.command;
     const maxHeight = 500;
-    let received = parseISO(cmd.received_on);
-
-    try {
-      received = format(received, 'EEEE, MMMM do yyyy, h:mm:ss a zzzz');
-    } catch (e) {
-      received = '...';
-    }
 
     return (
       <div className="col-md-10 mx-auto jumbotron">
@@ -57,7 +51,7 @@ class CommandInfo extends Component {
 
         <p><strong>Command ID:</strong> { cmd.command_id }</p>
 
-        <p><strong>Received:</strong> { received }</p>
+        <p><strong>Received:</strong> { iso2local(cmd.received_on) }</p>
 
         <div>
           <p><strong>Actuators:</strong></p>
