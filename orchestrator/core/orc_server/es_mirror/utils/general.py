@@ -90,7 +90,7 @@ class ElasticHooks:
         m2m = getattr(model, '_meta').many_to_many
         if m2m:
             for field in m2m:
-                print(f"M2M thought - {field}")
+                # print(f"M2M thought - {field}")
                 signals.m2m_changed.connect(self.handle_m2m_changed, sender=getattr(model, field.attname).through)
 
     def handle_save(self, sender, instance=None, **kwargs):
