@@ -9,25 +9,13 @@ import {
 } from 'reactstrap';
 
 import { iso2local, safeGet, titleCase } from '../../utils';
+import * as ActuatorActions from '../../../actions/actuator';
 import * as ConformanceActions from '../../../actions/conformance';
+import * as DeviceActions from '../../../actions/device';
 
 class ConformanceInfo extends Component {
   constructor(props, context) {
     super(props, context);
-
-    this.tableColumns = [
-       {
-        text: 'Test ID',
-        dataField: 'test_id',
-        sort: true
-      },
-      {
-        text: 'Run at',
-        dataField: 'test_time',
-        formatter: cell => <span>{ iso2local(cell) }</span>,
-        sort: true
-      }
-    ];
 
     this.color = {
       success: 'success',
@@ -120,11 +108,12 @@ class ConformanceInfo extends Component {
       );
     }
 
-    const { test_id, test_time, test_results } = this.props.test;
+    const { test_id, actuator_tested={}, test_time, test_results } = this.props.test;
     return (
       <div className="col-md-10 mx-auto jumbotron">
         <h2>Test Info</h2>
         <p><strong>Test ID:</strong> { test_id }</p>
+        <p><strong>Tested Actuator:</strong> { actuator_tested.name }</p>
         <p><strong>Tested Time:</strong> { iso2local(test_time) }</p>
         { this.test_results(test_results) }
       </div>

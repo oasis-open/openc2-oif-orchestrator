@@ -11,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 # Local imports
-from device.models import Device
+from device.models import Device, DeviceSerializer
 from utils import prefixUUID
 
 
@@ -221,6 +221,23 @@ class ActuatorSerializer(QueryFieldsMixin, serializers.ModelSerializer):
         model = Actuator
         fields = ('actuator_id', 'name', 'device', 'profile', 'schema')
         read_only_fields = ('profile',)
+
+
+class ActuatorSerializerReadOnly(ActuatorSerializer):
+    """
+    Actuator Extra API Serializer
+    """
+    device = serializers.SerializerMethodField()
+
+    def get_device(self, instance):
+        d = DeviceSerializer(instance.device).data
+        d['transport'] = list(map(dict, d['transport']))
+        return d
+
+    class Meta:
+        model = Actuator
+        fields = ('actuator_id', 'name', 'device', 'profile', 'schema')
+        read_only_fields = ('actuator_id', 'name', 'device', 'profile', 'schema')
 
 
 class ActuatorGroupSerializer(QueryFieldsMixin, serializers.ModelSerializer):

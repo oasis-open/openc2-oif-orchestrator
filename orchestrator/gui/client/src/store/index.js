@@ -47,7 +47,7 @@ export default history => {
       level: 'info',
       logErrors: true
     });
-    middleware.push(logger);
+    // middleware.push(logger);
     // extraEnhancers.push(window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
   }
 

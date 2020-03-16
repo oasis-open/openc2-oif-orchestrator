@@ -8,7 +8,7 @@ import { Button } from 'reactstrap';
 import {
   ConformanceInfo,
   ConformanceTable,
-  // ConformanceTest,
+  ConformanceTest,
   UnittestTable
 } from './pages';
 
@@ -57,27 +57,28 @@ class Conformance extends Component {
     let content = [];
     switch (page) {
       case 'info':
-        content = (
-          <h1>Conformance Test { testID } Info</h1>,
-          <ConformanceInfo test_id={ testID } />
-        );
+        content = [
+          <h3 key="header">Conformance Test { testID } Info</h3>,
+          <ConformanceInfo key="content" test_id={ testID } />
+        ];
         break;
       case 'unittests':
-        content = (
-          <h1>Unit Tests</h1>,
-          <UnittestTable />
-        );
+        content = [
+          <h3 key="header">Unit Tests</h3>,
+          <UnittestTable key="content" />
+        ];
         break;
       case 'test':
-        content = (
-          <h1>Conformance Test</h1>
-        );
+        content = [
+          <h3 key="header">Conformance Test</h3>,
+          <ConformanceTest key="content" />
+        ];
         break;
       default:
-        content = (
-          <h1>Conformance Tests</h1>,
-          <ConformanceTable confInfo={ this.conformanceInfo } />
-        );
+        content = [
+          <h3 key="header">Conformance Tests</h3>,
+          <ConformanceTable key="content" confInfo={ this.conformanceInfo } />
+        ];
         break;
     }
     return (
@@ -142,6 +143,7 @@ class Conformance extends Component {
           <title>{ meta.title }</title>
           <link rel="canonical" href={ meta.canonical } />
         </Helmet>
+        <div className="corner-ribbon top-left sticky red opacity-9 shadow">Beta Features</div>
         { this.getContent(selectedPage, id) }
         { this.updateIntervalOptions() }
       </div>

@@ -66,7 +66,7 @@ BootswatchThemes.themes.forEach(theme => {
           console.log(`Downloaded reference: ${opts.filename}`);
         });
       }
-      processedLine = processedLine.replace(URL_REPLACE, `url('${THEME_FONT_URL}${fileName}')`);
+      processedLine = processedLine.replace(URL_REPLACE, `url('/${THEME_FONT_URL}${fileName}')`);
     }
 
     processedLine = processedLine.replace(/\\[^\\]/g, '\\\\');

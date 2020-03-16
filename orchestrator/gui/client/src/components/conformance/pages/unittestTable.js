@@ -80,15 +80,11 @@ class UnittestTable extends Component {
 
 UnittestTable.propTypes = {
   getUnittests: PropTypes.func.isRequired,
-  unittests: PropTypes.object
-};
-
-UnittestTable.defaultProps = {
-  unittests: {}
+  unittests: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  unittests: state.Conformance.unitTests || {}
+  unittests: state.Conformance.unitTests
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -38,8 +38,27 @@ export const getUnittestsProfile = profile => ({
   }
 });
 
+// POST - /api/conformance/unittest
+const RUN_UNITTEST_REQUEST = '@@conformance/CONFORMANCE_RUN_UNITTEST_REQUEST';
+export const RUN_UNITTEST_SUCCESS = '@@conformance/CONFORMANCE_RUN_UNITTEST_SUCCESS';
+export const RUN_UNITTEST_FAILURE = '@@conformance/CONFORMANCE_RUN_UNITTEST_FAILURE';
+export const runUnittest = (actuator, tests) => ({
+  [RSAA]: {
+    endpoint: `${baseAPI}/unittest/`,
+    method: 'POST',
+    headers: withGUIAuth(),
+    body: JSON.stringify({
+      actuator,
+      tests
+    }),
+    types: [
+      RUN_UNITTEST_REQUEST, RUN_UNITTEST_SUCCESS, RUN_UNITTEST_FAILURE
+    ]
+  }
+});
 
-// GET - /api/conformance/conformance/
+
+// GET - /api/conformance/test/
 const GET_TESTS_REQUEST = '@@conformance/CONFORMANCE_GET_TESTS_REQUEST';
 export const GET_TESTS_SUCCESS = '@@conformance/CONFORMANCE_GET_TESTS_SUCCESS';
 export const GET_TESTS_FAILURE = '@@conformance/CONFORMANCE_GET_TESTS_FAILURE';
@@ -62,7 +81,7 @@ export const getConformanceTests = ({page=1, count=10, sort='test_time', refresh
   }
 });
 
-// GET - /api/conformance/conformance/{TEST_ID}
+// GET - /api/conformance/test/{TEST_ID}
 const GET_TEST_REQUEST = '@@conformance/CONFORMANCE_GET_TEST_REQUEST';
 export const GET_TEST_SUCCESS = '@@conformance/CONFORMANCE_GET_TEST_SUCCESS';
 export const GET_TEST_FAILURE = '@@conformance/CONFORMANCE_GET_TEST_FAILURE';
@@ -73,25 +92,6 @@ export const getConformanceTest = test_id => ({
     headers: withGUIAuth(),
     types: [
       GET_TEST_REQUEST, GET_TEST_SUCCESS, GET_TEST_FAILURE
-    ]
-  }
-});
-
-// POST - /api/conformance/conformance
-const RUN_TEST_REQUEST = '@@conformance/CONFORMANCE_RUN_TEST_REQUEST';
-export const RUN_TEST_SUCCESS = '@@conformance/CONFORMANCE_RUN_TEST_SUCCESS';
-export const RUN_TEST_FAILURE = '@@conformance/CONFORMANCE_RUN_TEST_FAILURE';
-export const runTest = (actuator, tests) => ({
-  [RSAA]: {
-    endpoint: `${baseAPI}/test/`,
-    method: 'POST',
-    headers: withGUIAuth(),
-    body: JSON.stringify({
-      actuator,
-      tests
-    }),
-    types: [
-      RUN_TEST_REQUEST, RUN_TEST_SUCCESS, RUN_TEST_FAILURE
     ]
   }
 });

@@ -101,9 +101,9 @@ class DoubleNav extends Component {
                   Conformance
                 </DropdownToggle>
                 <DropdownMenu>
-                  <NavItem dropdown href="/conformance" text="Conformance Tests" active={ this.state.active } click={ this.navigate } />
-                  <NavItem dropdown href="/conformance/test" text="New Conformance Tests" active={ this.state.active } click={ this.navigate } />
-                  <NavItem dropdown href="/conformance/unittests" text="Conformance Unittests" active={ this.state.active } click={ this.navigate } />
+                  <NavItem dropdown href="/conformance/test" text="New Test" active={ this.state.active } click={ this.navigate } />
+                  <NavItem dropdown href="/conformance" text="Test Results" active={ this.state.active } click={ this.navigate } />
+                  <NavItem dropdown href="/conformance/unittests" text="Unittests" active={ this.state.active } click={ this.navigate } />
                 </DropdownMenu>
               </UncontrolledDropdown>
 

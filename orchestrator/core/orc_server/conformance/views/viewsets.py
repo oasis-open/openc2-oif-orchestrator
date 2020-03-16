@@ -1,3 +1,4 @@
+import threading
 import unittest
 import uuid
 
@@ -9,9 +10,30 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 # Local imports
-from actuator.models import Actuator
+from actuator.models import Actuator, ActuatorSerializerReadOnly
+from utils import FrozenDict
 from ..models import ConformanceTest, ConformanceTestSerializer
 from ..tests import get_tests, load_test_suite, tests_in_suite, TestResults
+
+
+def test_thread(test_suite, db_test):
+    test_log = StringIO()
+    results = unittest.TextTestRunner(
+        stream=test_log,
+        failfast=False,
+        resultclass=TestResults
+    ).run(test_suite)
+
+    db_test.test_results = results.getReport(verbose=True)
+    db_test.save()
+
+
+def toFrozen(o) -> FrozenDict:
+    if isinstance(o, dict):
+        return FrozenDict({k: toFrozen(v) for k, v in o.items()})
+    if isinstance(o, list):
+        return tuple(map(toFrozen, o))
+    return o
 
 
 class ConformanceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -92,7 +114,6 @@ class UnitTests(viewsets.ViewSet):
         """
         Create and run a new conformance test based on the given tests
         """
-        testSuite = get_tests(self.unittest_Suite, request.data.get('tests', {}))
         actuator = request.data.get('actuator', None)
         try:
             uuid.UUID(actuator, version=4)
@@ -100,21 +121,14 @@ class UnitTests(viewsets.ViewSet):
         except (ObjectDoesNotExist, ValueError):
             raise NotFound(f"Actuator uuid not valid/found")
 
+        act = toFrozen(ActuatorSerializerReadOnly(actuator).data)
+        testSuite = get_tests(self.unittest_Suite, request.data.get('tests', {}), actuator=act)
         test = ConformanceTest(
             actuator_tested=actuator,
             tests_run=tests_in_suite(testSuite)
         )
         test.save()
-
-        test_log = StringIO()
-        results = unittest.TextTestRunner(
-            stream=test_log,
-            failfast=False,
-            resultclass=TestResults
-        ).run(testSuite)
-
-        test.test_results = results.getReport(verbose=True)
-        test.save()
+        threading.Thread(target=test_thread, args=(testSuite, test)).start()
 
         return Response(ConformanceTestSerializer(test).data)
 

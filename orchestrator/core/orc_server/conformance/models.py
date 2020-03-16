@@ -7,7 +7,7 @@ from jsonfield import JSONField
 from rest_framework import serializers
 
 # Local imports
-from actuator.models import Actuator
+from actuator.models import Actuator, ActuatorSerializer
 
 
 class ConformanceTest(models.Model):
@@ -49,10 +49,7 @@ class ConformanceTestSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     Actuator API Serializer
     """
     test_id = serializers.UUIDField(format='hex_verbose')
-    actuator_tested = serializers.SlugRelatedField(
-        queryset=Actuator.objects.all(),
-        slug_field='actuator_id'
-    )
+    actuator_tested = ActuatorSerializer(read_only=True)
     test_time = serializers.DateTimeField()
     tests_run = serializers.JSONField()
     test_results = serializers.JSONField()

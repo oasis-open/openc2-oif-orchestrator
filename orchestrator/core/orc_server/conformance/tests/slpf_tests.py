@@ -1,10 +1,10 @@
 """
 OpenC2 Stateless Packet Filtering Profile (SLPF) Conformance
 """
-from test_setup import SetupTests
+from test_setup import SetupTestCase
 
 
-class SLPF_UnitTests(SetupTests):
+class SLPF_UnitTests(SetupTestCase):
     """
     SLPF OpenC2 Conformance Tests
     """

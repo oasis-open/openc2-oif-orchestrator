@@ -56,22 +56,22 @@ class Commands extends Component {
     let content = [];
     switch (page) {
       case 'generate':
-        content = (
-          <h1>Command Generator</h1>,
-          <GenerateCommands />
-        );
+        content = [
+          <h3 key="header">Command Generator</h3>,
+          <GenerateCommands key="contents" />
+        ];
         break;
       case 'info':
-        content = (
-          <h1>Command { command } Info</h1>,
-          <CommandInfo command_id={ command } />
-        );
+        content = [
+          <h3 key="header">Command { command } Info</h3>,
+          <CommandInfo key="contents" command_id={ command } />
+        ];
         break;
       default:
-        content = (
-          <h1>Commands</h1>,
-          <CommandTable cmdInfo={ this.commandInfo } />
-        );
+        content = [
+          <h3 key="header">Commands</h3>,
+          <CommandTable key="contents" cmdInfo={ this.commandInfo } />
+        ];
         break;
     }
     return (
