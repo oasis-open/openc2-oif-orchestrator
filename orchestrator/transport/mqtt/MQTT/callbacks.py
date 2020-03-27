@@ -105,23 +105,25 @@ class Callbacks(object):
                         "header": format_header(message.headers, device, actuator),
                         "body": encode_msg(json.loads(body), encoding)
                     }
+                    topic = device.get("topic") or actuator
+                    # channel = device.get("channel", None)
                     print(f"Sending {ip}:{port} - {payload}")
 
                     try:
                         publish.single(
-                            actuator,
+                            topic,
                             payload=json.dumps(payload),
                             qos=1,
                             hostname=ip,
                             port=safe_cast(port, int, 1883),
                             will={
-                                "topic": actuator,
+                                "topic": topic,
                                 "payload": json.dumps(payload),
                                 "qos": 1
                             },
                             tls=tls
                         )
-                        print(f"Placed payload onto topic {actuator} Payload Sent: {payload}")
+                        print(f"Placed payload onto topic {topic} Payload Sent: {payload}")
                     except Exception as e:
                         print(f"There was an error sending command to {ip}:{port} - {e}")
                         send_error_response(e, payload["header"])
