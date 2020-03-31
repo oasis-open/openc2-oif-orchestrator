@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework.authtoken.models import Token
@@ -57,20 +57,3 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     """
     if created:
         Token.objects.create(user=instance)
-
-
-@receiver(post_delete, sender=Token)
-def refresh_auth_token(sender, instance=None, **kwargs):
-    """
-    Create a new user auth token on delete of their old one
-    :param sender:  model 'sending' the action - Token
-    :param instance: SENDER instance
-    :param kwargs: key/value args
-    :return: None
-    """
-    # TODO: refresh token, catch when user is deleted
-    user = instance.user
-    '''
-    if sender.objects.filter(user=user).count() == 0 and get_or_none(get_user_model(), username=user.username):
-        Token.objects.create(user=user)
-    '''

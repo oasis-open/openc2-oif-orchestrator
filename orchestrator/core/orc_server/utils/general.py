@@ -26,8 +26,7 @@ def prefixUUID(pre: str = "PREFIX", max_length: int = 30) -> str:
     uid = str(uuid.uuid4()).replace("-", "")[:uid_max]
     if pre in ["", " ", None]:
         return f"{uid}"[:max_length]
-    else:
-        return f"{pre}-{uid}"[:max_length]
+    return f"{pre}-{uid}"[:max_length]
 
 
 def to_str(s: Any) -> str:

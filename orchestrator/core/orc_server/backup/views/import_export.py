@@ -4,9 +4,11 @@ Save and load data for the Orchestrator
 from rest_framework import permissions
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
-
 from rest_framework_files.viewsets import ImportExportModelViewSet
 
+# Local imports
+from actuator.models import Actuator, ActuatorSerializer
+from device.models import Device, DeviceSerializer
 from ..utils import (
     # MsgPack
     MessagePackParser,
@@ -20,17 +22,7 @@ from ..utils import (
     # XML
     XMLParser,
     XMLRenderer
-)
 
-
-from actuator.models import (
-    Actuator,
-    ActuatorSerializer
-)
-
-from device.models import (
-    Device,
-    DeviceSerializer
 )
 
 

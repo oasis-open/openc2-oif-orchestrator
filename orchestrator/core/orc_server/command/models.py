@@ -8,12 +8,12 @@ from django.utils import timezone
 from jsonfield import JSONField
 from rest_framework import serializers
 
-from tracking import log
+# Local Imports
 from actuator.models import Actuator, ActuatorSerializer
-from utils import randBytes, get_or_none
-
-from .documents import CommandDocument, ResponseDocument
 from es_mirror.decorators import ElasticModel
+from tracking import log
+from utils import randBytes, get_or_none
+from .documents import CommandDocument, ResponseDocument
 
 
 @ElasticModel(doc=CommandDocument)

@@ -73,7 +73,7 @@ services:
       context: ./logger/server
       dockerfile: Dockerfile
     environment:
-      ES_HOST: es_logger
+      ES_HOST: logger_elastic
       ES_PORT: 9200
       LOG_PREFIX: 'orchestrator'
       HOST_PORT: ${LOG_PORT:-514}
@@ -82,7 +82,7 @@ services:
     volumes:
       - ./logs:/var/log/syslog
     external_links:
-      - es_logger
+      - logger_elastic
     restart: on-failure:5
 
   logger_gui:
@@ -92,12 +92,12 @@ services:
       context: ./logger/gui
       dockerfile: Dockerfile
     environment:
-      ES_HOST: es_logger
+      ES_HOST: logger_elastic
       ES_PORT: 9200
     ports:
       - 8081:80
     external_links:
-      - es_logger
+      - logger_elastic
     depends_on:
       - logger_server
     logging:
@@ -108,11 +108,11 @@ services:
         tag: "logger-gui"
     restart: on-failure:5
 
-  es_logger:
-    hostname: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.0
+  logger_elastic:
+    hostname: logger_elastic
+    image: elasticsearch:7.5.1
     env_file:
-      - ./environment/es_logger.env
+      - ./environment/elastic.env
     ulimits:
       memlock:
         soft: -1

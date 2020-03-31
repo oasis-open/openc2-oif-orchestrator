@@ -1,23 +1,28 @@
 import json
 import re
-import sys
 
 from collections import OrderedDict
+from io import BytesIO as StringIO
 from pyexcel_xls import get_data, save_data
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import BaseParser
 from rest_framework.renderers import BaseRenderer
 
-if sys.version_info[0] < 3:
-    from StringIO import StringIO
-else:
-    from io import BytesIO as StringIO
+
+def simpleType(obj):
+    if isinstance(obj, (str, float, int)):
+        return obj
+
+    try:
+        return json.dumps(obj)
+    except TypeError:
+        return str(obj)
 
 
 class XLSParser(BaseParser):
     media_type = 'application/vnd.ms-excel'
 
-    def parse(self, stream, media_type=media_type, parser_context={}):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Parses the incoming bytestream as XLS and return resulting data
         """
@@ -40,7 +45,6 @@ class XLSParser(BaseParser):
         except ValueError as e:
             raise ParseError(f"XLS parse error - invalid data in spreadsheet {getattr(e, 'message', e)}")
 
-        print(data)
         return data
 
     def _json_loads(self, val):
@@ -49,7 +53,7 @@ class XLSParser(BaseParser):
         """
         try:
             return json.loads(val)
-        except ValueError as e:
+        except ValueError:
             if isinstance(val, str):
                 if re.match(r"^[\[{].*[\]}]", val):
                     raise ParseError(f"XLS parse error - data appears to be JSON, cannot load")
@@ -61,7 +65,7 @@ class XLSRenderer(BaseRenderer):
     format = 'xls'
     charset = None
 
-    def render(self, data, media_type=media_type, renderer_context={}):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render `data` into XLS
         """
@@ -74,7 +78,8 @@ class XLSRenderer(BaseRenderer):
         else:
             try:
                 data = dict(data)
-            except Exception:
+            # TODO: change to more specific exceptions
+            except Exception:  # pylint: disable=broad-except
                 data = list(data)
 
             if isinstance(data, list):
@@ -83,7 +88,7 @@ class XLSRenderer(BaseRenderer):
 
                 for row in data:
                     row = dict(row)
-                    rows.append([row[c] if isinstance(row[c], str) else json.dumps(row[c]) for c in headers])
+                    rows.append([simpleType(row[c]) for c in headers])
 
                 xls_data.update({
                     "Data": [
@@ -93,9 +98,8 @@ class XLSRenderer(BaseRenderer):
                 })
             else:
                 xls_data.update({
-                    "Data": [[k, v if isinstance(v, str) else json.dumps(v)] for k, v in data.items()]
+                    "Data": [[k, simpleType(v)] for k, v in data.items()]
                 })
 
         save_data(xls_file, xls_data)
         return xls_file.getvalue()
-

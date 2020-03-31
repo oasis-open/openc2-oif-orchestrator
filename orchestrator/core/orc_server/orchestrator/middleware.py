@@ -49,10 +49,9 @@ class RESTMiddleware(MiddlewareMixin):
         """
         if request.META.get('CONTENT_TYPE', '').startswith('multipart'):
             return self.parse_multipart(request)
-        elif request.META.get('CONTENT_TYPE', '').endswith('json'):
+        if request.META.get('CONTENT_TYPE', '').endswith('json'):
             return self.parse_json(request), MultiValueDict()
-        else:
-            return self.parse_form(request), MultiValueDict()
+        return self.parse_form(request), MultiValueDict()
 
     def parse_json(self, request):
         """
@@ -63,9 +62,7 @@ class RESTMiddleware(MiddlewareMixin):
         data = QueryDict('', mutable=True)
         try:
             data.update(json.loads(request.body))
-        except Exception as e:  # TODO: NOT THIS, VERY BAD!!!
-            # print(f'JSON Parse Error: {e}')
-            # print(f'Body: {request.body}')
+        except json.JSONDecodeError:
             if request.body not in ['', b'', None]:
                 data = QueryDict(request.body)
 

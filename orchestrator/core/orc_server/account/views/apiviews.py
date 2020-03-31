@@ -1,7 +1,6 @@
 import bleach
 import coreapi
 import coreschema
-import utils
 
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions
@@ -9,6 +8,8 @@ from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+# Local imports
+import utils
 from actuator.models import ActuatorGroup
 
 
@@ -43,7 +44,7 @@ class ActuatorAccess(APIView):
         ]
     )
 
-    def get(self, request, username, *args, **kwargs):
+    def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
         """
         API endpoint that lists the actuators a users can access
         """
@@ -51,7 +52,7 @@ class ActuatorAccess(APIView):
         rtn = [g.name for g in ActuatorGroup.objects.filter(users__in=[User.objects.get(username=username)])]
         return Response(rtn)
 
-    def put(self, request, username, *args, **kwargs):
+    def put(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
         """
         API endpoint that adds actuators to a users access
         """

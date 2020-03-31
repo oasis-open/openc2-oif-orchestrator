@@ -1,10 +1,10 @@
 """
 Combination of AMQP Consumer/Producer as class for easier access within the Orchestrator code
 """
-from sb_utils import Consumer, FrozenDict, safe_cast, Producer
+from sb_utils import safe_cast, Consumer, FrozenDict, Producer
 
 
-class MessageQueue(object):
+class MessageQueue:
     _auth = FrozenDict({
         'username': 'guest',
         'password': 'guest'
@@ -13,14 +13,15 @@ class MessageQueue(object):
     _consumerKey = 'response'
     _producerExchange = 'transport'
 
-    def __init__(self, hostname='127.0.0.1', port=5672, auth=_auth, exchange=_exchange, consumer_key=_consumerKey, producer_exchange=_producerExchange, callbacks=None):
+    def __init__(self, hostname='127.0.0.1', port=5672, auth=_auth, exchange=_exchange,
+                 consumer_key=_consumerKey, producer_exchange=_producerExchange, callbacks=None):
         """
         Message Queue - holds a consumer class and producer class for ease of use
         :param hostname: server ip/hostname to connect
         :param port: port the AMQP Queue is listening
-        :param auth: dict of username/password for connection auth
         :param exchange: name of the default exchange
         :param consumer_key: key to consumer
+        :param producer_exchange: ...
         :param callbacks: list of functions to call on message receive
         """
         self._exchange = exchange if isinstance(exchange, str) else self._exchange
@@ -43,7 +44,7 @@ class MessageQueue(object):
         self.producer = Producer(**self._publish_opts)
         self.consumer = Consumer(**self._consume_opts)
 
-    def send(self, msg, headers={}, exchange=_producerExchange, routing_key=None):
+    def send(self, msg, headers, exchange=_producerExchange, routing_key=None):
         """
         Publish a message to the specified que and transport
         :param msg: message to be published
@@ -52,16 +53,16 @@ class MessageQueue(object):
         :param routing_key: routing key name
         :return: None
         """
+        headers = headers or {}
         exchange = exchange if exchange == self._producerExchange else self._producerExchange
         if routing_key is None:
             raise ValueError('Routing Key cannot be None')
-        else:
-            self.producer.publish(
-                message=msg,
-                headers=headers,
-                exchange=exchange,
-                routing_key=routing_key
-            )
+        self.producer.publish(
+            message=msg,
+            headers=headers,
+            exchange=exchange,
+            routing_key=routing_key
+        )
 
     def register_callback(self, fun):
         """

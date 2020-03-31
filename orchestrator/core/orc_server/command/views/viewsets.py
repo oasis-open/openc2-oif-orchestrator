@@ -1,14 +1,15 @@
 import coreapi
 import coreschema
-import utils
 
-from rest_framework import permissions, viewsets, filters
+from rest_framework import viewsets, filters
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
+# Local imports
+import utils
 from .actions import action_send
-
 from ..models import SentHistory, HistorySerializer
 
 
@@ -16,18 +17,18 @@ class HistoryViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Command History to be viewed or edited.
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = HistorySerializer
     lookup_field = 'command_id'
 
     permissions = {
-        'create': (permissions.IsAuthenticated,),
-        'destroy': (permissions.IsAdminUser,),
-        'partial_update': (permissions.IsAdminUser,),
-        'retrieve': (permissions.IsAuthenticated,),
-        'update': (permissions.IsAdminUser,),
+        'create': (IsAuthenticated,),
+        'destroy': (IsAdminUser,),
+        'partial_update': (IsAdminUser,),
+        'retrieve': (IsAuthenticated,),
+        'update': (IsAdminUser,),
         # Custom Views
-        'send': (permissions.IsAuthenticated,),
+        'send': (IsAuthenticated,),
     }
 
     queryset = SentHistory.objects.order_by('-received_on')

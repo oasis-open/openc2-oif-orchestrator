@@ -1,9 +1,10 @@
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Device, DeviceSerializer
@@ -13,7 +14,7 @@ class DeviceViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Actuators to be viewed or edited.
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = DeviceSerializer
     lookup_field = 'device_id'
 
@@ -22,10 +23,10 @@ class DeviceViewSet(viewsets.ModelViewSet):
     ordering_fields = ('name', 'host', 'port', 'protocol', 'serialization', 'type')
 
     permissions = {
-        'create':  (permissions.IsAdminUser,),
-        'destroy': (permissions.IsAdminUser,),
-        'partial_update': (permissions.IsAdminUser,),
-        'update':  (permissions.IsAdminUser,),
+        'create':  (IsAdminUser,),
+        'destroy': (IsAdminUser,),
+        'partial_update': (IsAdminUser,),
+        'update':  (IsAdminUser,),
     }
 
     def get_permissions(self):
@@ -45,9 +46,10 @@ class DeviceViewSet(viewsets.ModelViewSet):
         # TODO: set permissions
         '''
         if not request.user.is_staff:  # Standard User
-            user_devices = list(g.devices.values_list('name', flat=True) for g in DeviceGroup.objects.filter(users__in=[request.user]))
+            user_devices = DeviceGroup.objects.filter(users__in=[request.user])
+            user_devices = list(g.devices.values_list('name', flat=True) for g in user_devices)
             queryset = queryset.filter(name__in=user_devices)  # | queryset.exclude(name__in=user_devices)
-        '''
+        '''  # pylint: disable=pointless-string-statement
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -66,11 +68,11 @@ class DeviceViewSet(viewsets.ModelViewSet):
         # TODO: set permissions
         '''
         if not request.user.is_staff:  # Standard User
-            user_devices = list(g.devices.values_list('name', flat=True) for g in DeviceGroup.objects.filter(users__in=[request.user]))
-
+            user_devices = DeviceGroup.objects.filter(users__in=[request.user])
+            user_devices = list(g.devices.values_list('name', flat=True) for g in user_devices)
             if device is not None and device.name not in user_devices:
                 raise PermissionDenied(detail='User not authorised to access device', code=401)
-        '''
+        '''  # pylint: disable=pointless-string-statement
 
         serializer = self.get_serializer(device)
         return Response(serializer.data)

@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models import Actuator, ActuatorGroup, ActuatorProfile
-
+# Local imports
 from utils import ReadOnlyModelAdmin
+from .models import Actuator, ActuatorGroup, ActuatorProfile
 
 
 class ActuatorAdmin(admin.ModelAdmin):
@@ -37,8 +37,7 @@ class ActuatorProfileAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
         """
         if request.user.is_superuser:
             return ()
-        else:
-            return 'name', 'actuators'
+        return 'name', 'actuators'
 
 
 # Register models
