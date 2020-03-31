@@ -11,4 +11,3 @@ urlpatterns = [
     # GUI Patterns
     path('', include(gui_patterns), name='log.gui')
 ]
-

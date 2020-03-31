@@ -1,10 +1,9 @@
 import string
 
 from django.db.models import signals, Model
-from elasticsearch_dsl import Field, Nested, Object
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from elasticsearch.exceptions import NotFoundError
-from elasticsearch_dsl import connections, Document, Search
+from elasticsearch_dsl import connections, Document, Field, Nested, Object
 from typing import (
     Dict,
     List,
@@ -37,7 +36,6 @@ def es_dict(model: Model, fields: FIELDS = None) -> Union[dict, None]:
             val = es_dict(getattr(model, f.name), fields.get(f.name))
         elif isinstance(f, ManyToManyField):
             val = [es_dict(mod, fields.get(f.name)) for mod in getattr(model, f.name).all()]
-            pass
         else:
             val = getattr(model, f.name)
         data[f.name] = val
@@ -51,7 +49,7 @@ def es_dict(model: Model, fields: FIELDS = None) -> Union[dict, None]:
 
 def get_nestedFields(fields: List[Tuple[str, Field, bool]]) -> dict:
     nested_fields = {}
-    for f_name, f_type, f_req in fields:
+    for f_name, f_type, _ in fields:
         if isinstance(f_type, (Nested, Object)):
             nested_fields[f_name] = get_nestedFields(list(f_type._doc_class._ObjectBase__list_fields()))
         else:
@@ -92,7 +90,7 @@ class ElasticHooks:
         m2m = getattr(model, '_meta').many_to_many
         if m2m:
             for field in m2m:
-                print(f"M2M thought - {field}")
+                # print(f"M2M thought - {field}")
                 signals.m2m_changed.connect(self.handle_m2m_changed, sender=getattr(model, field.attname).through)
 
     def handle_save(self, sender, instance=None, **kwargs):

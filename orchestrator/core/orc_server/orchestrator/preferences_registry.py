@@ -40,7 +40,7 @@ def is_valid_ipv4_address(address):
     """
     try:
         ipaddress.IPv4Address(address)
-    except Exception:  # not a valid address
+    except ValueError:  # not a valid address
         return False
     return True
 
@@ -53,7 +53,7 @@ def is_valid_ipv6_address(address):
     """
     try:
         ipaddress.IPv6Address(address)
-    except Exception:  # not a valid address
+    except ValueError:  # not a valid address
         return False
     return True
 
@@ -111,7 +111,8 @@ class OrchestratorHost(StringPreference):
     name = "host"
     help_text = "The hostname/ip of the orchestrator"
     _default = os.environ.get("ORC_IP", "127.0.0.1")
-    default = _default if any([is_valid_hostname(_default), is_valid_ipv4_address(_default), is_valid_ipv6_address(_default)]) else "127.0.0.1"
+    _val_host_addr = any([is_valid_hostname(_default), is_valid_ipv4_address(_default), is_valid_ipv6_address(_default)])
+    default = _default if _val_host_addr else "127.0.0.1"
 
     def validate(self, value):
         """

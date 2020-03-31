@@ -1,5 +1,4 @@
 from django.urls import include, path
-
 from rest_framework import routers
 
 from .. import views
@@ -11,7 +10,5 @@ router.register('request', views.RequestLogViewSet)
 
 urlpatterns = [
     # Routers
-    path('', include(router.urls)),
-
-
+    path('', include(router.urls))
 ]

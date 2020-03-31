@@ -1,5 +1,4 @@
 from django.forms import ValidationError
-
 from dynamic_preferences.types import IntegerPreference
 from dynamic_preferences.preferences import Section
 from dynamic_preferences.registries import global_preferences_registry as global_registry
@@ -26,5 +25,6 @@ class CommandWait(IntegerPreference):
         """
         if value < 0:
             raise ValidationError('Wait cannot be less than 0 seconds')
-        elif value > 30:
+
+        if value > 30:
             raise ValidationError('Wait cannot be greater than 30 seconds')

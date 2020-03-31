@@ -41,6 +41,9 @@ api_patterns = [
     # Command App
     path('command/', include('command.urls')),
 
+    # Conformance App
+    path('conformance/', include('conformance.urls')),
+
     # Device App
     path('device/', include('device.urls')),
 

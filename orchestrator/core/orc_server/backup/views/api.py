@@ -1,4 +1,3 @@
-
 from django.apps import apps
 from django.http import JsonResponse
 from rest_framework import permissions
@@ -22,7 +21,8 @@ def backupRoot(request):
     """
     API endpoint that lists available apps for backup
     """
-    global backupModels
+    global backupModels  # pylint: disable=global-statement
+
     if backupModels is None:
         backupModels = {}
         for app in apps.get_app_configs():
@@ -32,7 +32,7 @@ def backupRoot(request):
 
             exclude_models = exclude.get(app_name, ())
             models = [m.__name__.lower() for m in app.get_models()]
-            models = list(filter(lambda m: m not in exclude_models, models))
+            models = [m for m in models if m not in exclude_models]
 
             if models:
                 backupModels[app_name] = models
@@ -40,17 +40,16 @@ def backupRoot(request):
         backupModels = {k: v for k, v in backupModels.items() if v}
 
     return JsonResponse({
-            "backupFormats": [
-                "json",
-                "xml",
-                "yaml"
-            ],
-            "models": backupModels
-        })
+        "backupFormats": [
+            "json",
+            "xml",
+            "yaml"
+        ],
+        "models": backupModels
+    })
 
 
 @api_view(['GET'])
 @permission_classes((permissions.IsAdminUser,))
 def backupFile(request):
     return ""
-

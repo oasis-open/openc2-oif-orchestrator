@@ -12,6 +12,7 @@ from drf_queryfields import QueryFieldsMixin
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
+# Local imports
 from orchestrator.models import Protocol, Serialization
 from utils import get_or_none, prefixUUID
 
@@ -76,7 +77,7 @@ class Transport(models.Model):
         max_length=30
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
         Override the save function for added validation
         :param args: save args
@@ -89,9 +90,7 @@ class Transport(models.Model):
             if len(trans) > 1:
                 raise DjangoValidationError("host, port, and protocol must make a unique pair unless a pub/sub protocol")
 
-        rsp = super(Transport, self).save(*args, **kwargs)
-        if rsp and issubclass(rsp, BaseException):
-            raise rsp
+        super(Transport, self).save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return "{}:{} - {}".format(self.host, self.port, self.protocol.name)
@@ -129,30 +128,6 @@ class Device(models.Model):
         :return: url name
         """
         return self.name.lower().replace(" ", "_")
-
-    @property
-    def schema(self):
-        """
-        Ge the combined schema for the device
-        :return: device schema
-        """
-        schema = {}
-
-        if self.multi_actuator:
-            """
-            acts = self.actuator_set.all()
-            if len(acts) == 1:
-                schema = acts[0].schema
-            elif len(acts) > 1:
-                schema = acts[0].schema
-                # TODO: Merge schemas??
-            """
-            schema["metaSchema"] = "TODO"
-        else:
-            act = self.actuator_set.first()
-            schema = getattr(act, "schema", {})
-
-        return schema
 
     def __str__(self):
         return "{}".format(self.name)
@@ -225,7 +200,7 @@ def verify_unique(sender, instance=None, **kwargs):
         if action == "pre_add" and count > 1:
             raise IntegrityError("Transport cannot be associated with more that one device")
 
-        elif action in ("post_clear", "post_remove") and count == 0:
+        if action in ("post_clear", "post_remove") and count == 0:
             trans.delete()
 
 

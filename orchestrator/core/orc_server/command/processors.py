@@ -1,12 +1,11 @@
 import random
 
+# Local imports
 from actuator.models import Actuator
-from tracking import log
-
-from .models import SentHistory, ResponseHistory
-
 from orchestrator.models import Protocol
+from tracking import log
 from utils import decode_msg, get_or_none, isHex, safe_cast
+from .models import SentHistory, ResponseHistory
 
 
 def command_response(body, message):
@@ -61,5 +60,6 @@ def command_response(body, message):
     try:
         cmd_rsp = ResponseHistory(command=command, actuator=actuator, response=response)
         cmd_rsp.save()
-    except Exception as e:
+    # TODO: change to more specific exceptions
+    except Exception as e:  # pylint: disable=broad-except
         log.error(msg=f'Message response failed to save: {e}')
