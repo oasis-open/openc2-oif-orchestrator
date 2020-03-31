@@ -1,7 +1,6 @@
 """
 Unittest Utilities
 """
-import copy
 import inspect
 import os
 import unittest
@@ -164,7 +163,7 @@ class TestResults(unittest.TextTestResult):
         profile = getattr(test, "profile", "Unknown")
         val = err or test
         if isinstance(val, tuple):
-            exctype, value, tb = err
+            exctype, value, _ = err
             val = f"{exctype.__name__}: {value}"
 
         self._testReport.setdefault(profile, {}).setdefault(category, {})[test._testMethodName] = val
