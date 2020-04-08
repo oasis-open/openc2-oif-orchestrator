@@ -67,14 +67,16 @@ class Transport(models.Model):
         help_text="Serialization(s) supported by the device"
     )
     topic = models.CharField(
-        default="topic",
+        default="",
         help_text="Topic for the specific device, only necessary for Pub/Sub protocols",
-        max_length=30
+        max_length=30,
+        blank=True
     )
     channel = models.CharField(
-        default="channel",
+        default="",
         help_text="Channel for the specific device, only necessary for Pub/Sub protocols",
-        max_length=30
+        max_length=30,
+        blank=True
     )
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
