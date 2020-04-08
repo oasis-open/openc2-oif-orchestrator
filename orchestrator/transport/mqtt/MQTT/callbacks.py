@@ -102,7 +102,7 @@ class Callbacks(object):
                 # iterate through actuator profiles to send message to
                 for actuator in device.get("profile", []):
                     payload = {
-                        "header": format_header(message.headers, device, actuator),
+                        "header": format_header(message.header.get("source", {}), device, actuator, f"{ip}:{port}"),
                         "body": encode_msg(json.loads(body), encoding)
                     }
                     topic = device.get("topic") or actuator
@@ -182,18 +182,17 @@ def get_response(ip, port, orc_id):
         client.loop_start()
 
 
-def format_header(header, device, actuator):
+def format_header(head_source, device, actuator, broker_socket):
     """
     Takes relevant info from header and organizes it into a format that the orchestrator is expecting
-    :param header: Header data received from device containing data to trace back the original command
+    :param head_source: Header data received from device containing data to trace back the original command
     """
-    broker_socket = header.get("source", {}).get("transport", {}).get("socket", "")
-    orc_id = header.get("source", {}).get("orchestratorID", "")
+    orc_id = head_source.get("orchestratorID", "")
 
     return {
         "to": f"{actuator}@{broker_socket}",
         "from": f"{orc_id}@{broker_socket}",
-        "correlationID": header.get("source", {}).get("correlationID", ""),
-        "created": header.get("source", {}).get("date", ""),
+        "correlationID": head_source.get("correlationID", ""),
+        "created": head_source.get("date", ""),
         "content_type": f"application/openc2-cmd+{device.get('encoding', 'json')};version=1.0",
     }
