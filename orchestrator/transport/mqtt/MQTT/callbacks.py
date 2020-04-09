@@ -102,7 +102,7 @@ class Callbacks(object):
                 # iterate through actuator profiles to send message to
                 for actuator in device.get("profile", []):
                     payload = {
-                        "header": format_header(message.header.get("source", {}), device, actuator, f"{ip}:{port}"),
+                        "header": format_header(message.headers.get("source", {}), device, actuator, f"{ip}:{port}"),
                         "body": encode_msg(json.loads(body), encoding)
                     }
                     topic = device.get("topic") or actuator
