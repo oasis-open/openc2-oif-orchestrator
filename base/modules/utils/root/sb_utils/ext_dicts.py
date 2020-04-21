@@ -27,8 +27,7 @@ class ObjectDict(dict):
         """
         if key in self:
             return self[key]
-        else:
-            raise AttributeError(f"No such attribute {key}")
+        raise AttributeError(f"No such attribute {key}")
 
     def __setattr__(self, key: Any, val: Any) -> None:
         """
@@ -55,6 +54,7 @@ class FrozenDict(ObjectDict):
     """
     Immutable/Frozen dictionary
     """
+    _hash: hash
 
     def __hash__(self) -> hash:
         """
@@ -134,8 +134,7 @@ class QueryDict(ObjectDict):
                 else:
                     raise AttributeError(f"Unknown type {type(rtn)}, cannot get value")
             return rtn
-        else:
-            return default
+        return default
 
     def set(self, path: str, val: Any, sep: str = None) -> None:
         """

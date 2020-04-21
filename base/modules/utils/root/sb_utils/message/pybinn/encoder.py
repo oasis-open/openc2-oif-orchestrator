@@ -1,4 +1,6 @@
-"""Implementation of BINNEncoder"""
+"""
+Implementation of BINNEncoder
+"""
 
 from io import BytesIO
 from struct import pack
@@ -7,22 +9,28 @@ from datetime import datetime, timedelta
 from . import datatypes as types
 
 
-class BINNEncoder(object):
-    """BINN <https://github.com/liteserver/binn> encoder for Python"""
+class BINNEncoder:
+    """
+    BINN <https://github.com/liteserver/binn> encoder for Python
+    """
 
-    def __init__(self, fp=None, *custom_encoders):
+    def __init__(self, fp=None, *custom_encoders):  # pylint: disable=keyword-arg-before-vararg
         self._buffer = fp
         if not self._buffer:
             self._buffer = BytesIO()
         self._custom_encoders = custom_encoders
 
     def encode_bytes(self, value):
-        """Encode value and return bytes"""
+        """
+        Encode value and return bytes
+        """
         self.encode(value)
         return self._buffer.getvalue()
 
     def encode(self, value):
-        """Encode value to stream"""
+        """
+        Encode value to stream
+        """
         if value is None:
             self._buffer.write(types.BINN_NULL)
             return
@@ -53,12 +61,12 @@ class BINNEncoder(object):
         # try use custom encoders when none type was recognized
         for encoder in self._custom_encoders:
             if not issubclass(type(encoder), CustomEncoder):
-                raise TypeError("Type {} is not CustomerEncoder.".format(type(encoder)))
+                raise TypeError(f"Type {type(encoder)} is not CustomerEncoder.")
             if isinstance(value, encoder.type):
                 self._encode_custom_type(value, encoder)
                 return
 
-        raise TypeError("Invalid type for encode: {}".format(type(value)))
+        raise TypeError(f"Invalid type for encode: {type(value)}")
 
     def _encode_str(self, value, data_type=types.BINN_STRING):
         size = len(value.encode('utf8'))
@@ -87,11 +95,12 @@ class BINNEncoder(object):
             self._buffer.write(types.BINN_UINT64)
             self._buffer.write(pack('L', value))
             return
-        raise OverflowError("Value to big {}.".format(hex(value)))
+        raise OverflowError(f"Value to big {value:x}.")
 
     def _encode_int(self, value):
         if value >= 0:
-            return self._encode_uint(value)
+            self._encode_uint(value)
+            return
         # signed char
         if value >= -0x80:
             self._buffer.write(types.BINN_INT8)
@@ -151,7 +160,7 @@ class BINNEncoder(object):
             for key in value:
                 if isinstance(key, str):
                     if len(key) > 255:
-                        raise OverflowError("Key '{}' is to big. Max length is 255.".format(key))
+                        raise OverflowError(f"Key '{key}' is to big. Max length is 255.")
                     buffer.write(pack('B', len(key)))
                     buffer.write(key.encode('utf8'))
                     buffer.write(BINNEncoder().encode_bytes(value[key]))
@@ -161,14 +170,12 @@ class BINNEncoder(object):
                     buffer.write(BINNEncoder().encode_bytes(value[key]))
                 elif isinstance(key, bytes):
                     if len(key) != types.PYBINN_MAP_SIZE:
-                        msg = "Bytes key should be exactly {} bytes length.".format(types.PYBINN_MAP_SIZE)
-                        raise OverflowError(msg)
+                        raise OverflowError(f"Bytes key should be exactly {types.PYBINN_MAP_SIZE} bytes length.")
                     container_type = types.PYBINN_MAP
                     buffer.write(key)
                     buffer.write(BINNEncoder().encode_bytes(value[key]))
                 else:
-                    msg = "Cannot serialize dictionary with key of type '{}'".format(type(key))
-                    raise TypeError(msg)
+                    raise TypeError(f"Cannot serialize dictionary with key of type '{type(key)}'")
 
             self._buffer.write(container_type)
             self._buffer.write(BINNEncoder._to_varint(buffer.tell() + 3))
@@ -188,17 +195,21 @@ class BINNEncoder(object):
         return pack('B', value)
 
 
-class CustomEncoder(object):
-    """Base class for handling encoding user types"""
+class CustomEncoder:
+    """
+    Base class for handling encoding user types
+    """
 
     def __init__(self, usr_type, data_type):
         # if custom data type is not BINN type
         if data_type in types.ALL:
-            raise Exception("Data type {} is defined as internal type.".format(data_type))
+            raise Exception(f"Data type {data_type} is defined as internal type.")
 
         self.type = usr_type
         self.datatype = data_type
 
     def getbytes(self, value):
-        """Encode instance of custom type"""
+        """
+        Encode instance of custom type
+        """
         raise NotImplementedError()
