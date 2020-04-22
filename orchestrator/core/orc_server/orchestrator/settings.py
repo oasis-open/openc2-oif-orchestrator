@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'actuator',
     'account',
     'command',
-    'conformance',
+    # 'conformance',
     'backup',
     'tracking',
     # Default Modules

@@ -1,61 +1,67 @@
-"""Implementation of BINNDecoder"""
-
+"""
+Implementation of BINNDecoder
+"""
 import io
-from struct import unpack
+
 from datetime import datetime, timedelta
+from functools import partial
+from struct import unpack
+from typing import (
+    Callable,
+    Dict,
+    Union
+)
 
 from . import datatypes as types
 
 
-class BINNDecoder(object):
-    """BINN <https://github.com/liteserver/binn> decoder for Python"""
+class BINNDecoder:
+    """
+    BINN <https://github.com/liteserver/binn> decoder for Python
+    """
+    _decoders: Dict[bytes, Callable]
 
-    def __init__(self, buffer=None, fp=None, *custom_decoders):
+    def __init__(self, buffer=None, fp=None, *custom_decoders):  # pylint: disable=keyword-arg-before-vararg
         if buffer:
             self._buffer = io.BytesIO(buffer)
         if fp:
             self._buffer = fp
         self._custom_decoders = custom_decoders
 
+        self._decoders = {
+            types.BINN_STRING: self._decode_str,
+            types.BINN_UINT8: partial(self._unpack, 'B', 1),
+            types.BINN_INT8: partial(self._unpack, 'b', 1),
+            types.BINN_UINT16: partial(self._unpack, 'H', 2),
+            types.BINN_INT16:  partial(self._unpack, 'h', 2),
+            types.BINN_UINT32:  partial(self._unpack, 'I', 4),
+            types.BINN_INT32: partial(self._unpack, 'i', 4),
+            types.BINN_UINT64: partial(self._unpack, 'L', 8),
+            types.BINN_INT64: partial(self._unpack, 'l', 8),
+            types.BINN_FLOAT64: partial(self._unpack, 'd', 8),
+            types.BINN_BLOB:self._decode_bytes,
+            types.BINN_DATETIME: self._decode_datetime,
+            types.BINN_LIST: self._decode_list,
+            types.BINN_OBJECT: self._decode_dict,
+            types.BINN_MAP: self._decode_dict,
+            types.PYBINN_MAP: self._decode_dict,
+            types.BINN_TRUE: lambda: True,
+            types.BINN_FALSE: lambda: False,
+            types.BINN_NULL: lambda: None
+        }
+
     def decode(self):
-        """Decode date from buffer"""
+        """
+        Decode date from buffer
+        """
         binntype = self._buffer.read(1)
-        if binntype == types.BINN_STRING:
-            return self._decode_str()
-        if binntype == types.BINN_UINT8:
-            return unpack('B', self._buffer.read(1))[0]
-        if binntype == types.BINN_INT8:
-            return unpack('b', self._buffer.read(1))[0]
-        if binntype == types.BINN_UINT16:
-            return unpack('H', self._buffer.read(2))[0]
-        if binntype == types.BINN_INT16:
-            return unpack('h', self._buffer.read(2))[0]
-        if binntype == types.BINN_UINT32:
-            return unpack('I', self._buffer.read(4))[0]
-        if binntype == types.BINN_INT32:
-            return unpack('i', self._buffer.read(4))[0]
-        if binntype == types.BINN_UINT64:
-            return unpack('L', self._buffer.read(8))[0]
-        if binntype == types.BINN_INT64:
-            return unpack('l', self._buffer.read(8))[0]
-        if binntype == types.BINN_FLOAT64:
-            return unpack('d', self._buffer.read(8))[0]
-        if binntype == types.BINN_BLOB:
-            return self._decode_bytes()
-        if binntype == types.BINN_DATETIME:
-            return self._decode_datetime()
-        if binntype == types.BINN_LIST:
-            return self._decode_list()
-        if binntype == types.BINN_OBJECT \
-                or binntype == types.BINN_MAP \
-                or binntype == types.PYBINN_MAP:
-            return self._decode_dict(binntype)
-        if binntype == types.BINN_TRUE:
-            return True
-        if binntype == types.BINN_FALSE:
-            return False
-        if binntype == types.BINN_NULL:
-            return None
+        decoder = self._decoders.get(binntype, None)
+        if decoder and binntype in (types.BINN_OBJECT, types.BINN_MAP, types.PYBINN_MAP):
+            return decoder(binntype)
+
+        if decoder:
+            return decoder()
+
         # if type was not found, try using custom decoders
         for decoder in self._custom_decoders:
             if not issubclass(type(decoder), CustomDecoder):
@@ -63,7 +69,7 @@ class BINNDecoder(object):
             if binntype == decoder.datatype:
                 return self._decode_custom_type(decoder)
 
-        raise TypeError("Invalid data format: {}".format(binntype))
+        raise TypeError(f"Invalid data format: {binntype}")
 
     def _decode_str(self):
         size = self._from_varint()
@@ -86,7 +92,7 @@ class BINNDecoder(object):
         self._from_varint()
         count = self._from_varint()
         result = []
-        for i in range(count):
+        for _ in range(count):
             result.append(self.decode())
         return result
 
@@ -95,7 +101,7 @@ class BINNDecoder(object):
         self._from_varint()
         count = self._from_varint()
         result = {}
-        for i in range(count):
+        for _ in range(count):
             if binntype == types.BINN_OBJECT:
                 key_size = unpack('B', self._buffer.read(1))[0]
                 key = self._buffer.read(key_size).decode('utf8')
@@ -118,17 +124,25 @@ class BINNDecoder(object):
             value &= 0x7FFFFFFF
         return value
 
+    # Switch Helpers
+    def _unpack(self, fmt: str, rb: int) -> Union[int, float]:
+        return unpack(fmt, self._buffer.read(rb))[0]
 
-class CustomDecoder(object):
-    """Base class for handling decoding user types"""
+
+class CustomDecoder:
+    """
+    Base class for handling decoding user types
+    """
 
     def __init__(self, data_type):
         # check if custom data type is not BINN type
         if data_type in types.ALL:
-            raise Exception("Data type {} is defined as internal type.".format(data_type))
+            raise Exception(f"Data type {data_type} is defined as internal type.")
 
         self.datatype = data_type
 
     def getobject(self, data_bytes):
-        """Decode object from bytes"""
+        """
+        Decode object from bytes
+        """
         raise NotImplementedError()

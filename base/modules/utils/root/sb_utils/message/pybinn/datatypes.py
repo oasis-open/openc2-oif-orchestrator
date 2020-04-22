@@ -1,4 +1,6 @@
-"""Common types for encoder and decoder"""
+"""
+Common types for encoder and decoder
+"""
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 

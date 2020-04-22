@@ -41,9 +41,6 @@ api_patterns = [
     # Command App
     path('command/', include('command.urls')),
 
-    # Conformance App
-    path('conformance/', include('conformance.urls')),
-
     # Device App
     path('device/', include('device.urls')),
 
@@ -59,6 +56,10 @@ api_patterns = [
         path('swagger/', get_swagger_view(title='OpenC2 Orchestrator API'), name='api.schema')
     ])),
 ]
+
+# Conformance App
+if 'conformance' in settings.INSTALLED_APPS:
+    path('conformance/', include('conformance.urls')),
 
 gui_patterns = [
     # No GUI - Redirect to API

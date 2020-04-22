@@ -76,7 +76,7 @@ class SetupTestCase(unittest.TestCase):
                 ]
             ]
             nodes: str
-        ]        
+        ]
         schema: FrozenDict
         schema_format: str -> OneOf(jadn, json)
         profile: str
@@ -91,12 +91,10 @@ class SetupTestCase(unittest.TestCase):
     def _setupKwargs(self, **kwargs):
         self.actuator = kwargs.get('actuator', None)
 
-    def debug(self, **kwargs):
+    def debug(self, **kwargs):  # pylint: disable=arguments-differ
         self._setupKwargs(**kwargs)
         super(SetupTestCase, self).debug()
 
     def __call__(self, *args, **kwargs):
         self._setupKwargs(**kwargs)
         return self.run(*args)
-
-

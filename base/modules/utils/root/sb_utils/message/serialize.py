@@ -4,24 +4,25 @@ Message Conversion functions
 import base64
 import bson
 import cbor2
+import edn_format
 import json
 import msgpack
 import shutil
+import toml
 import ubjson
 import yaml
 
 from typing import Union
 
+
+from . import (
+    helpers,
+    pybinn,
+    pysmile
+)
 from .. import (
     ext_dicts,
     general
-)
-
-from . import (
-    pybinn,
-    pysmile,
-    s_expression,
-    xml
 )
 
 
@@ -36,36 +37,41 @@ optionals = dict(
 )
 
 if shutil.which("json-to-vpack") and shutil.which("vpack-to-json"):
-    from . import vpack
-    optionals["encode"]["vpack"] = lambda v: vpack.encode(v)
-    optionals["decode"]["vpack"] = lambda v: vpack.decode(v)
+    optionals["encode"]["vpack"] = helpers.vpack_encode
+    optionals["decode"]["vpack"] = helpers.vpack_decode
 
 
 serializations = ext_dicts.FrozenDict(
     encode=ext_dicts.FrozenDict(
-        binn=lambda v: pybinn.dumps(v),
-        bson=lambda v: bson.dumps(v),
-        cbor=lambda v: cbor2.dumps(v),
-        json=lambda v: json.dumps(v),
-        msgpack=lambda v: msgpack.packb(v, use_bin_type=True),
-        s_expression=lambda v: s_expression.encode(v),
-        # smile=lambda v: pysmile.encode(v),
-        xml=lambda v: xml.encode(v),
-        ubjson=lambda v: ubjson.dumpb(v),
-        yaml=lambda v: yaml.dump(v, Dumper=Dumper),
+        binn=pybinn.dumps,
+        bencode=helpers.bencode_encode,
+        bson=bson.dumps,
+        cbor=cbor2.dumps,
+        edn=edn_format.dumps,
+        json=json.dumps,
+        msgpack=lambda m: msgpack.packb(m, use_bin_type=True),
+        s_expression=helpers.sp_encode,
+        smile=pysmile.encode,
+        toml=toml.dumps,
+        xml=helpers.xml_encode,
+        ubjson=ubjson.dumpb,
+        yaml=lambda m: yaml.dump(m, Dumper=Dumper),
         **optionals["encode"]
     ),
     decode=ext_dicts.FrozenDict(
-        binn=lambda v: pybinn.loads(v),
-        bson=lambda v: bson.loads(v),
-        cbor=lambda v: cbor2.loads(v),
-        json=lambda v: json.loads(v),
-        msgpack=lambda v: msgpack.unpackb(v),
-        s_expression=lambda v: s_expression.decode(v),
-        # smile=lambda v: pysmile.decode(v),
-        xml=lambda v: xml.decode(v),
-        ubjson=lambda v: ubjson.loadb(v),
-        yaml=lambda v: yaml.load(v, Loader=Loader),
+        binn=pybinn.loads,
+        bencode=helpers.bencode_decode,
+        bson=bson.loads,
+        cbor=cbor2.loads,
+        edn=edn_format.loads,
+        json=json.loads,
+        msgpack=msgpack.unpackb,
+        s_expression=helpers.sp_decode,
+        smile=pysmile.decode,
+        toml=toml.loads,
+        xml=helpers.xml_decode,
+        ubjson=ubjson.loadb,
+        yaml=lambda m: yaml.load(m, Loader=Loader),
         **optionals["decode"]
     )
 )

@@ -137,7 +137,7 @@ class Consumer(Process):
         print("The consumer has shutdown.")
 
 
-class Producer(object):
+class Producer:
     """
     The Producer class writes messages to the message queue to be consumed.
     """
@@ -157,7 +157,7 @@ class Producer(object):
         self._debug = debug
         self._conn = kombu.Connection(hostname=host, port=port, userid="guest", password="guest", virtual_host="/")
 
-    def publish(self, message: Union[dict, str] = "", headers: dict = {}, exchange: str = EXCHANGE, routing_key: str = ROUTING_KEY):
+    def publish(self, message: Union[dict, str] = "", headers: dict = None, exchange: str = EXCHANGE, routing_key: str = ROUTING_KEY):
         """
         Publish a message to th AMQP Queue
         :param message: message to be published
@@ -173,7 +173,7 @@ class Producer(object):
         producer = kombu.Producer(self._conn.channel())
         producer.publish(
             message,
-            headers=headers,
+            headers=headers or {},
             exchange=queue.exchange,
             routing_key=queue.routing_key,
             declare=[queue]
