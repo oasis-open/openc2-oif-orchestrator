@@ -5,7 +5,7 @@ import actuator from './actuator';
 import account from './account';
 import auth from './auth';
 import command from './command';
-import conformance from './conformance';
+// import conformance from './conformance';
 import device from './device';
 import generate from './generate';
 import util from './util';
@@ -21,7 +21,7 @@ export default history => combineReducers({
   'Account': account,
   'Auth': auth,
   'Command': command,
-  'Conformance': conformance,
+  // 'Conformance': conformance,
   'Device': device,
   'Generate': generate,
   'Util': util,
