@@ -33,8 +33,6 @@
 ## Configuration
 - Run `configure.py` with the desired options prior to starting the Orchestrator for the first time
 	- Options
-		- `-b` or `--build-image` -- Build base containers
-		- `-d` or `--dev` -- Build using the development python image
     	- `-f FILE` or `--log_file FILE` -- Enables logging to the designated file
     	- `-h` or `--help` -- Shows the help and exits
     	- `-v` or `--verbose` -- Enables verbose output    	

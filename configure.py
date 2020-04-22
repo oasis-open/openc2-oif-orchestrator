@@ -63,10 +63,10 @@ CONFIG = FrozenDict(
     ImagePrefix="g2inc",
     Logging=FrozenDict(
         Default=(
-            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml -f orchestrator-compose.log.yaml"),
+            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
         ),
         Central=(
-            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
+            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml -f orchestrator-compose.log.yaml"),
         )
     ),
     Composes=tuple(file for file in os.listdir(RootDir) if re.match(r"^\w*?-compose(\.\w*?)?\.yaml$", file))
