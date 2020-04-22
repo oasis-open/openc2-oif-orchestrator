@@ -44,7 +44,7 @@ services:
       ORC_HOST: core
       ORC_PORT: 8080
     ports:
-      - '8080:80'
+      - 8080:80
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:80']
       interval: 30s
@@ -62,7 +62,6 @@ services:
     build:
       context: ./orchestrator/transport/mqtt
       dockerfile: Dockerfile
-    working_dir: /opt/transport/MQTT
     env_file:
       - ./environment/queue.connect.env
       - ./environment/mqtt_transport.env
@@ -80,7 +79,6 @@ services:
     build:
       context: ./orchestrator/transport/https
       dockerfile: Dockerfile
-    working_dir: /opt/transport
     env_file:
       - ./environment/queue.connect.env
     external_links:
@@ -92,31 +90,41 @@ services:
     entrypoint:
       - sh
       - dev_start.sh
-    
+
   transport-coap:
     hostname: transport-coap
     image: g2inc/oif-orchestrator-transport-coap
     build:
       context: ./orchestrator/transport/coap
       dockerfile: Dockerfile
-    working_dir: /opt/transport/COAP
     env_file:
       - ./environment/queue.connect.env
     external_links:
       - queue
     ports:
-      - '5683:5683/udp'
+      - 5683:5683/udp
     depends_on:
       - queue
-    entrypoint:
-      - sh
-      - dev_start.sh
+
+#  transport-zmq:
+#    hostname: transport-zmq
+#    image: gitlab.labs.g2-inc.net:4567/screamingbunny/orchestrator/transport/zmq
+#    env_file:
+#      - ./environment/queue.connect.env
+#      - ./environment/zmq_transport.env
+#    external_links:
+#      - queue
+#    ports:
+#      - 5570:5570 # Pub
+#      - 5571:5571 # Sub
+#    depends_on:
+#      - queue
 
   queue:
     hostname: rabbit
     image: rabbitmq:management-alpine
     ports:
-      - '15672:15672'
+      - 15672:15672
     volumes:
       - queue:/var/lib/rabbitmq
     healthcheck:

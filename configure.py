@@ -63,10 +63,10 @@ CONFIG = FrozenDict(
     ImagePrefix="g2inc",
     Logging=FrozenDict(
         Default=(
-            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml -f orchestrator-compose.log.yaml"),
+            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
         ),
         Central=(
-            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
+            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml -f orchestrator-compose.log.yaml"),
         )
     ),
     Composes=tuple(file for file in os.listdir(RootDir) if re.match(r"^\w*?-compose(\.\w*?)?\.yaml$", file))
@@ -160,6 +160,6 @@ if __name__ == "__main__":
 
     Stylize.success("\nConfiguration Complete")
     for key, opts in CONFIG.Logging.items():
-        Stylize.info(f"{key} logging")
+        Stylize.h3(f"{key} logging")
         for opt in opts:
             Stylize.info(f"-- Run 'docker-compose {opt[1]} up' to start the {opt[0]} compose")
