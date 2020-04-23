@@ -69,9 +69,6 @@ services:
       - queue
     depends_on:
       - queue
-    entrypoint:
-      - sh
-      - dev_start.sh
 
   transport-https:
     hostname: transport-https
@@ -87,9 +84,6 @@ services:
       - 5000:5000
     depends_on:
       - queue
-    entrypoint:
-      - sh
-      - dev_start.sh
 
   transport-coap:
     hostname: transport-coap

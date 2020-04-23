@@ -45,7 +45,7 @@
 - Options
 	- * `-f FILE` or `--file FILE` -- Specify an alternate compose file (default: docker-compose.yml)
 	- `-p NAME` or `--project-name NAME` -- Specify an alternate project name (default: directory name)
-	- `d` or `--detach` -- Detached mode: Run containers in the background, print new container names. Incompatible with --abort-on-container-exit.
+	- `-d` or `--detach` -- Detached mode: Run containers in the background, print new container names. Incompatible with --abort-on-container-exit.
 - Starting
 	- Run the `docker-compose` command for the Orchestrator as shown below
 
@@ -72,7 +72,7 @@
 
 ### Docker Compose Files
 ### Central Logging
-- __Still in Beta__
+- __Still Developing__
 - Run the `docker-compose` as normal with the additional option of a second '-f/--file'
 - Allows for a central location for logging rather than the docker default of per container
 - Runs on default port of 8081 for logger web GUI
