@@ -14,15 +14,15 @@ import yaml
 
 from typing import Union
 
-from .. import (
-    ext_dicts,
-    general
-)
 
 from . import (
     helpers,
     pybinn,
     pysmile
+)
+from .. import (
+    ext_dicts,
+    general
 )
 
 

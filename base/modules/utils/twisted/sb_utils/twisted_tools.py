@@ -25,7 +25,7 @@ from pika.adapters import twisted_connection
 from twisted.internet import defer, protocol, reactor
 from typing import Callable, List, Tuple
 
-from root.sb_utils import (
+from sb_utils import (
     ObjectDict,
     safe_json
 )

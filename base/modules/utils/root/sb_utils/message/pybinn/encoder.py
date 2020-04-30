@@ -1,10 +1,9 @@
 """
 Implementation of BINNEncoder
 """
-
+from datetime import datetime, timedelta
 from io import BytesIO
 from struct import pack
-from datetime import datetime, timedelta
 
 from . import datatypes as types
 

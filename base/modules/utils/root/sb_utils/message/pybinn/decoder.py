@@ -3,12 +3,12 @@ Implementation of BINNDecoder
 """
 import io
 
+from datetime import datetime, timedelta
 from functools import partial
 from struct import unpack
-from datetime import datetime, timedelta
-from typing import Callable, Dict
-
 from typing import (
+    Callable,
+    Dict,
     Union
 )
 
