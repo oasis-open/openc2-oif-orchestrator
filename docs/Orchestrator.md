@@ -6,7 +6,8 @@
 - [GUI](../orchestrator/gui/client/ReadMe.md)
 
 ### Transport
-- [HTTPS](orchestrator/transport/https/README.md)
+- [CoAP](orchestrator/transport/coap/ReadMe.md)
+- [HTTPS](orchestrator/transport/https/ReadMe.md)
 - [MQTT](orchestrator/transport/mqtt/ReadMe.md)
 
 ### Logger
@@ -30,6 +31,11 @@
 - Python 3.6+
 - pip 18+
 
+## Getting Started
+- Clone/Fork/Download the repo
+- Create a local copy on you system, if not downloaded
+- Be sure Docker is running
+
 ## Configuration
 - Run `configure.py` with the desired options prior to starting the Orchestrator for the first time
 	- Options
@@ -37,7 +43,7 @@
     	- `-h` or `--help` -- Shows the help and exits
     	- `-v` or `--verbose` -- Enables verbose output    	
     ```bash
-    python configure.py [OPTIONS]
+    python3 configure.py [OPTIONS]
     ```
 
 ## Running the Compose
@@ -48,26 +54,30 @@
 	- `-d` or `--detach` -- Detached mode: Run containers in the background, print new container names. Incompatible with --abort-on-container-exit.
 - Starting
 	- Run the `docker-compose` command for the Orchestrator as shown below
+		
+		```bash
+		docker-compose ... up [-d]
+		```
 
--  Stoping
-	-  If running attatched (showing log output, no -d option)
+-  Stopping
+	-  If running attached (showing log output, no -d option)
 		-  Use 'Ctrl + C' 
-	-  If running detatched (not showing log output, -d option)
+	-  If running detached (not showing log output, -d option)
 		-  Run the `docker-compose` that was used to start the Orchestrator **except** replace `up ...` with `down`
 			
 			```bash
-			docker-compose ...... down
+			docker-compose ... down
 			```
 - Building Images
 	- Run the `docker-compose` that was used to start the Orchestrator **except** replace `up ...` with `build`
 	- Options
-		- SERVICE_NAME - The name of the service to rebuild the image, if not specified all will build
+		- SERVICE_NAME - The name of the service (as named in the specified compose file) to rebuild the image, if not specified all services will build if theirs is a context specified
 	- Notes
 		- Does not need to be run prior to starting, the containers will autobuild if not available
 		- Should be run after adding a new Protocol or Serialization
 	
 	```bash
-	docker-compose ...... build [SERVICE_NAME]
+	docker-compose ... build [SERVICE_NAME]
 	```
 
 ### Docker Compose Files
@@ -102,6 +112,6 @@
 - Give actuator a name and generate a UUID for it.
 - Select a parent device.
     -  Note: device should be registered before the actuator.
-- Upload/Copy-Paste schema. Schema for the default included ISR actuator can be found at [device/actuator/isr/act_server/schema.json](../device/actuator/isr/act_server/schema.json).
+- Upload/Copy-Paste schema. Schema for the default included SLPF actuator can be found at [device/actuator/slpf/act_server/schema.json](../device/actuator/slpf/act_server/schema.json).
 - This information can also be found under the [ISR Actuator](../device/actuator/isr/ReadMe.md) page.
 - If you are registering a new actuator for the first time while utilizing the MQTT transport you may need to update the `MQTT_TOPICS` environment variable. Read the MQTT Topics section [here](transport/mqtt/ReadMe.md)

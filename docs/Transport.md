@@ -33,7 +33,7 @@ When a transport sends a command while residing on a [Docker Network](https://do
 
 The IP can be set in the O.I.F. Admin Page > Global Preferences > Orchestrator Host. The default value is `127.0.0.1`.
 
-The Port for each transport needs to have a default set in the data fixtures file [orchestrator.json](../orchestrator/core/orc_server/data/fixtures/orchestrator.json). (See example at bottom of this page.) The port is specified under orchestrator.protocol under the "fields" section once you have added your transport to the list of orchestator.protocols. 
+The Port for each transport needs to have a default set in the data fixtures file [orchestrator.json](../orchestrator/core/orc_server/data/fixtures/orchestrator.json). (See example at bottom of this page.) The port is specified under orchestrator.protocol under the "fields" section once you have added your transport to the list of orchestrator.protocols. 
 
 ## Listening to the Internal Buffer
 
@@ -100,7 +100,7 @@ from sb_utils import Producer
     [{
         "deviceID": "337917b5-9330-4107-94d2-5d7929019c23", 
         "socket": "127.0.0.1:5001", 
-        "profile": ["openc2_isr_actuator_profile"], 
+        "profile": ["openc2_slpf_actuator_profile"], 
         "encoding": "json"
     }]
 }
@@ -140,7 +140,7 @@ From this information, you are able to build the headers for your transport as n
 
 ## Making the transport usable in the O.I.F. GUI
 ### Option 1
-###### This is preferred as it is persistant across multiple instances derived from a single source
+###### This is preferred as it is persistent across multiple instances derived from a single source
 
 In order to have the transport that you have created selectable in the "Register Device" section of the GUI you will need to add it to the [fixtures file](../orchestrator/core/orc_server/data/fixtures/orchestrator.json) and add it as an additional `orchestrator.protocol`. The other transports look like this:
 
@@ -170,7 +170,7 @@ In order to have the transport that you have created selectable in the "Register
 * `port`: This is the default port in which your transport will be sending/listening on
 
 ### Option 2
-###### This is not preferred as it is not persistant across multiple instances derived from a single source. This options is better oriented for transport testing
+###### This is not preferred as it is not persistent across multiple instances derived from a single source. This options is better oriented for transport testing
 1. Open a web browser to the admin page of the Orchestrator
 	- This is the same log/pass as the user page
 2. From the list on the page, click 'Protocols' under 'Orchestrator'
