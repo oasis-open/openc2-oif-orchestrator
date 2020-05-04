@@ -91,8 +91,10 @@
 	docker-compose -f orchestrator-compose.yaml -f orchestrator-compose.log.yaml ...
 	```
 
-#### Orchestrator
+#### Standard Logging
 - Use [`docker-compose`](https://docs.docker.com/compose/reference/overview/) to start the orchestrator on the system
+- Logs are displayed on the terminal with the service name at the start of the line with a randon color for each
+- This is the default option if the `-d/--detached` option or central logging is not used
 
 	```bash
 	docker-compose -f orchestrator-compose.yaml [-p NAME] up [-d]
@@ -104,6 +106,7 @@
 - Select a transport
     - HTTPS: Enter host and port (Default Port 5001)
     - MQTT: Enter host and port of the broker (Default Port 1883)
+	    - See MQTT section in [Transports](./Transport.md) for more info
 - Select which serializations in which the device utilizes.
     - Default included device supports JSON, CBOR, and XML.
 - Note: include a note about what type of device you are adding.
@@ -112,6 +115,6 @@
 - Give actuator a name and generate a UUID for it.
 - Select a parent device.
     -  Note: device should be registered before the actuator.
-- Upload/Copy-Paste schema. Schema for the default included SLPF actuator can be found at [device/actuator/slpf/act_server/schema.json](../device/actuator/slpf/act_server/schema.json).
-- This information can also be found under the [ISR Actuator](../device/actuator/isr/ReadMe.md) page.
+- Upload/Copy-Paste schema. Schema for the default included SLPF actuator can be found at [SLPF Schema](https://github.com/oasis-open/openc2-oif-device/blob/master/device/actuator/SLPF/act_server/schema.json).
+- This information can also be found under the [SLPF Actuator](https://github.com/oasis-open/openc2-oif-device/blob/master/device/actuator/SLPF/ReadMe.md) page.
 - If you are registering a new actuator for the first time while utilizing the MQTT transport you may need to update the `MQTT_TOPICS` environment variable. Read the MQTT Topics section [here](transport/mqtt/ReadMe.md)
