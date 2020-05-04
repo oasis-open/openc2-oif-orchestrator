@@ -13,7 +13,7 @@
 - [XML](https://w3.org/TR/2008/REC-xml-20081126/)
 - [ubjson](http://ubjson.org/)
 - [VelocityPack (VPack)](https://github.com/arangodb/velocypack)
-	- Requires velocity pack to be installed, no python module currently
+	- Requires velocity pack to be installed, only C++ module available
 - [YAML](https://yaml.org/spec/1.2/spec.html)
 
 ## Adding Additional Serializations
