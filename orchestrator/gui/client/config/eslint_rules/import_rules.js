@@ -1,5 +1,4 @@
 // Import Rules
-
 module.exports = {
   'import/default': 0,
   'import/dynamic-import-chunkname': [0, {
@@ -33,9 +32,7 @@ module.exports = {
     allowObject: false
   }],
   'import/no-commonjs': 0,
-  'import/no-cycle': [2, {
-    // maxDepth: null
-  }],
+  'import/no-cycle': [2, {}],
   'import/no-default-export': 0,
   'import/no-deprecated': 0,
   'import/no-duplicates': 2,
@@ -47,9 +44,9 @@ module.exports = {
       'spec/**',
       '**/__tests__/**',
       '**/__mocks__/**',
-      'test.{js,jsx}',
-      'test-*.{js,jsx}',
-      '**/*{.,_}{test,spec}.{js,jsx}',
+      'test.{js,jsx,ts,tsx}',
+      'test-*.{js,jsx,ts,tsx}',
+      '**/*{.,_}{test,spec}.{js,jsx,ts,tsx}',
       '**/jest.config.js',
       '**/jest.setup.js',
       '**/vue.config.js',
@@ -61,7 +58,8 @@ module.exports = {
       '**/gulpfile.*.js',
       '**/Gruntfile{,.js}',
       '**/protractor.conf.js',
-      '**/protractor.conf.*.js'
+      '**/protractor.conf.*.js',
+      '**/karma.conf.js'
     ],
     optionalDependencies: false
   }],
@@ -88,7 +86,9 @@ module.exports = {
     missingExports: true,
     unusedExports: true
   }],
-  'import/no-useless-path-segments': 2,
+  'import/no-useless-path-segments': [2, {
+    commonjs: true
+  }],
   'import/no-webpack-loader-syntax': 2,
   'import/order': [2, {
     groups: [

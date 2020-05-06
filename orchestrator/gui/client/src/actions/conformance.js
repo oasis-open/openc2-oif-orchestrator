@@ -85,9 +85,9 @@ export const getConformanceTests = ({page=1, count=10, sort='test_time', refresh
 const GET_TEST_REQUEST = '@@conformance/CONFORMANCE_GET_TEST_REQUEST';
 export const GET_TEST_SUCCESS = '@@conformance/CONFORMANCE_GET_TEST_SUCCESS';
 export const GET_TEST_FAILURE = '@@conformance/CONFORMANCE_GET_TEST_FAILURE';
-export const getConformanceTest = test_id => ({
+export const getConformanceTest = testId => ({
   [RSAA]: {
-    endpoint: `${baseAPI}/test/${test_id}`,
+    endpoint: `${baseAPI}/test/${testId}`,
     method: 'GET',
     headers: withGUIAuth(),
     types: [

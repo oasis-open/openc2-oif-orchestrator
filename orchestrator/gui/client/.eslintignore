@@ -53,3 +53,6 @@ internals
 
 # Assorted
 src/registerServiceWorker.js
+
+# Tmp Ignore
+src/components/conformance

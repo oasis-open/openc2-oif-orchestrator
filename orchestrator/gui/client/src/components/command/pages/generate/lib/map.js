@@ -11,10 +11,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinusSquare, faPlusSquare } from '@fortawesome/free-solid-svg-icons';
 
 import Field from '.';
-import { isOptionalJSON } from '../utils';
+import { isOptionalJSON } from './utils';
 
 
-class RecordField extends Component {
+class MapField extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -31,20 +31,25 @@ class RecordField extends Component {
       parent = this.props.name;
     }
 
-    const defOpts = Object.keys(this.props.def.properties).map((field, i) => (
-      <Field
-        key={ i }
-        parent={ parent }
-        name={ field }
-        def={ this.props.def.properties[field] }
-        required={ isOptionalJSON(this.props.def.required, field) }
-        optChange={ this.props.optChange }
-      />
-    ));
-
-    if (this.props.root) {
-      return defOpts;
+    let defOpts = [];
+    if ('properties' in this.props.def) {
+      defOpts = Object.keys(this.props.def.properties).map((field, i) => (
+        <Field
+          key={ i }
+          parent={ parent }
+          name={ field }
+          def={ this.props.def.properties[field] }
+          required={ isOptionalJSON(this.props.def.required, field) }
+          optChange={ this.props.optChange }
+        />
+      ));
     }
+
+    if ('patternProperties' in this.props.def) {
+      // TODO: Pattern Properties
+      console.log('Map Pattern Props', this.props.def.patternProperties);
+    }
+
     return (
       <FormGroup tag="fieldset" className="border border-dark p-2">
         <legend>
@@ -57,8 +62,8 @@ class RecordField extends Component {
           </Button>
           { (this.props.required ? '*' : '') + this.props.name }
         </legend>
-        { this.props.def.description ? <FormText color="muted">{ this.props.def.description }</FormText> : '' }
-        <Collapse isOpen={ this.state.open }>
+        { this.props.def.description !== '' ? <FormText color="muted">{ this.props.def.description }</FormText> : '' }
+         <Collapse isOpen={ this.state.open }>
           <div className="col-12 my-1 px-0">
             { defOpts }
           </div>
@@ -68,26 +73,25 @@ class RecordField extends Component {
   }
 }
 
-RecordField.propTypes = {
+MapField.propTypes = {
   def: PropTypes.shape({
     name: PropTypes.string,
     type: PropTypes.string,
-    required: PropTypes.arrayOf(PropTypes.string),
+    required: PropTypes.bool,
     description: PropTypes.string,
-    properties: PropTypes.object
+    properties: PropTypes.object,
+    patternProperties: PropTypes.object
   }).isRequired,
   optChange: PropTypes.func.isRequired,
   name: PropTypes.string,
   required: PropTypes.bool,
-  root: PropTypes.bool,
   parent: PropTypes.string
 };
 
-RecordField.defaultProps = {
-  name: 'RecordField',
+MapField.defaultProps = {
+  name: 'MapField',
   required: false,
-  root: false,
   parent: ''
 };
 
-export default RecordField;
+export default MapField;

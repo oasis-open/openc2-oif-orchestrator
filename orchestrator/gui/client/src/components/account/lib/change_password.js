@@ -2,15 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
-import { Button } from 'reactstrap';
+import { Button, Input, Label } from 'reactstrap';
 
-import { safeGet } from '../../utils';
+import { objectValues, safeGet } from '../../utils';
 import * as AccountActions from '../../../actions/account';
 
 class ChangePassword extends Component {
   constructor(props, context) {
     super(props, context);
-
     this.submitForm = this.submitForm.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
 
@@ -40,7 +39,7 @@ class ChangePassword extends Component {
 
   submitForm(e) {
     e.preventDefault();
-    this.props.changePassword(this.props.username, ...Object.values(this.state.password));
+    this.props.changePassword(this.props.username, ...objectValues(this.state.password));
   }
 
   updatePassword(e) {
@@ -72,8 +71,8 @@ class ChangePassword extends Component {
         <form className='col-md-10 mx-auto' onSubmit={ this.submitForm }>
           { this.helpText(this.state.status, 'info') }
           <div className='form-group'>
-            <label htmlFor='old_password'>Old Password</label>
-            <input
+            <Label for='old_password'>Old Password</Label>
+            <Input
               id='old_password'
               className='form-control'
               type='password'
@@ -85,8 +84,8 @@ class ChangePassword extends Component {
             { this.helpText(this.state.errors.old_password, 'danger') }
           </div>
           <div className='form-group'>
-            <label htmlFor='new_password_1'>New Password</label>
-            <input
+            <Label for='new_password_1'>New Password</Label>
+            <Input
               id='new_password_1'
               className='form-control'
               type='password'
@@ -98,8 +97,8 @@ class ChangePassword extends Component {
             { this.helpText(this.state.errors.new_password_1, 'danger') }
           </div>
           <div className='form-group'>
-            <label htmlFor='new_password_2'>New Password Confirmation</label>
-            <input
+            <Label for='new_password_2'>New Password Confirmation</Label>
+            <Input
               id='new_password_2'
               className='form-control'
               type='password'

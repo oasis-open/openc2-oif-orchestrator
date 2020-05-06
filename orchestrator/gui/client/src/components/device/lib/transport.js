@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button } from 'reactstrap';
+import { Button, Input, Label } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +12,6 @@ class Transport extends Component {
     this.checkboxChange = this.checkboxChange.bind(this);
     this.transportRemove = this.transportRemove.bind(this);
     this.transportChange = this.transportChange.bind(this);
-
 
     this.state = {
       host: '127.0.0.1',
@@ -96,8 +95,9 @@ class Transport extends Component {
       columns = 'col-md-4 col-sm-12';
       channelTopic = [(
         <div key={ 0 } className={ `form-group ${columns}` }>
-          <label htmlFor="topic">Topic</label>
-          <input
+          <Label for="topic">Topic</Label>
+          <Input
+            id="topic"
             className="form-control"
             type="text"
             name="topic"
@@ -106,8 +106,9 @@ class Transport extends Component {
           />
         </div>), (
         <div key={ 1 } className={ `form-group ${columns}` }>
-          <label htmlFor="channel">Channel</label>
-          <input
+          <Label for="channel">Channel</Label>
+          <Input
+            id="channel"
             className="form-control"
             type="text"
             name="channel"
@@ -121,7 +122,7 @@ class Transport extends Component {
     return (
       <div className="form-row">
         <div className={ `form-group ${columns}` }>
-          <label htmlFor="protocol">Protocol</label>
+          <Label for="protocol">Protocol</Label>
           <select
             className="form-control"
             name="protocol"
@@ -139,17 +140,17 @@ class Transport extends Component {
   render() {
     const serializations = this.props.orchestrator.serializations.map((s, i) => (
       <div key={ s } className="form-check-inline">
-        <label className="form-check-label">
-          <input
+        <Label className="form-check-Label">
+          <Input
             id={ `checkbox_${i}_${s}` }
             className="form-check-input"
-            name="serialization"
             type="checkbox"
+            name="serialization"
             checked={ this.state.serialization.indexOf(s) >= 0 }
             onChange={ this.checkboxChange }
           />
           { s }
-        </label>
+        </Label>
       </div>
     ));
 
@@ -162,8 +163,9 @@ class Transport extends Component {
         </Button>
         <div className="form-row">
           <div className="form-group col-lg-6">
-            <label htmlFor="host">Host</label>
-            <input
+            <Label for="host">Host</Label>
+            <Input
+              id="host"
               className="form-control"
               type="text"
               name="host"
@@ -173,8 +175,9 @@ class Transport extends Component {
           </div>
 
           <div className="form-group col-lg-6">
-            <label htmlFor="port">Port</label>
-            <input
+            <Label for="port">Port</Label>
+            <Input
+              id="port"
               className="form-control"
               type="text"
               name="port"

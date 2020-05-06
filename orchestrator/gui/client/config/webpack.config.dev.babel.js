@@ -5,7 +5,7 @@ import path from 'path';
 import DeadCodePlugin from 'webpack-deadcode-plugin';
 // import CircularDependencyPlugin from 'circular-dependency-plugin';
 
-import baseConfig from './base.config.babel';
+import baseConfig from './webpack.config.base';
 
 const env = 'development';
 

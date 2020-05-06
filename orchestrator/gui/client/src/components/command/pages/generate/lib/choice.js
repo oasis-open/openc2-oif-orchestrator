@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FormGroup, FormText, Input } from 'reactstrap';
 
 import Field from '.';
-import { isOptionalJSON } from '../utils';
+import { isOptionalJSON } from './utils';
 
 
 class ChoiceField extends Component {

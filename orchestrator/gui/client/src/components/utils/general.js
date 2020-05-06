@@ -30,3 +30,5 @@ export const iso2local = date => {
     return date;
   }
 };
+
+export const objectValues = obj => Object.keys(obj).map(k => obj[k]);

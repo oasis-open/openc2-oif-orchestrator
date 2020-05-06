@@ -1,3 +1,4 @@
+// Eslint Base Rules
 module.exports = {
   'accessor-pairs': 0,
   'array-bracket-newline': [0, 'consistent'],
@@ -89,6 +90,7 @@ module.exports = {
   'default-case': [2, {
     commentPattern: '^no default$'
   }],
+  'default-param-last': 0,
   'dot-location': [0, 'property'],
   'dot-notation': [2, {
     allowKeywords: true,
@@ -106,7 +108,7 @@ module.exports = {
   }],
   'func-names': 1,
   'func-style': [0, 'expression'],
-  'function-call-argument-newline': 0,
+  'function-call-argument-newline': [0, 'consistent'],
   'function-paren-newline': [0, 'consistent'],
   'generator-star': 0,
   'generator-star-spacing': [0, {
@@ -116,7 +118,8 @@ module.exports = {
   'getter-return': [2, {
     allowImplicit: true
   }],
-  'global-require': 1,
+  'global-require': 2,
+  'grouped-accessor-pairs': 0,
   'guard-for-in': 2,
   'handle-callback-err': 0,
   'id-blacklist': 0,
@@ -256,6 +259,7 @@ module.exports = {
   'no-console': 0,
   'no-const-assign': 2,
   'no-constant-condition': 1,
+  'no-constructor-return': 0,
   'no-continue': 2,
   'no-control-regex': 2,
   'no-debugger': 2,
@@ -263,6 +267,7 @@ module.exports = {
   'no-div-regex': 0,
   'no-dupe-args': 2,
   'no-dupe-class-members': 2,
+  'no-dupe-else-if': 0,
   'no-dupe-keys': 2,
   'no-duplicate-case': 2,
   'no-duplicate-imports': 0,
@@ -304,6 +309,7 @@ module.exports = {
   }],
   'no-implicit-globals': 0,
   'no-implied-eval': 2,
+  'no-import-assign': 0,
   'no-inline-comments': 0,
   'no-inner-declarations': 2,
   'no-invalid-regexp': 2,
@@ -533,6 +539,7 @@ module.exports = {
   }],
   'no-self-compare': 2,
   'no-sequences': 2,
+  'no-setter-return': 0,
   'no-shadow': 2,
   'no-shadow-restricted-names': 2,
   'no-space-before-semi': 0,
@@ -669,6 +676,7 @@ module.exports = {
       enforceForRenamedProperties: false
     }
   ],
+  'prefer-exponentiation-operator': 0,
   'prefer-named-capture-group': 0,
   'prefer-numeric-literals': 2,
   'prefer-object-spread': 2,
@@ -676,6 +684,7 @@ module.exports = {
     allowEmptyReject: true
   }],
   'prefer-reflect': 0,
+  'prefer-regex-literals': 0,
   'prefer-rest-params': 2,
   'prefer-spread': 2,
   'prefer-template': 2,

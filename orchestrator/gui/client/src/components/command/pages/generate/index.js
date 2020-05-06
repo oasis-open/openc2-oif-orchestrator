@@ -24,21 +24,16 @@ import locale from 'react-json-editor-ajrm/locale/en';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons';
 
-import {
-  zip,
-  JADN_FIELD,
-  JSON_FIELD,
-  JADN_KEYS
-} from './lib';
+import JSON_FIELD from './lib';
 
 import {
   delMultiKey,
   generateUUID4,
+  objectValues,
   safeGet,
   setMultiKey
 } from '../../../utils';
 
-import JADNInput from '../../../utils/jadn-editor';
 import * as GenerateActions from '../../../../actions/generate';
 import * as CommandActions from '../../../../actions/command';
 
@@ -55,7 +50,6 @@ class GenerateCommands extends Component {
     this.sendCommand = this.sendCommand.bind(this);
     this.updateChannel = this.updateChannel.bind(this);
 
-    this.jadn_keys = ['meta', 'types'];
     this.json_validator = new Ajv({
       unknownFormats: 'ignore'
     });
@@ -94,7 +88,6 @@ class GenerateCommands extends Component {
         schema: {},
         selected: 'empty',
         type: '',
-        jadn_fmt: false,
         exports: []
       },
       message: {},
@@ -135,21 +128,13 @@ class GenerateCommands extends Component {
       };
     }
 
-    const schemaKeys = Object.keys(nextState.schema.schema);
-    // eslint-disable-next-line no-param-reassign
-    nextState.schema.jadn_fmt = schemaKeys.length === this.jadn_keys.length
-      && schemaKeys.every(v => this.jadn_keys.indexOf(v) !== -1);
-
-    if (nextState.schema.jadn_fmt) {
-      // eslint-disable-next-line no-param-reassign
-      nextState.schema.exports = safeGet(safeGet(nextState.schema.schema, 'meta', {}), 'exports', []);
-    } else if (!nextState.schema.jadn_fmt && 'properties' in nextState.schema.schema) {
+    if ('properties' in nextState.schema.schema) {
       // eslint-disable-next-line no-param-reassign
       nextState.schema.exports = Object.keys(nextState.schema.schema.properties).map(k => {
         const def = safeGet(nextState.schema.schema.properties, k, {});
         return '$ref' in def ? def.$ref.replace(/^#\/definitions\//, '') : '';
       });
-    } else if (!nextState.schema.jadn_fmt) {
+    } else {
       // eslint-disable-next-line no-param-reassign
       nextState.schema.exports = safeGet(nextState.schema.schema, 'oneOf', [])
         .map(exp => '$ref' in exp ? exp.$ref.replace(/^#\/definitions\//, '') : '');
@@ -200,12 +185,13 @@ class GenerateCommands extends Component {
     toast.info('Request sent');
     // this.props.sendCommand(this.state.message, actuator, this.state.channel);
 
+    // eslint-disable-next-line promise/always-return, promise/catch-or-return
     Promise.resolve(this.props.sendCommand(this.state.message, actuator, this.state.channel)).then(() => {
       const errs = safeGet(this.props.errors, CommandActions.SEND_COMMAND_FAILURE, {});
 
       if (Object.keys(errs).length !== 0) {
         if ('non_field_errors' in errs) {
-          Object.values(errs).forEach((err) => {
+          objectValues(errs).forEach((err) => {
             toast(<p>Error: { err }</p>, {type: toast.TYPE.WARNING});
           });
         } else {
@@ -242,28 +228,23 @@ class GenerateCommands extends Component {
         delMultiKey(msg, k);
       }
       // TODO: Validate message - errors to state.message_warnings as array
-      if (prevState.schema.jadn_fmt) {
-        console.log('Generated from JADN', msg);
-
-      } else {
-        // console.log('Generated from JSON', prevState.msg_record, msg)
-        let tmpMsg = msg;
-        if ('properties' in prevState.schema.schema) {
-          const idx = prevState.schema.exports.indexOf(prevState.msg_record);
-          const msgWrapper = Object.keys(prevState.schema.schema.properties)[idx];
-          tmpMsg = {
-            [msgWrapper]: msg
-          };
+      // console.log('Generated from JSON', prevState.msg_record, msg)
+      let tmpMsg = msg;
+      if ('properties' in prevState.schema.schema) {
+        const idx = prevState.schema.exports.indexOf(prevState.msg_record);
+        const msgWrapper = Object.keys(prevState.schema.schema.properties)[idx];
+        tmpMsg = {
+          [msgWrapper]: msg
+        };
+      }
+      try {
+        const valid = this.json_validator.validate(prevState.schema.schema, tmpMsg);
+        if (!valid) {
+          errors = this.json_validator.errors;
         }
-        try {
-          const valid = this.json_validator.validate(prevState.schema.schema, tmpMsg);
-          if (!valid) {
-            errors = this.json_validator.errors;
-          }
-        } catch (err) {
-          console.log(err);
-          errors = [ JSON.stringify(err) ];
-        }
+      } catch (err) {
+        console.log(err);
+        errors = [ JSON.stringify(err) ];
       }
 
       return {
@@ -314,7 +295,6 @@ class GenerateCommands extends Component {
   }
 
   schema(maxHeight) {
-    const Editor = this.state.schema.jadn_fmt ? JADNInput : JSONInput;
     const actuatorSchemas = [];
     let profileSchemas = [];
 
@@ -350,7 +330,7 @@ class GenerateCommands extends Component {
             </div>
 
             <div className="form-control border card-body p-0" style={{ height: `${maxHeight}px` }}>
-              <Editor
+              <JSONInput
                 id='schema'
                 placeholder={ this.state.schema.schema }
                 colors={ this.theme.schema }
@@ -376,11 +356,7 @@ class GenerateCommands extends Component {
 
     if (this.props.selected.schema) {
       let recordDef = {};
-      if (this.state.schema.jadn_fmt) {
-        recordDef = 'types' in this.props.selected.schema ? this.props.selected.schema.types.filter(type => type[0] === this.state.msg_record) : [];
-        recordDef = zip(JADN_KEYS.Structure, recordDef.length === 1 ? recordDef[0] : []);
-        RecordDef = <JADN_FIELD def={ recordDef } optChange={ this.optChange } />;
-      } else if (this.props.selected.schema.definitions && this.state.msg_record in this.props.selected.schema.definitions) {
+      if (this.props.selected.schema.definitions && this.state.msg_record in this.props.selected.schema.definitions) {
         recordDef = this.props.selected.schema.definitions[this.state.msg_record];
         RecordDef = <JSON_FIELD name={ this.state.msg_record } def={ recordDef } root optChange={ this.optChange } />;
       }

@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   Button,
+  Input,
+  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -13,7 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import Transport from './transport';
-import { generateUUID4, validateUUID4 } from '../../utils';
+import { generateUUID4, objectValues, validateUUID4 } from '../../utils';
 import * as DeviceActions from '../../../actions/device';
 
 class DeviceModal extends Component {
@@ -40,8 +42,8 @@ class DeviceModal extends Component {
           host: '127.0.0.1',
           port: 5001,
           protocol: 'HTTPS',
-          topic: 'topic',
-          channel: 'channel',
+          topic: '',
+          channel: '',
           serialization: ['JSON']
         }
       ]
@@ -209,7 +211,7 @@ class DeviceModal extends Component {
       }
 
       if ('non_field_errors' in errs) {
-        Object.values(errs).forEach(err => {
+        objectValues(errs).forEach(err => {
           if (typeof err === 'object') {
             err.forEach(e => toast(<p>Error: { e }</p>, {type: toast.TYPE.WARNING}) );
           } else {
@@ -218,7 +220,16 @@ class DeviceModal extends Component {
         });
       } else {
         Object.keys(errs).forEach(err => {
-          toast(<div><p>Error { err }:</p><p>{ errs[err] }</p></div>, {type: toast.TYPE.WARNING});
+          if (err === 'transport') {
+            console.log(err, errs[err]);
+            errs[err].forEach(transErr => {
+              Object.keys(transErr).forEach(e => {
+                toast(<div><p>Error { err }-{ e }:</p><p>{ transErr[e] }</p></div>, {type: toast.TYPE.WARNING});
+              });
+            });
+          } else {
+            toast(<div><p>Error { err }:</p><p>{ errs[err] }</p></div>, {type: toast.TYPE.WARNING});
+          }
         });
       }
     }
@@ -258,8 +269,8 @@ class DeviceModal extends Component {
             <form onSubmit={ () => false }>
               <div className="form-row">
                 <div className="form-group col-lg-6">
-                  <label htmlFor="name">Name</label>
-                  <input
+                  <Label for="name">Name</Label>
+                  <Input
                     id="name"
                     className="form-control"
                     type="text"
@@ -269,12 +280,12 @@ class DeviceModal extends Component {
                 </div>
 
                 <div className="form-group col-lg-6">
-                  <label htmlFor="device_id">Device ID</label>
+                  <Label for="device_id">Device ID</Label>
                   <div className="input-group">
-                    <input
+                    <Input
                       id="device_id"
-                      type="text"
                       className="form-control"
+                      type="text"
                       readOnly={ !this.props.register }
                       value={ this.state.device.device_id }
                       onChange={ this.updateDevice }
@@ -300,7 +311,7 @@ class DeviceModal extends Component {
 
               <div className="form-row">
                 <div className="form-group col-lg-6">
-                  <label htmlFor="note">Note</label>
+                  <Label for="note">Note</Label>
                   <textarea
                     id="note"
                     className="form-control"

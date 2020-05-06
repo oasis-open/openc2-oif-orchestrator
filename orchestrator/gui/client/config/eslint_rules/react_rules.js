@@ -1,5 +1,4 @@
 // React Rules
-
 module.exports = {
   'react/boolean-prop-naming': [0, {
     message: '',
@@ -34,6 +33,10 @@ module.exports = {
     checkChildContextTypes: true,
     checkContextTypes: true,
     forbid: ['any']
+  }],
+  'react/function-component-definition': [0, {
+    namedComponents: 'function-expression',
+    unnamedComponents: 'function-expression'
   }],
   'react/jsx-boolean-value': [2, 'never', {
     always: []
@@ -84,10 +87,17 @@ module.exports = {
   'react/jsx-no-literals': [0, {
     noStrings: true
   }],
+  'react/jsx-no-script-url': [0, [
+    {
+      name: 'Link',
+      props: ['to']
+    }
+  ]],
   'react/jsx-no-target-blank': [2, {
     enforceDynamicLinks: 'always'
   }],
   'react/jsx-no-undef': 2,
+  'react/jsx-no-useless-fragment': 0,
   'react/jsx-one-expression-per-line': [0, {
     allow: 'single-child'
   }],
@@ -96,7 +106,11 @@ module.exports = {
     ignore: []
   }],
   'react/jsx-props-no-multi-spaces': 0,
-  'react/jsx-props-no-spreading': 0,
+  'react/jsx-props-no-spreading': [0, {
+    html: 'enforce',
+    custom: 'enforce',
+    exceptions: []
+  }],
   'react/jsx-sort-default-props': [0, {
     ignoreCase: true
   }],
@@ -128,6 +142,7 @@ module.exports = {
     return: 'parens-new-line'
   }],
   'react/no-access-state-in-setstate': 2,
+  'react/no-adjacent-inline-elements': 0,
   'react/no-array-index-key': 1,
   'react/no-children-prop': 2,
   'react/no-danger': 1,

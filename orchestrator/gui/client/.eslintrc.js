@@ -4,6 +4,7 @@ module.exports = {
     es6: true,
     node: true
   },
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     allowImportExportEverywhere: true,
     ecmaFeatures: {
@@ -12,12 +13,15 @@ module.exports = {
       objectLiteralDuplicateProperties: false
     },
     ecmaVersion: 2018,
-    sourceType: 'module'
+    project: 'tsconfig.json',
+    sourceType: 'module',
+    tsconfigRootDir: __dirname
   },
   plugins: [
+    '@typescript-eslint',
     'compat',
-    'flowtype',
     'import',
+    'jest',
     'jsx-a11y',
     'prettier',
     'promise',
@@ -25,13 +29,19 @@ module.exports = {
   ],
   settings: {
     'import/resolver': {
+      // See https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-575727774 for line below
+      node: {},
+      react: {
+        version: 'detect'
+      },
       webpack: {
-        config: require('./config/config.eslint')
+        config: require.resolve('./config/webpack.config.eslint.js')
       }
     }
   },
   rules: {
-    ...require('./config/eslint_rules')
-    // 'semi': [2, 'always']
+    ...require('./config/eslint_rules'),
+    // A temporary hack related to IDE not resolving correct package.json
+    'import/no-extraneous-dependencies': 0
   }
-}
+};

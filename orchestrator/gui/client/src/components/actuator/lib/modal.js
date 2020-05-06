@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 
 import {
   Button,
+  Input,
+  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -13,9 +15,8 @@ import {
 
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
-import JADNInput from '../../utils/jadn-editor';
 
-import { generateUUID4, validateUUID4 } from '../../utils';
+import { objectValues, generateUUID4, validateUUID4 } from '../../utils';
 
 import * as ActuatorActions from '../../../actions/actuator';
 import * as DeviceActions from '../../../actions/device';
@@ -33,7 +34,6 @@ class ActuatorModal extends Component {
     this.textAreaChange = this.textAreaChange.bind(this);
     this.updateActuator = this.updateActuator.bind(this);
 
-    this.jadn_keys = ['meta', 'types'];
     this.register = this.props.register === true;
     this.schemaUpload = null;
     this.defaultParent = {};
@@ -47,7 +47,6 @@ class ActuatorModal extends Component {
 
     this.state = {
       modal: false,
-      jadn_fmt: false,
       actuator: {
         ...this.defaultActuator
       }
@@ -89,14 +88,6 @@ class ActuatorModal extends Component {
       };
       // eslint-disable-next-line no-param-reassign
       nextState.actuator.device = this.defaultActuator.device;
-    }
-    if (this.state.actuator.schema !== nextState.actuator.schema) {
-      const schemaKeys = Object.keys(nextState.actuator.schema);
-      // eslint-disable-next-line no-param-reassign
-      nextState.jadn_fmt = (
-        schemaKeys.length === this.jadn_keys.length
-        && schemaKeys.every(v => this.jadn_keys.indexOf(v) !== -1)
-      );
     }
     return propsUpdate || stateUpdate;
   }
@@ -155,7 +146,7 @@ class ActuatorModal extends Component {
       }
 
       if ('non_field_errors' in errs) {
-        Object.values(errs).forEach(err => {
+        objectValues(errs).forEach(err => {
          toast(<p>Error: { err }</p>, {type: toast.TYPE.WARNING});
         });
       } else {
@@ -212,7 +203,6 @@ class ActuatorModal extends Component {
   }
 
   render() {
-    const Editor = this.state.jadn_fmt ? JADNInput : JSONInput;
     const devices = this.props.devices.map(d => <option key={ d.device_id } value={ d.device_id }>{ d.name }</option> );
 
     return (
@@ -225,8 +215,8 @@ class ActuatorModal extends Component {
             <form onSubmit={ () => false }>
               <div className="form-row">
                 <div className="form-group col-lg-6">
-                  <label htmlFor="name">Name</label>
-                  <input
+                  <Label for="name">Name</Label>
+                  <Input
                     id="name"
                     className="form-control"
                     type="text"
@@ -236,9 +226,9 @@ class ActuatorModal extends Component {
                 </div>
 
                 <div className="form-group col-lg-6">
-                  <label htmlFor="actuator_id">Actuator ID</label>
+                  <Label for="actuator_id">Actuator ID</Label>
                   <div className="input-group">
-                    <input
+                    <Input
                       id="actuator_id"
                       className="form-control"
                       type="text"
@@ -255,7 +245,7 @@ class ActuatorModal extends Component {
 
               <div className="form-row">
                 <div className="form-group col-lg-6">
-                  <label htmlFor="parent_dev">Parent Device</label>
+                  <Label for="parent_dev">Parent Device</Label>
                   <select
                     id="parent_dev"
                     className="form-control"
@@ -269,7 +259,7 @@ class ActuatorModal extends Component {
               </div>
 
               <div className="form-control border card-body p-0" style={{ height: '250px' }}>
-                <Editor
+                <JSONInput
                   id="schema"
                   placeholder={ this.state.actuator.schema }
                   onChange={ val => {
@@ -297,7 +287,7 @@ class ActuatorModal extends Component {
                   type="file"
                   className="d-none"
                   ref={ e => { this.schemaUpload = e; } }
-                  accept="application/json, .jadn, .json"
+                  accept="application/json, .json"
                   onChange={ this.loadSchema }
                 />
               </div>

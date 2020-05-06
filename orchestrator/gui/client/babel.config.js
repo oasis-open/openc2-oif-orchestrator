@@ -1,4 +1,4 @@
-/* eslint global-require: off */
+/* eslint global-require: off, import/no-extraneous-dependencies: off */
 const developmentEnvironments = ['development', 'test'];
 
 const developmentPlugins = [
@@ -15,14 +15,14 @@ const productionPlugins = [
 
 module.exports = api => {
   // see docs about api at https://babeljs.io/docs/en/config-files#apicache
-
   const development = api.env(developmentEnvironments);
 
   return {
     presets: [
-      require('@babel/preset-flow'),
-      [require('@babel/preset-react'), { development }],
-      [require('@babel/preset-env'), { targets: { node: true } }]
+      // @babel/preset-env will automatically target our browserslist targets
+      require('@babel/preset-env'),
+      require('@babel/preset-typescript'),
+      [require('@babel/preset-react'), { development }]
     ],
     plugins: [
       // Stage 0

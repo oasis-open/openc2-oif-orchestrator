@@ -7,8 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinusSquare, faPlusSquare } from '@fortawesome/free-solid-svg-icons';
 
 import Field from '.';
-import { isOptionalJSON } from '../utils';
-import { safeGet } from '../../../../../utils';
+import { isOptionalJSON } from './utils';
+import { objectValues, safeGet } from '../../../../utils';
 
 
 class ArrayField extends Component {
@@ -47,7 +47,7 @@ class ArrayField extends Component {
         max: !maxBool
       };
     }, () => {
-      this.props.optChange(this.parent, [ ...new Set(Object.values(this.state.opts)) ]);
+      this.props.optChange(this.parent, [ ...new Set(objectValues(this.state.opts)) ]);
       if (this.state.max) {
         const toastNode = (
           <div>
@@ -77,7 +77,7 @@ class ArrayField extends Component {
         min: !minBool
       };
     }, () => {
-      this.props.optChange(this.parent, [ ...new Set(Object.values(this.state.opts)) ]);
+      this.props.optChange(this.parent, [ ...new Set(objectValues(this.state.opts)) ]);
       if (this.state.min) {
         const toastNode = (
           <div>
@@ -99,7 +99,7 @@ class ArrayField extends Component {
         }
       };
     }, () => {
-      this.props.optChange(this.parent, [ ...new Set(Object.values(this.state.opts)) ]);
+      this.props.optChange(this.parent, [ ...new Set(objectValues(this.state.opts)) ]);
     });
   }
 

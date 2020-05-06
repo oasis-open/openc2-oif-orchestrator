@@ -8,6 +8,7 @@ import {
 import {
   checkSchema,
   iso2local,
+  objectValues,
   safeGet,
   titleCase
 } from './general';
@@ -36,6 +37,7 @@ export {
   iso2local,
   InputField,
   mergeByProperty,
+  objectValues,
   RemotePageTable,
   safeGet,
   setMultiKey,

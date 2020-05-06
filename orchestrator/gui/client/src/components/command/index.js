@@ -27,6 +27,7 @@ class Commands extends Component {
   }
 
   componentDidMount() {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     this.commandUpdate = setInterval(this.props.getCommands, this.state.updateInterval * 1000);
   }
 
@@ -36,6 +37,7 @@ class Commands extends Component {
 
     if (stateUpdate) {
       clearInterval(this.commandUpdate);
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
       this.commandUpdate = setInterval(this.props.getCommands, nextState.updateInterval * 1000);
     }
 

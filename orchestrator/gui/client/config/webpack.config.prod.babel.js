@@ -10,7 +10,8 @@ import TerserPlugin from 'terser-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
-import baseConfig from './base.config.babel';
+import baseConfig from './webpack.config.base';
+import Loaders from './webpack.loaders';
 
 const env = 'production';
 
@@ -119,18 +120,8 @@ export default merge.smart(baseConfig, {
         test: /\.(c|le)ss$/,
         use: [
           MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              url: false
-            }
-          },
-          {
-            loader: 'less-loader',
-            options: {
-              strictMath: true
-            }
-          }
+          Loaders.css,
+          Loaders.less,
         ]
       }
     ]

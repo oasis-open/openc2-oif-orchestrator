@@ -1,5 +1,4 @@
 // JSX-a11y Rules
-
 module.exports = {
   'jsx-a11y/accessible-emoji': 2,
   'jsx-a11y/alt-text': [2, {
@@ -64,7 +63,7 @@ module.exports = {
   'jsx-a11y/iframe-has-title': 2,
   'jsx-a11y/img-redundant-alt': 2,
   'jsx-a11y/interactive-supports-focus': 2,
-  'jsx-a11y/label-has-associated-control': [0, {
+  'jsx-a11y/label-has-associated-control': [2, {
     assert: 'both',
     controlComponents: [],
     depth: 25,

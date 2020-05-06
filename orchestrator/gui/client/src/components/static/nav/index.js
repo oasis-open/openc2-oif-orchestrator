@@ -96,7 +96,7 @@ class DoubleNav extends Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
 
-              {/*<UncontrolledDropdown nav inNavbar>
+              {/* <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   Conformance
                 </DropdownToggle>
@@ -105,7 +105,7 @@ class DoubleNav extends Component {
                   <NavItem dropdown href="/conformance" text="Test Results" active={ this.state.active } click={ this.navigate } />
                   <NavItem dropdown href="/conformance/unittests" text="Unittests" active={ this.state.active } click={ this.navigate } />
                 </DropdownMenu>
-              </UncontrolledDropdown>*/}
+              </UncontrolledDropdown> */}
             </ul>
             <ul className="nav navbar-nav pull-right-md ml-md-auto">
               <UncontrolledDropdown nav inNavbar>
