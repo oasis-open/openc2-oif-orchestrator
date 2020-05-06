@@ -10,15 +10,9 @@ from rest_framework_files.viewsets import ImportExportModelViewSet
 from actuator.models import Actuator, ActuatorSerializer
 from device.models import Device, DeviceSerializer
 from ..utils import (
-    # MsgPack
-    MessagePackParser,
-    MessagePackRenderer,
     # XLS
     XLSParser,
     XLSRenderer,
-    # XLSX
-    # XLSXParser,
-    # XLSXRenderer,
     # XML
     XMLParser,
     XMLRenderer
@@ -29,8 +23,8 @@ from ..utils import (
 class ImportExportBase(ImportExportModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
     parser_classes = (MultiPartParser,)
-    renderer_classes = (JSONRenderer, MessagePackRenderer, XLSRenderer, XMLRenderer)
-    file_content_parser_classes = (JSONParser, MessagePackParser, XLSParser, XMLParser)
+    renderer_classes = (JSONRenderer, XLSRenderer, XMLRenderer)
+    file_content_parser_classes = (JSONParser, XLSParser, XMLParser)
     filename = 'Backup'
 
     _removeActions = [

@@ -51,12 +51,6 @@ class Actuator(models.Model):
         help_text="Schema of the actuator",
         null=True
     )
-    schema_format = models.CharField(
-        choices=((f.lower(), f.upper()) for f in settings.SCHEMA_FORMATS),
-        default='jadn',
-        help_text=f"Format of the schema ({'|'.join(f.upper() for f in settings.SCHEMA_FORMATS)}), set from the schema",
-        max_length=4
-    )
     profile = models.CharField(
         default='N/A',
         help_text="Profile of the actuator, set from the schema",
@@ -153,17 +147,10 @@ def actuator_pre_save(sender, instance=None, **kwargs):
     :return: None
     """
     profile = 'None'
-    schema_keys = set(instance.schema.keys())
 
     if isinstance(instance.schema, dict):
-        if len(schema_keys - {"meta", "types"}) == 0:  # JADN
-            instance.schema_format = 'jadn'
-            profile = instance.schema.get('meta', {}).get('title', '').replace(' ', '_')
-            profile = 'None' if profile in ('', ' ', None) else profile
-        else:  # JSON
-            instance.schema_format = 'json'
-            profile = instance.schema.get('title', '').replace(' ', '_')
-            profile = 'None' if profile in ('', ' ', None) else profile
+        profile = instance.schema.get('title', '').replace(' ', '_')
+        profile = 'None' if profile in ('', ' ', None) else profile
 
     instance.profile = profile
 

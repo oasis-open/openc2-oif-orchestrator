@@ -78,7 +78,6 @@ class SetupTestCase(unittest.TestCase):
             nodes: str
         ]
         schema: FrozenDict
-        schema_format: str -> OneOf(jadn, json)
         profile: str
     ]
     '''

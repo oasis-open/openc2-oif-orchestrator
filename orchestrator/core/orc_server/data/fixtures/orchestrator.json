@@ -25,15 +25,6 @@
     }
   },
   {
-    "model": "orchestrator.protocol",
-    "pk": 4,
-    "fields": {
-      "name": "ZMQ",
-      "pub_sub": true,
-      "port": 5572
-    }
-  },
-  {
     "model": "orchestrator.serialization",
     "pk": 1,
     "fields": {
@@ -115,6 +106,13 @@
     "pk": 12,
     "fields": {
       "name": "YAML"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 13,
+    "fields": {
+      "name": "VPack"
     }
   }
 ]

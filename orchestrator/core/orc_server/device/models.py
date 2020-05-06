@@ -217,8 +217,8 @@ class TransportSerializer(serializers.ModelSerializer):
         queryset=Protocol.objects.all(),
         slug_field="name"
     )
-    topic = serializers.CharField(max_length=30, default="topic")
-    channel = serializers.CharField(max_length=30, default="channel")
+    topic = serializers.CharField(max_length=30, default="", allow_blank=True, required=False)
+    channel = serializers.CharField(max_length=30, default="", allow_blank=True, required=False)
     pub_sub = serializers.SerializerMethodField()
     serialization = serializers.SlugRelatedField(
         queryset=Serialization.objects.all(),

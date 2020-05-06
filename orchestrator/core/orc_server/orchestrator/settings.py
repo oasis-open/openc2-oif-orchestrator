@@ -1,5 +1,6 @@
 import datetime
 import os
+import pymysql
 import re
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -113,7 +114,7 @@ WSGI_APPLICATION = 'orchestrator.wsgi.application'
 # MySQL/MariaDB
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql.connector.django',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DATABASE_NAME', 'orchestrator'),
         'USER': os.environ.get('DATABASE_USER', 'orc_root'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', '0Rch35Tr@t0r'),
@@ -122,6 +123,11 @@ DATABASES = {
         'CON_MAX_AGE': 5
     }
 }
+
+# Fake PyMySQL's version and install as MySQLdb
+# https://adamj.eu/tech/2020/02/04/how-to-use-pymysql-with-django/
+pymysql.version_info = (1, 4, 2, "final", 0)
+pymysql.install_as_MySQLdb()
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -323,12 +329,6 @@ QUEUE = {
 }
 
 MESSAGE_QUEUE = None
-
-# Valid Schema Formats
-SCHEMA_FORMATS = (
-    'jadn',
-    'json'
-)
 
 # App stats function
 STATS_FUN = 'app_stats'
