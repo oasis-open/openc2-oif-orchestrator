@@ -1,23 +1,20 @@
-# BASE_IMAGE - arg is the tag of the container built from Dockerfile_alpine
+# BASE_IMAGE - arg is the tag of the container built from Dockerfile_alpine-python3
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
 MAINTAINER Screaming_Bunny
 
-LABEL name="Base Alpine Python3" \
+LABEL name="Twisted Alpine Python3" \
 vendor="Screaming Bunny" \
 license="BSD" \
 version="2.0" \
-description="This is the Base Alpine Python3 with SB_Utils container for Screaming Bunny."
+description="This is the Twisted Alpine Python3 with SB_Utils container for Screaming Bunny."
 
-ENV DOCKERIZE_VERSION=v0.6.1 \
-    PYTHONUNBUFFERED=0
-
-ADD modules/utils/root /tmp/sb_utils
-ADD https://bootstrap.pypa.io/get-pip.py /tmp/get-pip.py
+ADD modules/utils/twisted /tmp/sb_utils
 
 # Package Installation
 # Packages - https://pkgs.alpinelinux.org/packages
+RUN apk add --no-cache python3 && \
 apk add --no-cache --virtual .build-deps \
   g++ \
   gcc \
