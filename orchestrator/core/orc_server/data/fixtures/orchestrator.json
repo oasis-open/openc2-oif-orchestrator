@@ -28,42 +28,91 @@
     "model": "orchestrator.serialization",
     "pk": 1,
     "fields": {
-      "name": "BSON"
+      "name": "Bencode"
     }
   },
   {
     "model": "orchestrator.serialization",
     "pk": 2,
     "fields": {
-      "name": "CBOR"
+      "name": "BINN"
     }
   },
   {
     "model": "orchestrator.serialization",
     "pk": 3,
     "fields": {
-      "name": "JSON"
+      "name": "BSON"
     }
   },
   {
     "model": "orchestrator.serialization",
     "pk": 4,
     "fields": {
-      "name": "MsgPack"
+      "name": "CBOR"
     }
   },
   {
     "model": "orchestrator.serialization",
     "pk": 5,
     "fields": {
-      "name": "XML"
+      "name": "JSON"
     }
   },
   {
     "model": "orchestrator.serialization",
     "pk": 6,
     "fields": {
+      "name": "MsgPack"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 7,
+    "fields": {
+      "name": "S_Expression"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 8,
+    "fields": {
+      "name": "Smile"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 9,
+    "fields": {
+      "name": "Toml"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 10,
+    "fields": {
+      "name": "XML"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 11,
+    "fields": {
+      "name": "UBJSON"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 12,
+    "fields": {
       "name": "YAML"
+    }
+  },
+  {
+    "model": "orchestrator.serialization",
+    "pk": 13,
+    "fields": {
+      "name": "VPack"
     }
   }
 ]

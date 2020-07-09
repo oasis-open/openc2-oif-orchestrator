@@ -1,19 +1,23 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Helmet } from 'react-helmet-async'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
+import {
+  Card,
+  CardBody,
+  CardHeader
+} from 'reactstrap';
 
-import OpenC2_Logo from '../dependencies/img/openc2-logo.png'
-
-const str_fmt = require('string-format')
+import LogoOpenC2 from '../dependencies/img/openc2-logo.png';
 
 class Home extends Component {
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
 
     this.meta = {
-      title: str_fmt('{base} | {page}', {base: this.props.siteTitle, page: 'Home'}),
-      canonical: str_fmt('{origin}{path}', {origin: window.location.origin, path: window.location.pathname})
-    }
+      title: `${this.props.siteTitle} | Home`,
+      canonical: `${window.location.origin}${window.location.pathname}`
+    };
   }
 
   render() {
@@ -23,37 +27,78 @@ class Home extends Component {
           <title>{ this.meta.title }</title>
           <link rel="canonical" href={ this.meta.canonical } />
         </Helmet>
-        <div className="col-12">
-          <img src={ OpenC2_Logo } alt="OpenC2 Logo" className="float-left col-md-4 col-xs-12 mr-3 mb-3" />
 
-          <p>Spicy jalapeno bacon ipsum dolor amet dolore aliquip sirloin swine quis veniam magna in ipsum voluptate reprehenderit elit velit sunt.
-            Landjaeger laboris buffalo excepteur bacon commodo fugiat.
-            Pastrami landjaeger rump, id dolore corned beef flank ad beef officia velit meatball ex.
-            Qui ipsum cupim, dolore adipisicing salami est in ham hock consectetur hamburger enim pork belly.
-            Incididunt quis shankle magna, minim occaecat ham officia consectetur landjaeger burgdoggen leberkas pastrami.</p>
+        <div className="col-lg-4 col-md-6 col-sm-8 col-12 mb-3 mx-auto">
+          <img src={ LogoOpenC2 } alt="OpenC2 Logo" className="img-responsive w-100" />
+        </div>
 
-          <p>Hamburger pork chop nostrud ea minim dolore, venison flank exercitation sausage pork sirloin.
-            Kielbasa frankfurter consequat cupidatat shoulder short loin non eu.
-            Doner pig in hamburger, consequat eu veniam prosciutto.
-            Pork sint tail biltong tenderloin do nulla in swine tempor strip steak adipisicing incididunt.
-            Pastrami in anim ham officia ut excepteur dolor cupim ground round veniam biltong meatball.
-            Enim frankfurter swine meatloaf spare ribs capicola.
-            Do fatback chicken rump, est id pork chop leberkas shankle shank eu esse.</p>
+        <div className="col-md-10 offset-md-1 col-12 mb-3">
+          <Card>
+            <CardHeader>Statement of Purpose</CardHeader>
+            <CardBody>
+              <p>OpenC2 Integration Framework (OIF) is a project that will enable developers to create and test OpenC2
+              specifications and implementations without having to recreate an entire OpenC2 ecosystem.</p>
+              <p>OIF consists of two major parts. The &quot;orchestrator&quot; which functions as an OpenC2 producer and the
+              &quot;Device&quot; which functions as an OpenC2 consumer.</p>
+              <p>This application is the OpenC2 Orchestrator. The Device repository can be found&nbsp;
+              <a href="https://github.com/oasis-open/openc2-oif-device" rel="noopener noreferrer" target="_blank">here</a>.
+              Due to port bindings it is recommended that the orchestrator and the device not be run on the same machine.</p>
+              <p>The OIF Orchestrator was created with the intent of being an easy-to-configure OpenC2 producer that can be
+              used in the creation of reference implementations to control multiple devices. To that end it allows for the
+              addition of multiple serializations and transportation types.</p>
+            </CardBody>
+          </Card>
+        </div>
 
-          <p>Reprehenderit landjaeger kevin ut pork loin.
-            Leberkas sirloin deserunt voluptate, veniam andouille quis tenderloin non ground round nisi.
-            Cupidatat culpa sausage nisi filet mignon, tempor aliquip sed bresaola qui chicken do in veniam.
-            Dolor in tri-tip buffalo ham fugiat, mollit pariatur.
-            Nisi ut leberkas labore, shoulder shank cow turducken nostrud non et velit ad veniam.
-            Fatback cupidatat pancetta est laborum chuck quis flank ipsum ribeye.</p>
+        <div className="row mx-auto">
+          <div className="col-md-6 col-12">
+            <Card>
+              <CardHeader>Transports</CardHeader>
+              <CardBody>
+                <ul>
+                  <li><a href="#" rel="noopener noreferrer">CoAP</a> - Nonstandard, no specification</li>
+                  <li><a href="https://docs.oasis-open.org/openc2/open-impl-https/v1.0/open-impl-https-v1.0.html" rel="noopener noreferrer" target="_blank">HTTPS</a> *<sup>Official</sup></li>
+                  <li><a href="#" rel="noopener noreferrer">MQTT</a> - Nonstandard, no specification</li>
+                  <li><a href="#" rel="noopener noreferrer">ZMQ</a> - Nonstandard, no specification</li>
+                </ul>
+              </CardBody>
+            </Card>
+          </div>
+
+          <div className="col-md-6 col-12">
+            <Card>
+              <CardHeader>Serializations</CardHeader>
+              <CardBody>
+                <ul>
+                  <li><a href="https://github.com/liteserver/binn" rel="noopener noreferrer" target="_blank">Binn</a></li>
+                  <li><a href="https://wiki.theory.org/index.php/BitTorrentSpecification#Bencoding" rel="noopener noreferrer" target="_blank">Bencode</a></li>
+                  <li><a href="http://bsonspec.org/" rel="noopener noreferrer" target="_blank">BSON</a></li>
+                  <li><a href="https://tools.ietf.org/html/rfc7049" rel="noopener noreferrer" target="_blank">CBOR</a></li>
+                  <li><a href="https://tools.ietf.org/html/rfc8259" rel="noopener noreferrer" target="_blank">JSON</a> *<sup>Official</sup></li>
+                  <li><a href="https://msgpack.org" rel="noopener noreferrer" target="_blank">MessagePack (msgpack)</a></li>
+                  <li><a href="https://people.csail.mit.edu/rivest/Sexp.txt" rel="noopener noreferrer" target="_blank">S-expressions</a></li>
+                  <li><a href="https://github.com/FasterXML/smile-format-specification" rel="noopener noreferrer" target="_blank">Smile</a></li>
+                  <li><a href="https://github.com/toml-lang/toml" rel="noopener noreferrer" target="_blank">Toml</a></li>
+                  <li><a href="https://w3.org/TR/2008/REC-xml-20081126/" rel="noopener noreferrer" target="_blank">XML</a></li>
+                  <li><a href="http://ubjson.org/" rel="noopener noreferrer" target="_blank">ubjson</a></li>
+                  <li><a href="https://github.com/arangodb/velocypack" rel="noopener noreferrer" target="_blank">VelocityPack (VPack)</a> - Requires velocity pack to be installed, only C++ module available</li>
+                  <li><a href="https://yaml.org/spec/1.2/spec.html" rel="noopener noreferrer" target="_blank">YAML</a></li>
+                </ul>
+              </CardBody>
+            </Card>
+          </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
-  siteTitle: state.Util.site_title
-})
+Home.propTypes = {
+  siteTitle: PropTypes.string.isRequired
+};
 
-export default connect(mapStateToProps)(Home)
+const mapStateToProps = state => ({
+  siteTitle: state.Util.site_title
+});
+
+export default connect(mapStateToProps)(Home);

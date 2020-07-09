@@ -42,7 +42,7 @@ api_patterns = [
     path('command/', include('command.urls')),
 
     # Conformance App
-    path('conformance/', include('conformance.urls')),
+    # path('conformance/', include('conformance.urls')),
 
     # Device App
     path('device/', include('device.urls')),

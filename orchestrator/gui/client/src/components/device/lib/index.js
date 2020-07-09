@@ -1,7 +1,5 @@
-import DeviceModal from './modal'
-import Transport from './transport'
+import DeviceModal from './modal';
 
 export {
-  DeviceModal,
-  Transport
-}
+  DeviceModal
+};

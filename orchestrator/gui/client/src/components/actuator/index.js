@@ -1,66 +1,67 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Helmet } from 'react-helmet-async'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 
-import { ActuatorModal } from './lib'
-import { RemotePageTable } from '../utils'
+import { ActuatorModal } from './lib';
+import { RemotePageTable } from '../utils';
 
-import * as ActuatorActions from '../../actions/actuator'
-import * as DeviceActions from '../../actions/device'
-
-const str_fmt = require('string-format')
+import * as ActuatorActions from '../../actions/actuator';
+import * as DeviceActions from '../../actions/device';
 
 class Actuators extends Component {
   constructor(props, context) {
-    super(props, context)
-    this.getDevice = this.getDevice.bind(this)
+    super(props, context);
+    this.getDevice = this.getDevice.bind(this);
 
     this.meta = {
-      title: str_fmt('{base} | {page}', {base: this.props.siteTitle, page: 'Actuators'}),
-      canonical: str_fmt('{origin}{path}', {origin: window.location.origin, path: window.location.pathname})
-    }
+      title:`${this.props.siteTitle} | Actuators`,
+      canonical: `${window.location.origin}${window.location.pathname}`
+    };
 
     this.tableColumns = [
       {
         text: 'Name',
         dataField: 'name',
         sort: true
-      },{
+      },
+      {
         text: 'Device',
         dataField: 'device',
         sort: true,
-        formatter: (cell, row) => ( <span>{ this.getDevice(cell) }</span> )
-      },{
+        formatter: cell => <span>{ this.getDevice(cell) }</span>
+      },
+      {
         text: 'Profile',
         dataField: 'profile',
         sort: true,
-        formatter: (cell, row) => <span>{ cell.replace(/_/g, ' ') }</span>
+        formatter: cell => <span>{ cell.replace(/_/g, ' ') }</span>
       }
-    ]
+    ];
 
     this.editOptions = {
       modal: ActuatorModal,
       delete: this.props.deleteActuator
-    }
+    };
 
     if (this.props.devices.loaded === 0) {
-      this.props.getDevices()
+      this.props.getDevices();
     }
     // this.props.getActuators()
   }
 
   getDevice(id) {
-    let device = this.props.devices.devices.filter(d => d.device_id == id)
-    device = device.length == 1 ? device[0] : {}
-    return device.name || id
+    let device = this.props.devices.devices.filter(d => d.device_id === id);
+    device = device.length === 1 ? device[0] : {};
+    return device.name || id;
   }
 
   render() {
     setTimeout(() => {
       if (this.props.devices.loaded !== this.props.devices.total) {
-        this.props.getDevices(1, this.props.devices.total)
+        this.props.getDevices(1, this.props.devices.total);
       }
-    }, 10)
+    }, 10);
 
     return (
       <div className="row mx-auto">
@@ -85,10 +86,12 @@ class Actuators extends Component {
               {
                 dataField: 'name',
                 order: 'desc'
-              },{
+              },
+              {
                 dataField: 'profile',
                 order: 'desc'
-              },{
+              },
+              {
                 dataField: 'device',
                 order: 'desc'
               }
@@ -96,11 +99,27 @@ class Actuators extends Component {
           />
         </div>
       </div>
-    )
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
+Actuators.propTypes = {
+  admin: PropTypes.bool.isRequired,
+  deleteActuator: PropTypes.func.isRequired,
+  devices: PropTypes.shape({
+    devices: PropTypes.array,
+    loaded: PropTypes.number,
+    total: PropTypes.number
+  }).isRequired,
+  getActuators: PropTypes.func.isRequired,
+  getDevices: PropTypes.func.isRequired,
+  orchestrator: PropTypes.shape({
+    name: PropTypes.string
+  }).isRequired,
+  siteTitle: PropTypes.string.isRequired
+};
+
+const mapStateToProps = state => ({
   siteTitle: state.Util.site_title,
   orchestrator: {
     name: state.Util.name || 'N/A'
@@ -111,12 +130,12 @@ const mapStateToProps = (state) => ({
     loaded: state.Device.devices.length,
     total: state.Device.count
   }
-})
+});
 
 const mapDispatchToProps = (dispatch) => ({
   getActuators: (page, sizePerPage, sort) => dispatch(ActuatorActions.getActuators(page, sizePerPage, sort)),
   deleteActuator: (act) => dispatch(ActuatorActions.deleteActuator(act)),
   getDevices: (page, sizePerPage, sort) => dispatch(DeviceActions.getDevices(page, sizePerPage, sort))
-})
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Actuators)
+export default connect(mapStateToProps, mapDispatchToProps)(Actuators);

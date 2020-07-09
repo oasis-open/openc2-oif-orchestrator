@@ -9,8 +9,8 @@ class ActuatorAdmin(admin.ModelAdmin):
     """
     Actuator admin
     """
-    readonly_fields = ('actuator_id', 'profile', 'schema_format')
-    list_display = ('name', 'device', 'profile', 'schema_format')
+    readonly_fields = ('actuator_id', 'profile')
+    list_display = ('name', 'device', 'profile')
 
 
 class ActuatorGroupAdmin(admin.ModelAdmin):

@@ -1,55 +1,62 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Helmet } from 'react-helmet-async'
-import qs from 'query-string'
-import { toast } from 'react-toastify'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
+import { Button, Input, Label } from 'reactstrap';
 
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader
-} from 'reactstrap'
-
-import { confirmAlert } from 'react-confirm-alert'
-import 'react-confirm-alert/src/react-confirm-alert.css'
-
-import * as AccountActions from '../../../actions/account'
-import { withGUIAuth } from '../../../actions/util'
-
-const str_fmt = require('string-format')
+import { objectValues, safeGet } from '../../utils';
+import * as AccountActions from '../../../actions/account';
 
 class ChangePassword extends Component {
   constructor(props, context) {
-    super(props, context)
-
-    this.submitForm = this.submitForm.bind(this)
+    super(props, context);
+    this.submitForm = this.submitForm.bind(this);
+    this.updatePassword = this.updatePassword.bind(this);
 
     this.meta = {
-      title: str_fmt('{base} | {page}', {base: this.props.siteTitle, page: 'Account - Change Password'}),
-      canonical: str_fmt('{origin}{path}', {origin: window.location.origin, path: window.location.pathname})
-    }
+      title: `${this.props.siteTitle} | Account - Change Password`,
+      canonical: `${window.location.origin}${window.location.pathname}`
+    };
 
     this.state = {
       password: {
-        old: '',
-        new_1: '',
-        new_2: ''
+        old_password: '',
+        new_password_1: '',
+        new_password_2: ''
       },
       errors: {},
       status: ''
-    }
+    };
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return {
+      ...prevState,
+      errors: safeGet(nextProps.errors, AccountActions.CHANGE_ACCOUNT_PASSWORD_FAILURE, {}),
+      status: safeGet(nextProps.status, AccountActions.CHANGE_ACCOUNT_PASSWORD_SUCCESS, '')
+    };
   }
 
   submitForm(e) {
-    e.preventDefault()
-    Promise.resolve(this.props.changePassword(this.props.username, ...Object.values(this.state.password))).then(rsp => {
-      this.setState({
-        errors: this.props.errors[AccountActions.CHANGE_ACCOUNT_PASSWORD_FAILURE],
-        status: this.props.status[AccountActions.CHANGE_ACCOUNT_PASSWORD_SUCCESS]
-      })
-    })
+    e.preventDefault();
+    this.props.changePassword(this.props.username, ...objectValues(this.state.password));
+  }
+
+  updatePassword(e) {
+    const target = e.currentTarget;
+    this.setState(prevState => ({
+      password: {
+        ...prevState.password,
+        [target.id]: btoa(target.value)
+      }
+    }));
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  helpText(txt, type) {
+    // eslint-disable-next-line no-param-reassign
+    type = type || 'info';
+    return txt ? <p className={ `form-text text-${type}` }>{ txt }</p> : '';
   }
 
   render() {
@@ -62,86 +69,80 @@ class ChangePassword extends Component {
         <h1 className='text-center'>Password Change</h1>
 
         <form className='col-md-10 mx-auto' onSubmit={ this.submitForm }>
-          {
-            this.state.status ? (
-              <p className="form-text text-info">{ this.state.status }</p>
-            ) : ''
-          }
+          { this.helpText(this.state.status, 'info') }
           <div className='form-group'>
-            <label htmlFor='old_password'>Old Password</label>
-            <input
-              type='password'
-              className='form-control'
+            <Label for='old_password'>Old Password</Label>
+            <Input
               id='old_password'
+              className='form-control'
+              type='password'
               required=''
               placeholder='password'
-              value={ atob(this.state.password.old) }
-              onChange={ e => this.setState({ password: { ...this.state.password, old: btoa(e.target.value) } }) }
+              value={ atob(this.state.password.old_password) }
+              onChange={ this.updatePassword }
             />
-            {
-              this.state.errors.old_password ? (
-                <small className="form-text text-danger">{ this.state.errors.old_password }</small>
-              ) : ''
-            }
+            { this.helpText(this.state.errors.old_password, 'danger') }
           </div>
           <div className='form-group'>
-            <label htmlFor='new_password_1'>New Password</label>
-            <input
-              type='password'
-              className='form-control'
+            <Label for='new_password_1'>New Password</Label>
+            <Input
               id='new_password_1'
+              className='form-control'
+              type='password'
               required=''
               placeholder='password'
-              value={ atob(this.state.password.new_1) }
-              onChange={ e => this.setState({ password: { ...this.state.password, new_1: btoa(e.target.value) } }) }/>
-            {
-              this.state.errors.new_password_1 ? (
-                <small className="form-text text-danger">{ this.state.errors.new_password_1 }</small>
-              ) : ''
-            }
+              value={ atob(this.state.password.new_password_1) }
+              onChange={ this.updatePassword }
+            />
+            { this.helpText(this.state.errors.new_password_1, 'danger') }
           </div>
           <div className='form-group'>
-            <label htmlFor='new_password_2'>New Password Confirmation</label>
-            <input
-              type='password'
-              className='form-control'
+            <Label for='new_password_2'>New Password Confirmation</Label>
+            <Input
               id='new_password_2'
+              className='form-control'
+              type='password'
               required=''
               placeholder='password'
-              value={ atob(this.state.password.new_2) }
-              onChange={ e => this.setState({ password: { ...this.state.password, new_2: btoa(e.target.value) } }) }/>
-            {
-              this.state.errors.new_password_2 ? (
-                <small className="form-text text-danger">{ this.state.errors.new_password_2 }</small>
-              ) : ''
-            }
+              value={ atob(this.state.password.new_password_2) }
+              onChange={ this.updatePassword }
+            />
+            { this.helpText(this.state.errors.new_password_2, 'danger') }
           </div>
 
           <small className='form-text text-muted'>
             <ul>
-              <li>Your password can't be too similar to your other personal information.</li>
+              <li>Your password can&apos;t be too similar to your other personal information.</li>
               <li>Your password must contain at least 8 characters.</li>
-              <li>Your password can't be a commonly used password.</li>
-              <li>Your password can't be entirely numeric.</li>
+              <li>Your password can&apos;t be a commonly used password.</li>
+              <li>Your password can&apos;t be entirely numeric.</li>
             </ul>
           </small>
 
           <Button type='submit' color='primary' className="float-right">Save changes</Button>
         </form>
       </div>
-    )
+    );
   }
 }
 
-const mapStateToProps = (state) => ({
-  username: state.Auth.access == undefined ? 'User' : state.Auth.access.username,
+ChangePassword.propTypes = {
+  changePassword: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired,
+  siteTitle: PropTypes.string.isRequired,
+  status: PropTypes.object.isRequired,
+  username: PropTypes.string.isRequired
+};
+
+const mapStateToProps = state => ({
+  username: state.Auth.access === undefined ? 'User' : state.Auth.access.username,
   errors: state.Account.errors,
   status: state.Account.status,
   siteTitle: state.Util.site_title
-})
+});
 
 const mapDispatchToProps = (dispatch) => ({
   changePassword: (usrn, op, np1, np2) => dispatch(AccountActions.changeAccountPassword(usrn, op, np1, np2))
-})
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChangePassword)
+export default connect(mapStateToProps, mapDispatchToProps)(ChangePassword);

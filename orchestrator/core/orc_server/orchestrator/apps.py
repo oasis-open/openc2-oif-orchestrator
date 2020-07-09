@@ -38,7 +38,7 @@ def shutdown(*args, **kwargs):
         settings.MESSAGE_QUEUE.shutdown()
 
     try:
-        import uwsgi  # pylint: disable=import-outside-toplevel
+        import uwsgi  # pylint: disable=import-error, import-outside-toplevel
         print(f"worker {uwsgi.worker_id()} has passed")
     except ModuleNotFoundError:
         pass

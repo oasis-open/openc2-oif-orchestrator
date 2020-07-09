@@ -116,8 +116,8 @@ class Validator:
             actuators = get_or_none(ActuatorProfile, name__iexact=_act_prof)
             if actuators is None:
                 return dict(
-                    detail=f"profile cannot be found",
-                    response=f"Profile Invalid: profile must be a valid registered profile with the orchestrator"
+                    detail="profile cannot be found",
+                    response="Profile Invalid: profile must be a valid registered profile with the orchestrator"
                 ), 400
             return list(Actuator.objects.filter(profile__iexact=_act_prof.replace(" ", "_")))
 
@@ -205,7 +205,16 @@ def action_send(usr, cmd: dict, actuator: str, channel: dict):
     actuators, protocol, serialization = val.validate()
 
     # Store command in db
-    cmd_id = cmd.get("id", uuid.uuid4())
+    if "id" in cmd:
+        cmd_id = cmd.get("id", uuid.uuid4())
+        try:
+            cmd_id = uuid.UUID(cmd_id, version=4)
+        except ValueError:
+            cmd_id = uuid.uuid4()
+            cmd["id"] = str(cmd_id)
+    else:
+        cmd_id = uuid.uuid4()
+
     if get_or_none(SentHistory, command_id=cmd_id):
         return dict(
             command_id=[

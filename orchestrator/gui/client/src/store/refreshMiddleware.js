@@ -1,29 +1,25 @@
 // Automatically refresh the authentication JWT before it expires
-import { isRSAA } from 'redux-api-middleware'
-import * as AuthActions from '../actions/auth'
-import {
-  differenceInMinutes,
-  fromUnixTime,
-  toDate
-} from 'date-fns'
+import { isRSAA } from 'redux-api-middleware';
+import { differenceInMinutes, fromUnixTime } from 'date-fns';
+import * as AuthActions from '../actions/auth';
 
 export default ({ getState }) => {
   return next => action => {
     if (isRSAA(action)) {
-      let auth = getState().Auth
+      const auth = getState().Auth;
 
       if (auth.access) {
-        let exp = fromUnixTime(auth.access.exp)
-        let orig_iat = fromUnixTime(auth.access.orig_iat)
-        let diff = differenceInMinutes(exp, orig_iat)
+        const exp = fromUnixTime(auth.access.exp);
+        const origIat = fromUnixTime(auth.access.orig_iat);
+        const diff = differenceInMinutes(exp, origIat);
 
-        if (differenceInMinutes(new Date(), orig_iat) > (diff-5) && !auth.refresh) {
-          return next(AuthActions.refreshAccessToken(auth.access.token)).then(() => next(action))
-        } else {
-          return next(action)
+        if (differenceInMinutes(new Date(), origIat) > (diff-5) && !auth.refresh) {
+        // eslint-disable-next-line promise/no-callback-in-promise
+          return next(AuthActions.refreshAccessToken(auth.access.token)).then(() => next(action));
         }
       }
     }
-    return next(action)
-  }
-}
+    // eslint-disable-next-line promise/no-callback-in-promise
+    return next(action);
+  };
+};

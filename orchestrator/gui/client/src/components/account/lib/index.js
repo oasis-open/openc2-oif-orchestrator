@@ -1,5 +1,5 @@
-import ChangePassword from './change_password'
+import ChangePassword from './change_password';
 
 export {
   ChangePassword
-}
+};

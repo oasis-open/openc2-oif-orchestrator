@@ -1,36 +1,32 @@
-import React, { Component } from 'react'
+import React from 'react';
 import {
-  Alert,
-  Button,
-  Form,
   FormGroup,
   FormFeedback,
   Input,
-  Jumbotron,
   Label
-} from 'reactstrap'
+} from 'reactstrap';
 
-export default (args) => {
-  const change = (e) => {}
-  let name = args.name || 'input'
-  let label = args.label || null
-  let input_type = args.type || 'text'
-  let error = args.error || null
-  let onChange = args.onChange || change
-  let id = `id_${name}`
+export default args => {
+  const name = args.name || 'input';
+  const label = args.label || null;
+  const inputType = args.type || 'text';
+  const error = args.error || null;
+  const change = () => {};
+  const onChange = args.onChange || change;
+  const id = `id_${name}`;
 
   return (
-    <FormGroup color={error ? "danger" : ""}>
-      {label ? <Label htmlFor={ id }>{ label }</Label> : ""}
+    <FormGroup color={error ? 'danger' : ''}>
+      {label ? <Label htmlFor={ id }>{ label }</Label> : ''}
       <Input
-        type={input_type}
-        name={name}
-        id={id}
-        className={ error ? "is-invalid" : ""}
+        type={ inputType }
+        name={ name }
+        id={ id }
+        className={ error ? 'is-invalid' : ''}
         onChange={ onChange }
       />
 
-      {error ? <FormFeedback className="invalid-feedback">{ error }</FormFeedback> : ""}
+      {error ? <FormFeedback className="invalid-feedback">{ error }</FormFeedback> : ''}
     </FormGroup>
-  )
-}
+  );
+};
