@@ -41,7 +41,7 @@ init_now = datetime.now()
 
 if options.log_file:
     name, ext = os.path.splitext(options.log_file)
-    ext = '.log' if ext is '' else ext
+    ext = '.log' if ext == '' else ext
     fn = f'{name}-{init_now:%Y.%m.%d_%H.%M.%S}{ext}'
     log_file = open(options.log_file, 'w+')
     log_file.write(f'Configure run at {init_now:%Y.%m.%d_%H:%M:%S}\n\n')
@@ -71,7 +71,7 @@ CONFIG = FrozenDict(
     ),
     Repos=FrozenDict(
         Orchestrator=('Core', 'GUI'),
-        Transport=('HTTPS', 'MQTT', 'CoAP'),
+        Transport=('HTTP', 'HTTPS', 'MQTT', 'CoAP'),
     )
 )
 
