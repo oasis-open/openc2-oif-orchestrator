@@ -35,23 +35,26 @@ def process_message(body, message):
                 }
 
                 try:
-                    r = requests.post(
+                    rslt = requests.post(
                         url=f"https://{device_socket}",
-                        data=encode_msg(body, encoding),  # command being encoded
                         headers={
                             "Content-type": f"application/openc2-cmd+{encoding};version=1.0",
-                            # "Status": ...,  # Numeric status code supplied by Actuator's OpenC2-Response
+                            # Numeric status code supplied by Actuator's OpenC2-Response
+                            # "Status": ...,
                             "X-Request-ID": corr_id,
-                            "Date": f"{datetime.utcnow():%a, %d %b %Y %H:%M:%S GMT}",  # RFC7231-7.1.1.1 -> Sun, 06 Nov 1994 08:49:37 GMT
+                            # RFC7231-7.1.1.1 -> Sun, 06 Nov 1994 08:49:37 GMT
+                            "Date": f"{datetime.utcnow():%a, %d %b %Y %H:%M:%S GMT}",
                             "From": f"{orc_id}@{orc_socket}",
-                            "Host": f"{profile}@{device_socket}",
-                        }
+                            # "Host": f"{profile}@{device_socket}"
+                        },
+                        data=encode_msg(body, encoding),  # command being encoded
+                        verify=False
                     )
                     data = {
-                        "headers": dict(r.headers),
-                        "content": decode_msg(r.content.decode('utf-8'), encoding)
+                        "headers": dict(rslt.headers),
+                        "content": decode_msg(rslt.content.decode('utf-8'), encoding)
                     }
-                    print(f"Response from request: {r.status_code} - {data}")
+                    print(f"Response from request: {rslt.status_code} - {data}")
                     # TODO: UPDATE HEADERS WITH RESPONSE INFO
                     response = safe_json(data['content']) if isinstance(data['content'], dict) else data['content']
 

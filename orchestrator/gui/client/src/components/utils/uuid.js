@@ -33,7 +33,7 @@ export const generateUUID4 = () => generateUUID(4);
 // export const generateUUID5 = () => generateUUID(5)
 
 // Validate UUIDs
-const validateUUID = (uuid='', v=4) => uuid.match(uuidValidation[v]);
+const validateUUID = (uuid='', v=4) => Boolean(uuidValidation[v].exec(uuid));
 // export const validateUUID1 = (uuid='') => validateUUID(uuid, 1)
 // export const validateUUID2 = (uuid='') => validateUUID(uuid, 2)
 // export const validateUUID3 = (uuid='') => validateUUID(uuid, 3)

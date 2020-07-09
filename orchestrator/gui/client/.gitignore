@@ -144,8 +144,9 @@ flow-typed/npm/*
 !flow-typed/npm/module_vx.x.x.js
 
 ### Custom Ignore
-!src/components/***/lib/
+!src/components/**/lib/
 !/internals/*
 analyzer.stats.*
 webpack.stats.*
 package-lock.json
+lint_errors.txt

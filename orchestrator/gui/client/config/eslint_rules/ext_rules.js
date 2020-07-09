@@ -3,7 +3,7 @@
 module.exports = {
   'compat/compat': 2,
   'prettier/prettier': [0, {
-    parser: 'flow',
+    // parser: 'flow',
     singleQuote: true
   }]
-}
+};

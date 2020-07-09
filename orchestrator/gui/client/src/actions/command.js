@@ -13,7 +13,9 @@ const baseAPI = '/api/command';
 const GET_COMMANDS_REQUEST = '@@command/GET_COMMANDS_REQUEST';
 export const GET_COMMANDS_SUCCESS = '@@command/GET_COMMANDS_SUCCESS';
 export const GET_COMMANDS_FAILURE = '@@command/GET_COMMANDS_FAILURE';
-export const getCommands = ({page=1, count=10, sort='name', refresh=false}={}) => ({
+export const getCommands = ({
+  page=1, count=10, sort='name', refresh=false
+}={}) => ({
   [RSAA]: {
     endpoint: `${baseAPI}?page=${page}&length=${count}&ordering=${sort}`,
     method: 'GET',

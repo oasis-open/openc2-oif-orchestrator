@@ -119,7 +119,7 @@ class UnitTests(viewsets.ViewSet):
             uuid.UUID(actuator, version=4)
             actuator = Actuator.objects.get(actuator_id=actuator)
         except (ObjectDoesNotExist, ValueError):
-            raise NotFound(f"Actuator uuid not valid/found")
+            raise NotFound("Actuator uuid not valid/found")
 
         act = toFrozen(ActuatorSerializerReadOnly(actuator).data)
         testSuite = get_tests(self.unittest_Suite, request.data.get('tests', {}), actuator=act)

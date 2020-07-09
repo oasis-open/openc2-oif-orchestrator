@@ -11,4 +11,4 @@ module.exports = {
   'promise/no-return-in-finally': 1,
   'promise/no-return-wrap': 2,
   'promise/param-names': 2
-}
+};

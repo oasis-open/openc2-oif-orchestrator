@@ -16,7 +16,7 @@ module.exports = {
   'jsx-a11y/anchor-has-content': [2, {
     components: []
   }],
-  'jsx-a11y/anchor-is-valid': [0, {
+  'jsx-a11y/anchor-is-valid': [2, {
     aspects: ['noHref', 'invalidHref', 'preferButton'],
     components: ['Link'],
     specialLink: ['to']
@@ -153,4 +153,4 @@ module.exports = {
   'jsx-a11y/role-supports-aria-props': 2,
   'jsx-a11y/scope': 2,
   'jsx-a11y/tabindex-no-positive': 2
-}
+};

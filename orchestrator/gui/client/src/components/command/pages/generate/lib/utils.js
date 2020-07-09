@@ -19,7 +19,7 @@ export const JSON_SCHEMA_PROPS = PropTypes.shape({
 
 export const isOptionalJSON = (req, field) => {
   if (req && Array.isArray(req)) {
-    return req.indexOf(field) >= 0;
+    return req.includes(field);
   }
   return false;
 };

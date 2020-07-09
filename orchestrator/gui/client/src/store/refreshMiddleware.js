@@ -14,10 +14,12 @@ export default ({ getState }) => {
         const diff = differenceInMinutes(exp, origIat);
 
         if (differenceInMinutes(new Date(), origIat) > (diff-5) && !auth.refresh) {
+        // eslint-disable-next-line promise/no-callback-in-promise
           return next(AuthActions.refreshAccessToken(auth.access.token)).then(() => next(action));
         }
       }
     }
+    // eslint-disable-next-line promise/no-callback-in-promise
     return next(action);
   };
 };

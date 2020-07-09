@@ -8,10 +8,12 @@ import {
   ListGroupItem
 } from 'reactstrap';
 
-import { iso2local, safeGet, titleCase } from '../../utils';
-import * as ActuatorActions from '../../../actions/actuator';
+import {
+  iso2local,
+  safeGet,
+  titleCase
+} from '../../utils';
 import * as ConformanceActions from '../../../actions/conformance';
-import * as DeviceActions from '../../../actions/device';
 
 class ConformanceInfo extends Component {
   constructor(props, context) {
@@ -41,7 +43,7 @@ class ConformanceInfo extends Component {
     }
   }
 
-  test_results(results) {
+  testResults(results) {
     const { stats={}, ...profiles } = results;
 
     const statCounts = Object.entries(stats).map(([p, s]) => (
@@ -108,14 +110,15 @@ class ConformanceInfo extends Component {
       );
     }
 
-    const { test_id, actuator_tested={}, test_time, test_results } = this.props.test;
+    // eslint-disable-next-line camelcase, @typescript-eslint/camelcase
+    const { actuator_tested={}, test_id, test_time, test_results } = this.props.test;
     return (
       <div className="col-md-10 mx-auto jumbotron">
         <h2>Test Info</h2>
         <p><strong>Test ID:</strong> { test_id }</p>
-        <p><strong>Tested Actuator:</strong> { actuator_tested.name }</p>
+        <p><strong>Tested Actuator:</strong> { actuator_tested.name } ({actuator_tested.profile})</p>
         <p><strong>Tested Time:</strong> { iso2local(test_time) }</p>
-        { this.test_results(test_results) }
+        { this.testResults(test_results) }
       </div>
     );
   }
@@ -123,6 +126,7 @@ class ConformanceInfo extends Component {
 
 ConformanceInfo.propTypes = {
   test: PropTypes.shape({
+    actuator_tested: PropTypes.object,
     test_id: PropTypes.string,
     test_time: PropTypes.string,
     tests_run: PropTypes.object,

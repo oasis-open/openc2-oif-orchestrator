@@ -13,7 +13,9 @@ const baseAPI = '/api/actuator';
 const GET_ACTUATORS_REQUEST = '@@actuator/GET_ACTUATORS_REQUEST';
 export const GET_ACTUATORS_SUCCESS = '@@actuator/GET_ACTUATORS_SUCCESS';
 export const GET_ACTUATORS_FAILURE = '@@actuator/GET_ACTUATORS_FAILURE';
-export const getActuators = ({page=1, count=10, sort='name', refresh=false}={}) => ({
+export const getActuators = ({
+  page=1, count=10, sort='name', refresh=false
+}={}) => ({
   [RSAA]: {
     endpoint: `${baseAPI}?page=${page}&length=${count}&ordering=${sort}`,
     method: 'GET',

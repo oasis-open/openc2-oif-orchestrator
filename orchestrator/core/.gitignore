@@ -168,3 +168,4 @@ migrations/*
 !/orc_server/*/migrations/0001_initial.py
 orc_server/migration_complete
 dev_start.sh
+/orc_server/data/settings.json

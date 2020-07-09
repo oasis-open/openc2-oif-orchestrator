@@ -13,7 +13,9 @@ const baseAPI = '/api/device';
 const GET_DEVICES_REQUEST = '@@device/GET_DEVICES_REQUEST';
 export const GET_DEVICES_SUCCESS = '@@device/GET_DEVICES_SUCCESS';
 export const GET_DEVICES_FAILURE = '@@device/GET_DEVICES_FAILURE';
-export const getDevices = ({page=1, count=10, sort='name', refresh=false}={}) => ({
+export const getDevices = ({
+  page=1, count=10, sort='name', refresh=false
+}={}) => ({
   [RSAA]: {
     endpoint: `${baseAPI}?page=${page}&length=${count}&ordering=${sort}`,
     method: 'GET',

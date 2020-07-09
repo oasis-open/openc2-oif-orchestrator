@@ -44,18 +44,21 @@ export default merge.smart(baseConfig, {
       chunkFilename: 'css/[name].bundle.min.css',
       allChunks: true
     }),
-    new CopyWebpackPlugin([
-      { // Custom Assets
-        from: path.join(DEPEND_DIR, 'assets'),
-        to: path.join(BUILD_DIR, 'assets'),
-        toType: 'dir'
-      },
-      { // Theme Assets
-        from: path.join(COMPONENTS_DIR, 'utils', 'theme-switcher', 'assets'),
-        to: path.join(BUILD_DIR, 'assets'),
-        toType: 'dir'
-      }
-    ]),
+    new CopyWebpackPlugin(
+    {
+      patterns: [
+        { // Custom Assets
+          from: path.join(DEPEND_DIR, 'assets'),
+          to: path.join(BUILD_DIR, 'assets'),
+          toType: 'dir'
+        },
+        { // Theme Assets
+          from: path.join(COMPONENTS_DIR, 'utils', 'theme-switcher', 'assets'),
+          to: path.join(BUILD_DIR, 'assets'),
+          toType: 'dir'
+        }
+      ]
+    }),
     new FaviconsWebpackPlugin({
       logo: path.join(DEPEND_DIR, 'img', 'openc2-favicon.png'),
       cache: true,

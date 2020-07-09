@@ -17,11 +17,11 @@ const DEPEND_DIR = path.join(COMPONENTS_DIR, 'dependencies');
 export default {
   devtool: 'inline-source-map',
   entry: {
-    main: path.join(ROOT_DIR, 'src', 'index.js'),
-    account: path.join(COMPONENTS_DIR, 'account', 'index.js'),
-    device: path.join(COMPONENTS_DIR, 'device', 'index.js'),
-    actuator: path.join(COMPONENTS_DIR, 'actuator', 'index.js'),
-    command: path.join(COMPONENTS_DIR, 'command', 'index.js')
+    main: path.join(ROOT_DIR, 'src', 'index'),
+    account: path.join(COMPONENTS_DIR, 'account', 'index'),
+    device: path.join(COMPONENTS_DIR, 'device', 'index'),
+    actuator: path.join(COMPONENTS_DIR, 'actuator', 'index'),
+    command: path.join(COMPONENTS_DIR, 'command', 'index')
   },
   output: {
     path: BUILD_DIR,

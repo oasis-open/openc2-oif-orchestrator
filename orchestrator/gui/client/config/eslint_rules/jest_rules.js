@@ -16,4 +16,4 @@ module.exports = {
   'jest/valid-describe': 2,
   'jest/valid-expect': 2,
   'jest/valid-expect-in-promise': 2,
-}
+};

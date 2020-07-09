@@ -130,7 +130,7 @@ def check_command_id(sender, instance=None, **kwargs):
     :return: None
     """
     if instance.command_id is None:
-        log.info(msg=f"Command submitted without command id, command id generated")
+        log.info(msg="Command submitted without command id, command id generated")
         instance.command_id = uuid.uuid4()
         instance.command.update({"id": str(instance.command_id)})
     else:

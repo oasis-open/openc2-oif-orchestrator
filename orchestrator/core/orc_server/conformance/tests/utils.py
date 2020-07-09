@@ -12,7 +12,7 @@ from typing import (
     Union
 )
 
-from .test_setup import SetupTestSuite, SetupTestCase
+from .test_setup import SetupTestSuite, SetupTestCase  # pylint: disable=import-error
 
 test_dirs = [
     os.path.dirname(os.path.realpath(__file__)),  # Local Dir
@@ -32,7 +32,7 @@ def inherits_from(child, parents: Union[Tuple[type, ...], type]):
 def load_test_suite() -> SetupTestSuite:
     suite = SetupTestSuite()
     for d in test_dirs:
-        suite.addTests(unittest.defaultTestLoader.discover(start_dir=d, pattern=f"*_tests.py"))
+        suite.addTests(unittest.defaultTestLoader.discover(start_dir=d, pattern="*_tests.py"))
     return get_tests(suite)
 
 

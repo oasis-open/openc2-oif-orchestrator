@@ -47,11 +47,11 @@ package.json
 
 # Non-packaged files
 config
-flow-typed
 httpd
 internals
 
 # Assorted
+babel.config.js
 src/registerServiceWorker.js
 
 # Tmp Ignore

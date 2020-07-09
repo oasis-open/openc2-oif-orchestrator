@@ -16,7 +16,7 @@ export const isSocketAction = action => {
     SOCKET_DISCONNECTED,
     SOCKET_ERROR,
     RECEIVED_SOCKET_DATA
-  ].indexOf(action.type) > -1;
+  ].includes(action.type);
 };
 
 export const undefinedEndpointErrorMessage = action => {
@@ -29,7 +29,7 @@ export const undefinedEndpointErrorMessage = action => {
 
 // Socket Calls
 // Socket Connected - WebSocket is connected and open
-const createConnectionAction = (endpoint) => ({
+const createConnectionAction = endpoint => ({
   type: SOCKET_CONNECTED,
   payload: {
     connected: true
@@ -73,7 +73,7 @@ const createMessageAction = (endpoint, data) => ({
 const NULLS = [null, '', ' '];
 export const setupSocket = (dispatch, endpoint, protocols, options) => {
   // eslint-disable-next-line no-restricted-globals
-  const endpointUpdate = NULLS.indexOf(endpoint) === -1 ? `ws://${location.hostname}:8080` : endpoint;
+  const endpointUpdate = !NULLS.includes(endpoint) ? `ws://${location.hostname}:8080` : endpoint;
   const payload = {
     endpoint: endpointUpdate,
     socket: new WebSocketBridge(),
