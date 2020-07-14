@@ -2,7 +2,7 @@
  * Base webpack config used across other specific configs
  */
 import webpack from 'webpack';
-import merge from 'webpack-merge';
+import { merge } from 'webpack-merge';
 import path from 'path';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -19,9 +19,10 @@ export default {
   entry: {
     main: path.join(ROOT_DIR, 'src', 'index'),
     account: path.join(COMPONENTS_DIR, 'account', 'index'),
-    device: path.join(COMPONENTS_DIR, 'device', 'index'),
     actuator: path.join(COMPONENTS_DIR, 'actuator', 'index'),
-    command: path.join(COMPONENTS_DIR, 'command', 'index')
+    command: path.join(COMPONENTS_DIR, 'command', 'index'),
+    conformance: path.join(COMPONENTS_DIR, 'conformance', 'index'),
+    device: path.join(COMPONENTS_DIR, 'device', 'index')
   },
   output: {
     path: BUILD_DIR,
@@ -55,7 +56,7 @@ export default {
           chunks: 'all'
         },
         utils: {
-          test: /components\/utils[\\/]/,
+          test: /components\/(static|utils)[\\/]/,
           name: 'utils',
           chunks: 'all'
         }
@@ -85,7 +86,7 @@ export default {
       },
       {  // WOFF Font
         test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-        use: merge.smart(Loaders.url, {
+        use: merge(Loaders.url, {
           options: {
             mimetype: 'application/font-woff'
           }
@@ -93,7 +94,7 @@ export default {
       },
       {  // WOFF2 Font
         test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-        use: merge.smart(Loaders.url, {
+        use: merge(Loaders.url, {
           options: {
             mimetype: 'application/font-woff'
           }
@@ -101,7 +102,7 @@ export default {
       },
       {  // TTF Font
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        use: merge.smart(Loaders.url, {
+        use: merge(Loaders.url, {
           options: {
             mimetype: 'application/octet-stream'
           }

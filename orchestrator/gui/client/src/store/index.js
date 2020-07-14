@@ -21,7 +21,7 @@ export default history => {
       key: 'orc_gui',
       storage,
       whitelist: ['Auth'],
-      blacklist: ['Router'],
+      blacklist: ['router'],
       transforms: [persistedFilter]
     },
     createRootReducer(history)

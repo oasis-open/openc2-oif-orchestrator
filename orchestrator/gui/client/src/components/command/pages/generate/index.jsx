@@ -8,8 +8,6 @@ import JSONPretty from 'react-json-pretty';
 import {
   Button, ButtonGroup, Form, FormGroup, FormText, Input, Nav, NavItem, NavLink, TabContent, TabPane
 } from 'reactstrap';
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -20,26 +18,13 @@ import {
 import * as GenerateActions from '../../../../actions/generate';
 import * as CommandActions from '../../../../actions/command';
 
-const editorThemes = {
-  schema: { // Theming for JADN/JSON input
-    default: '#D4D4D4',
-    background: '#FCFDFD',
-    background_warning: '#FEECEB',
-    string: '#FA7921',
-    number: '#70CE35',
-    colon: '#49B8F7',
-    keys: '#59A5D8',
-    keys_whiteSpace: '#835FB6',
-    primitive: '#386FA4'
-  },
-  message: { // Theming for JSONPretty
-    main: 'color:#D4D4D4;background:#FCFDFD;overflow:auto;',
-    error: 'color:#f92672;background:#FEECEB;overflow:auto;',
-    key: 'color:#59A5D8;',
-    string: 'color:#FA7921;',
-    value: 'color:#386FA4;',
-    boolean: 'color:#386FA4;'
-  }
+const editorTheme = { // Theming for JSONPretty
+  main: 'color:#D4D4D4;background:#FCFDFD;overflow:auto;',
+  error: 'color:#f92672;background:#FEECEB;overflow:auto;',
+  key: 'color:#59A5D8;',
+  string: 'color:#FA7921;',
+  value: 'color:#386FA4;',
+  boolean: 'color:#386FA4;'
 };
 
 class GenerateCommands extends Component {
@@ -359,16 +344,15 @@ class GenerateCommands extends Component {
             </div>
 
             <div className="form-control border card-body p-0" style={{ height: `${maxHeight}px` }}>
-              <JSONInput
-                id='schema'
-                placeholder={ schema.schema }
-                colors={ editorThemes.schema }
-                locale={ locale }
-                reset={ false }
-                height='100%'
-                width='100%'
-                viewOnly
-              />
+              <div className='p-1 position-relative' style={{ height: `${maxHeight-25}px`, overflowY: 'scroll' }}>
+                <JSONPretty
+                  id='schema'
+                  className='scroll-xl'
+                  style={{ minHeight: '2.5em' }}
+                  data={ schema.schema }
+                  theme={ editorTheme }
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -515,7 +499,7 @@ class GenerateCommands extends Component {
                   className='scroll-xl'
                   style={{ minHeight: '2.5em' }}
                   data={ message }
-                  theme={ editorThemes.message }
+                  theme={ editorTheme }
                 />
               </div>
             </div>

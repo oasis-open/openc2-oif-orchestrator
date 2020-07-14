@@ -1,5 +1,5 @@
 import webpack from 'webpack';
-import merge from 'webpack-merge';
+import { merge } from 'webpack-merge';
 import path from 'path';
 
 import CopyWebpackPlugin from 'copy-webpack-plugin';
@@ -20,12 +20,14 @@ const BUILD_DIR = path.join(ROOT_DIR, 'build');
 const COMPONENTS_DIR = path.join(ROOT_DIR, 'src', 'components');
 const DEPEND_DIR = path.join(COMPONENTS_DIR, 'dependencies');
 
-export default merge.smart(baseConfig, {
+export default merge(baseConfig, {
   mode: env,
   devtool: 'source-map',
   resolve: {
     alias: {
-      // 'jquery': 'jquery-min',  // TODO: Verify the jquery-min version
+      'react': 'preact/compat',
+      'react-dom/test-utils': 'preact/test-utils',
+      'react-dom': 'preact/compat',
     }
   },
   plugins: [
@@ -44,8 +46,7 @@ export default merge.smart(baseConfig, {
       chunkFilename: 'css/[name].bundle.min.css',
       allChunks: true
     }),
-    new CopyWebpackPlugin(
-    {
+    new CopyWebpackPlugin({
       patterns: [
         { // Custom Assets
           from: path.join(DEPEND_DIR, 'assets'),
@@ -75,7 +76,7 @@ export default merge.smart(baseConfig, {
         icons: {
           android: true,        // Create Android homescreen icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
           appleIcon: true,      // Create Apple touch icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
-          appleStartup: true,   // Create Apple startup images. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
+          appleStartup: false,   // Create Apple startup images. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
           coast: false,         // Create Opera Coast icon. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
           favicons: true,       // Create regular favicons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`
           firefox: true,        // Create Firefox OS icons. `boolean` or `{ offset, background, mask, overlayGlow, overlayShadow }`

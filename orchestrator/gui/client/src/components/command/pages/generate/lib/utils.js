@@ -1,3 +1,4 @@
+// Command Generator Utilities
 import PropTypes from 'prop-types';
 
 export const JSON_SCHEMA_PROPS = PropTypes.shape({

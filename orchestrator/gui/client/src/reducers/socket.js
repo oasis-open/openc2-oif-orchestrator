@@ -4,7 +4,7 @@ const initialState = {
   connected: false,
   connection: null,
   // eslint-disable-next-line no-restricted-globals
-  endpoint: `ws://${location.hostname}:8080`,
+  endpoint: `ws://${location.host}:8080`,
   queue: []
 };
 

@@ -1,5 +1,5 @@
 import webpack from 'webpack';
-import merge from 'webpack-merge';
+import { merge } from 'webpack-merge';
 import path from 'path';
 
 import DeadCodePlugin from 'webpack-deadcode-plugin';
@@ -14,7 +14,7 @@ const BUILD_DIR = path.join(ROOT_DIR, 'build');
 const COMPONENTS_DIR = path.join(ROOT_DIR, 'src', 'components');
 const DEPEND_DIR = path.join(COMPONENTS_DIR, 'dependencies');
 
-export default merge.smart(baseConfig, {
+export default merge(baseConfig, {
   mode: env,
   devtool: 'eval',
   plugins: [

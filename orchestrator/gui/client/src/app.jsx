@@ -10,9 +10,7 @@ import {
 } from './components/static';
 
 import {
-  Login,
-  Logout,
-  PrivateRoute
+  Login, Logout, PrivateRoute
 } from './components/auth';
 
 import Account from './components/account';

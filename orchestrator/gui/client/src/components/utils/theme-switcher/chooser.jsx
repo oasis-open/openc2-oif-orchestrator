@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {
+  Button, ButtonDropdown, ButtonGroup, DropdownMenu, DropdownToggle
+} from 'reactstrap';
 
 const capitalize = s => s.charAt(0).toUpperCase() + s.substring(1);
 
@@ -7,6 +10,7 @@ class ThemeChooser extends Component {
   constructor(props, context) {
     super(props, context);
     this.onSelect = this.onSelect.bind(this);
+    this.toggleList = this.toggleList.bind(this);
 
     const { currentTheme, defaultTheme, themes } = this.context;
 
@@ -15,6 +19,7 @@ class ThemeChooser extends Component {
     this.themes.sort();
 
     this.state = {
+      listOpen: false,
       currentTheme: currentTheme || '',
       defaultTheme
     };
@@ -36,43 +41,46 @@ class ThemeChooser extends Component {
     });
   }
 
+  toggleList() {
+    this.setState(prevState => ({
+      listOpen: !prevState.listOpen
+    }));
+  }
+
   render() {
     const { size, style } = this.props;
-    const { currentTheme, defaultTheme } = this.state;
+    const { currentTheme, defaultTheme, listOpen } = this.state;
 
     const themes = this.themes.map(theme => {
       return (
-        <button
+        <Button
           key={ theme }
-          type='button'
-          className={ `btn btn-info ${theme === currentTheme ? 'active' : ''}` }
+          color='info'
+          active={ theme === currentTheme }
           data-theme={ theme }
           onClick={ this.onSelect }
         >
           { `${theme === defaultTheme ? '* ' : ''}${capitalize(theme)}` }
-        </button>
+        </Button>
       );
     });
 
     return (
-      <div className='dropdown dropdown-menu-right' style={ style }>
-        <button
-          id='theme-menu'
-          type='button'
-          className={ `btn btn-default dropdown-toggle ${size === '' ? '' : `btn-${size}` }` }
-          data-toggle='dropdown'
-          aria-haspopup='true'
-          aria-expanded='true'
+      <ButtonDropdown isOpen={ listOpen } toggle={ this.toggleList } style={ style }>
+        <DropdownToggle
+          caret
+          color='default'
+          size={ size }
         >
           Theme
-        </button>
+        </DropdownToggle>
 
-        <div className='dropdown-menu p-0'>
-          <div className={ `btn-group-vertical${size === '' ? '' : ` btn-group-${size}` } w-100` }>
+        <DropdownMenu className='p-0'>
+          <ButtonGroup vertical size={ size } className='w-100'>
             { themes }
-          </div>
-        </div>
-      </div>
+          </ButtonGroup>
+        </DropdownMenu>
+      </ButtonDropdown>
     );
   }
 }

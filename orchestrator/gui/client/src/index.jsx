@@ -3,13 +3,12 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { HelmetProvider } from 'react-helmet-async';
 import { createBrowserHistory } from 'history';
-
 import registerServiceWorker from './registerServiceWorker';
 
 // Styles
-import { ThemeSwitcher } from './components/utils';
-import 'bootstrap';
+// import 'bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
+import { ThemeSwitcher } from './components/utils';
 import './components/dependencies/css/styles.less';
 
 // Orchestrator Application
