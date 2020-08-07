@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 import atexit
 import os
 import re
-import shutil
 import sys
 
 from datetime import datetime
