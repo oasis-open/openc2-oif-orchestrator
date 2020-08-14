@@ -61,7 +61,6 @@ export default (state=initialState, action=null) => {
     case conformance.GET_UNITTESTS_FAILURE:
     case conformance.GET_UNITTESTS_PROFILE_FAILURE:
     case conformance.RUN_UNITTEST_FAILURE:
-      console.log('Conformance Error', action.type, action);
       return {
         ...state,
         errors: {

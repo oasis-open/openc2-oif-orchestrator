@@ -55,7 +55,7 @@ class ChoiceField extends Component {
 
     if ('patternProperties' in def) {
       // TODO: Pattern Properties
-      console.log('Choice Pattern Props', def.patternProperties);
+      console.warn('Choice Pattern Props', def.patternProperties);
     }
 
     let selectedDef = '';

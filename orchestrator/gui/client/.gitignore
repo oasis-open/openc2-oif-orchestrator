@@ -139,14 +139,11 @@ typings/
 # OSX
 .DS_Store
 
-# flow-typed
-flow-typed/npm/*
-!flow-typed/npm/module_vx.x.x.js
+# Components
+!src/components/**/lib/
 
 ### Custom Ignore
-!src/components/**/lib/
 !/internals/*
 analyzer.stats.*
 webpack.stats.*
-package-lock.json
 lint_errors.txt

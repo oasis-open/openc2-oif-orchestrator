@@ -1,14 +1,13 @@
 # GUI Builder
-FROM alpine as builder
-RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
+FROM node:10-alpine as builder
 
 ADD . /tmp/gui
 
-RUN apk add --update nodejs nodejs-npm && \
+RUN apk add --no-cache git && \
 cd /tmp/gui && \
-npm install  && \
-npm run download-themes  && \
-npm run build  && \
+npm config set unsafe-perm true && \
+npm install && \
+npm run build && \
 mkdir -p /opt/orchestrator/gui && \
 cp -r build/* /opt/orchestrator/gui
 
@@ -16,8 +15,6 @@ cp -r build/* /opt/orchestrator/gui
 # GUI Image
 FROM alpine
 RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
-
-MAINTAINER Screaming_Bunny
 
 LABEL name="Orchestrator GUI" \
 vendor="OpenC2" \

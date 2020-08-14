@@ -12,7 +12,6 @@ import util from './util';
 
 // Additional stores
 // import socket from './socket';
-import theme from '../components/utils/theme-switcher/theme-reducer';
 
 export default history => combineReducers({
   'router': connectRouter(history), // MUST BE 'router'
@@ -24,8 +23,7 @@ export default history => combineReducers({
   // 'Conformance': conformance,
   'Device': device,
   'Generate': generate,
-  'Util': util,
+  'Util': util
   // Additional Reducers
-  // 'Socket': socket,
-  'theme': theme
+  // 'Socket': socket
 });

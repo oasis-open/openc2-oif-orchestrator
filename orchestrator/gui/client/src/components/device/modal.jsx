@@ -218,7 +218,7 @@ class DeviceModal extends Component {
       } else {
         Object.keys(errs).forEach(err => {
           if (err === 'transport') {
-            console.log(err, errs[err]);
+            console.error(err, errs[err]);
             errs[err].forEach(transErr => {
               Object.keys(transErr).forEach(e => {
                 toast(

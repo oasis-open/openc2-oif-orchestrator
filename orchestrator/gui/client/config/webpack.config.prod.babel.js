@@ -13,7 +13,7 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import Loaders from './webpack.loaders';
 
-const env = 'production';
+const NODE_ENV = 'production';
 
 const ROOT_DIR = path.join(__dirname, '..');
 const BUILD_DIR = path.join(ROOT_DIR, 'build');
@@ -21,18 +21,11 @@ const COMPONENTS_DIR = path.join(ROOT_DIR, 'src', 'components');
 const DEPEND_DIR = path.join(COMPONENTS_DIR, 'dependencies');
 
 export default merge(baseConfig, {
-  mode: env,
+  mode: NODE_ENV,
   devtool: 'source-map',
-  resolve: {
-    alias: {
-      'react': 'preact/compat',
-      'react-dom/test-utils': 'preact/test-utils',
-      'react-dom': 'preact/compat',
-    }
-  },
   plugins: [
     new webpack.DefinePlugin({
-      NODE_ENV: env
+      NODE_ENV
     }),
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
@@ -54,7 +47,7 @@ export default merge(baseConfig, {
           toType: 'dir'
         },
         { // Theme Assets
-          from: path.join(COMPONENTS_DIR, 'utils', 'theme-switcher', 'assets'),
+          from: path.resolve('node_modules', 'react-bootswatch-theme-switcher', 'assets'),
           to: path.join(BUILD_DIR, 'assets'),
           toType: 'dir'
         }

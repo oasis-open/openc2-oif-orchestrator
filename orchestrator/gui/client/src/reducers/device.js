@@ -101,7 +101,6 @@ export default (state=initialState, action=null) => {
     case device.GET_DEVICE_FAILURE:
     case device.UPDATE_DEVICE_FAILURE:
     case device.DELETE_DEVICE_FAILURE:
-      console.log('Device Failure', action.type, action);
       return {
         ...state,
         errors: {

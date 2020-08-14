@@ -250,7 +250,7 @@ class GenerateCommands extends Component {
           errors = this.json_validator.errors;
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
         errors = [ JSON.stringify(err) ];
       }
 

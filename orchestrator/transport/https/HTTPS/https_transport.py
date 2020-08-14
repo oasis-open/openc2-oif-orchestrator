@@ -1,3 +1,4 @@
+import json
 import requests
 
 from datetime import datetime
@@ -50,6 +51,7 @@ def process_message(body, message):
                         data=encode_msg(body, encoding),  # command being encoded
                         verify=False
                     )
+
                     data = {
                         "headers": dict(rslt.headers),
                         "content": decode_msg(rslt.content.decode('utf-8'), encoding)
@@ -57,7 +59,14 @@ def process_message(body, message):
                     print(f"Response from request: {rslt.status_code} - {data}")
                     # TODO: UPDATE HEADERS WITH RESPONSE INFO
                     response = safe_json(data['content']) if isinstance(data['content'], dict) else data['content']
-
+                except requests.exceptions.ConnectionError as err:
+                    response = str(getattr(err, "message", err))
+                    rtn_headers["error"] = True
+                    print(f"Connection error: {err}")
+                except json.decoder.JSONDecodeError as err:
+                    response = str(getattr(err, "message", err))
+                    rtn_headers["error"] = True
+                    print(f"Message error: {err}")
                 except Exception as err:
                     response = str(getattr(err, "message", err))
                     rtn_headers["error"] = True
@@ -73,7 +82,12 @@ def process_message(body, message):
             response = "Destination/Encoding/Orchestrator Socket of command not specified"
             rcv_headers["error"] = True
             print(response)
-            producer.publish(message=str(response), headers=rcv_headers, exchange="orchestrator", routing_key="response")
+            producer.publish(
+                message=str(response),
+                headers=rcv_headers,
+                exchange="orchestrator",
+                routing_key="response"
+            )
 
 
 if __name__ == "__main__":

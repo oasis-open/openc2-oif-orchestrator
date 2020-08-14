@@ -5,9 +5,9 @@ import { createBrowserHistory } from 'history';
 import {
   UncontrolledDropdown, DropdownItem, DropdownToggle, DropdownMenu
 } from 'reactstrap';
+import { ThemeChooser } from 'react-bootswatch-theme-switcher';
 
 import NavItem from './navItem';
-import { ThemeChooser } from '../../utils';
 import * as AuthActions from '../../../actions/auth';
 
 const themeOptionStyles = {

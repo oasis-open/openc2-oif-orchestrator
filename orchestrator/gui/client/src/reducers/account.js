@@ -25,7 +25,6 @@ export default (state=initialState, action=null) => {
       };
 
     case account.CHANGE_ACCOUNT_PASSWORD_FAILURE:
-      console.log('Account Failure', action.type, action);
       return {
         ...state,
         errors: {

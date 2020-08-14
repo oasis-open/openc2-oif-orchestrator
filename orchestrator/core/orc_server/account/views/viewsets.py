@@ -28,7 +28,7 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('last_name', 'first_name', 'username', 'email_address', 'active')
 
-    @action(methods=['POST'], detail=False, permission_classes=[IsAdminOrIsSelf], serializer_class=PasswordSerializer)
+    @action(methods=['POST'], detail=True, permission_classes=[IsAdminOrIsSelf], serializer_class=PasswordSerializer)
     def change_password(self, request, username=None):  # pylint: disable=unused-argument
         """
         Change user password, passwords sent as base64 encoded strings

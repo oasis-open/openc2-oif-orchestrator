@@ -46,7 +46,6 @@ export default (state=initialState, action=null) => {
     case command.GET_COMMANDS_FAILURE:
     case command.SEND_COMMAND_FAILURE:
     case command.GET_COMMAND_FAILURE:
-      console.log('Command Failure', action.type, action);
       return {
         ...state,
         errors: {

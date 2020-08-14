@@ -1,14 +1,15 @@
 /**
  * Base webpack config used across other specific configs
  */
+import path from 'path';
 import webpack from 'webpack';
 import { merge } from 'webpack-merge';
-import path from 'path';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import Loaders from './webpack.loaders';
 
 const NODE_ENV = 'production';
+
 const ROOT_DIR = path.join(__dirname, '..');
 const BUILD_DIR = path.join(ROOT_DIR, 'build');
 const COMPONENTS_DIR = path.join(ROOT_DIR, 'src', 'components');
@@ -67,7 +68,7 @@ export default {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',

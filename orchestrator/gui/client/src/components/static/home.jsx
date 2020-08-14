@@ -34,14 +34,25 @@ const Home = props => {
           <Card>
             <CardHeader>Statement of Purpose</CardHeader>
             <CardBody>
-              <p>OpenC2 Integration Framework (OIF) is a project that will enable developers to create and test OpenC2 specifications and implementations without having to recreate an entire OpenC2 ecosystem.</p>
-              <p>OIF consists of two major parts. The &quot;orchestrator&quot; which functions as an OpenC2 producer and the &quot;Device&quot; which functions as an OpenC2 consumer.</p>
+              <p>
+                OpenC2 Integration Framework (OIF) is a project that will enable developers to create and test OpenC2
+                specifications and implementations without having to recreate an entire OpenC2 ecosystem.
+              </p>
+              <p>
+                OIF consists of two major parts. The &quot;orchestrator&quot; which functions as an OpenC2 producer and
+                the &quot;Device&quot; which functions as an OpenC2 consumer.
+              </p>
               <p>
                 This application is the OpenC2 Orchestrator. The Device repository can be found&nbsp;
                 <a href="https://github.com/oasis-open/openc2-oif-device" rel="noopener noreferrer" target="_blank">here</a>
-                .&nbsp;Due to port bindings it is recommended that the orchestrator and the device not be run on the same machine.
+                .&nbsp;Due to port bindings it is recommended that the orchestrator and the device not be run on the same
+                machine.
               </p>
-              <p>The OIF Orchestrator was created with the intent of being an easy-to-configure OpenC2 producer that can be used in the creation of reference implementations to control multiple devices. To that end it allows for the addition of multiple serializations and transportation types.</p>
+              <p>
+                The OIF Orchestrator was created with the intent of being an easy-to-configure OpenC2 producer that can be
+                used in the creation of reference implementations to control multiple devices. To that end it allows for the
+                addition of multiple serializations and transportation types.
+              </p>
             </CardBody>
           </Card>
         </div>

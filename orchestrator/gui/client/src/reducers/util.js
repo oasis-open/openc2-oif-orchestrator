@@ -23,7 +23,6 @@ export default (state=initialState, action=null) => {
       };
 
     case util.INFO_FAILURE:
-      console.log('Utils Failure', action.type, action);
       return {
         ...state,
         errors: {

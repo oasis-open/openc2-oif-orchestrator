@@ -20,11 +20,6 @@ import {
 } from './multiKey';
 
 import {
-  ThemeChooser,
-  ThemeSwitcher
-} from './theme-switcher';
-
-import {
   generateUUID4,
   validateUUID4
 } from './uuid';
@@ -41,8 +36,6 @@ export {
   RemotePageTable,
   safeGet,
   setMultiKey,
-  ThemeChooser,
-  ThemeSwitcher,
   titleCase,
   validateUUID4
 };

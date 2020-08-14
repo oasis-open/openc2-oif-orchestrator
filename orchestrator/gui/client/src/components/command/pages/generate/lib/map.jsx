@@ -54,7 +54,7 @@ class MapField extends Component {
 
     if ('patternProperties' in def) {
       // TODO: Pattern Properties
-      console.log('Map Pattern Props', def.patternProperties);
+      console.warn('Map Pattern Props', def.patternProperties);
     }
 
     return (

@@ -6,7 +6,7 @@ export const checkSchema = schema => {
     try {
       return JSON.parse(schema);
     } catch (err) {
-      console.log('Cannot load schema', err);
+      console.error('Cannot load schema', err);
       return {};
     }
   }

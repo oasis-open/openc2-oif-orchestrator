@@ -1,19 +1,27 @@
 module.exports = {
+  extends: [
+    'eslint:recommended',
+    // 'plugin:@typescript-eslint/recommended',
+    // 'plugin:@typescript-eslint/recommended-requiring-type-checking'
+  ],
   env: {
     browser: true,
     es6: true,
     node: true
   },
-  parser: '@typescript-eslint/parser',
+  parser: 'babel-eslint',
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 2018,
     sourceType: 'module',
     project: 'tsconfig.json',
-    tsconfigRootDir: __dirname
+    tsconfigRootDir: __dirname,
+    warnOnUnsupportedTypeScriptVersion: false
   },
   plugins: [
     '@typescript-eslint',
     'compat',
+    'eslint-comments',
+    'eslint-plugin',
     'import',
     'jest',
     'jsx-a11y',
@@ -23,12 +31,12 @@ module.exports = {
     'react-hooks'
   ],
   settings: {
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx']
-    },
+    'import/extensions': ['.js', '.jsx'],
     'import/resolver': {
       // See https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-575727774 for line below
-      node: {},
+      node: {
+        extensions: ['.js', '.jsx']
+      },
       webpack: {
         config: require.resolve('./config/webpack.config.eslint.js')
       }

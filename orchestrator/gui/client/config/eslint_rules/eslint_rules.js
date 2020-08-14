@@ -263,7 +263,12 @@ module.exports = {
   'no-confusing-arrow': [0, {
     allowParens: true
   }],
-  'no-console': 1,
+  'no-console': [2, {
+    allow: [
+      'warn',
+      'error'
+    ]
+  }],
   'no-const-assign': 2,
   'no-constant-condition': 1,
   'no-constructor-return': 0,

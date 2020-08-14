@@ -6,9 +6,11 @@ export const JSON_SCHEMA_PROPS = PropTypes.shape({
   $id: PropTypes.string.isRequired,
   title: PropTypes.string,
   type: (props, propName, componentName) => {
+    // eslint-disable-next-line react/destructuring-assignment
     if (props[propName] !== 'object') {
       return new Error(`Invalid prop '${propName}' supplied to '${componentName}'. Validation failed.`);
     }
+    return null;
   },
   description: PropTypes.string,
   oneOf: PropTypes.arrayOf(PropTypes.exact({

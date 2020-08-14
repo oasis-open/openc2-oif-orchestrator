@@ -27,14 +27,12 @@ export default (state=initialState, action=null) => {
       };
 
     case auth.TOKEN_REFRESH:
-      console.log('Token Refresh');
       return {
         ...state,
         refresh: true
       };
 
     case auth.TOKEN_REFRESHED:
-      console.log('Token Refreshed');
       return {
         ...state,
         access: {
@@ -48,7 +46,6 @@ export default (state=initialState, action=null) => {
     case auth.LOGIN_FAILURE:
     case auth.LOGOUT_FAILURE:
     case auth.TOKEN_FAILURE:
-      console.log('Auth Failure', action.type, action);
       return {
         access: undefined,
         errors: action.payload.response || {'non_field_errors': action.payload.statusText}
