@@ -1,6 +1,6 @@
 # README
 
-## <a id="readme-general"></a>OASIS TC Open Repository: openc2-oif-orchestrator
+## OASIS TC Open Repository: openc2-oif-orchestrator
 
 This GitHub public repository [openc2-oif-orchestrator](https://github.com/oasis-open/openc2-oif-orchestrator) was created at the request of the [OASIS OpenC2 Technical Committee](https://www.oasis-open.org/committees/openc2/) as an [OASIS TC Open Repository](https://www.oasis-open.org/resources/open-repositories/) to support development of open source resources related to Technical Committee work.
 
@@ -10,23 +10,57 @@ All contributions made to this TC Open Repository are subject to open source lic
 
 As documented in [Public Participation Invited](https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/CONTRIBUTING.md#public-participation-invited), contributions to this TC Open Repository are invited from all parties, whether affiliated with OASIS or not. Participants must have a GitHub account, but no fees or OASIS membership obligations are required.  Participation is expected to be consistent with the [OASIS TC Open Repository Guidelines and Procedures](https://www.oasis-open.org/policies-guidelines/open-repositories), the open source [LICENSE.md](LICENSE.md) designated for this particular repository, and the requirement for an [Individual Contributor License Agreement](href="https://www.oasis-open.org/resources/open-repositories/cla/individual-cla) that governs intellectual property.
 
-## <a id="purposeStatement"></a>Statement of Purpose
+## Statement of Purpose
 
-OpenC2 Integration Framework (OIF) is a project that will enable developers to create and test OpenC2 specifications and implementations without having to recreate an entire OpenC2 ecosystem.
+**OpenC2 Integration Framework (OIF)** is a project to enable
+developers to create and test OpenC2 specifications and
+implementations without having to recreate an entire OpenC2
+ecosystem.  The OIF consists of two major parts:
+* The
+["OIF Orchestrator" (this
+repository)](https://github.com/oasis-open/openc2-oif-orchestrator),
+which functions as an OpenC2 producer, and 
+* The "[OIF
+Device](https://github.com/oasis-open/openc2-oif-device)",
+which functions as an OpenC2 consumer. 
 
-OIF consists of two major parts. The "orchestrator" which functions as an OpenC2 producer and the "Device" which functions as an OpenC2 consumer.
+When used together the OIF Orchestrator and Device implement
+both sides of the OpenC2 [Producer / Consumer
+model](https://docs.oasis-open.org/openc2/oc2ls/v1.0/cs02/oc2ls-v1.0-cs02.html#16-overview). The following diagram
+provides a high-level overview of the OIF:
 
-This particular repository contains the code required to set up an OpenC2 Orchestrator. The Device repository can be found [here](https://github.com/oasis-open/openc2-oif-device). Due to port bindings it is recommended that the orchestrator and the device not be run on the same machine.
+![Insert Overview Diagram](/docs/images/overview.png)
 
-The OIF Orchestrator was created with the intent of being an easy-to-configure OpenC2 producer that can be used in the creation of reference implemetations to control multiple devices. To that end it allows for the addition of multiple serializations and trasnportation types.
 
-To get started please reference [https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/docs/Orchestrator.md](https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/docs/Orchestrator.md)
+_Motivation_:  The OIF Orchestrator was created with the intent of being an
+easy-to-configure OpenC2 producer that can be used in the
+creation of reference implementations to control multiple
+devices. To that end it allows for the addition of multiple
+serializations and message transfer solutions. The intent is
+to reduce the time and effort needed to produce an OpenC2
+reference implementation. The OpenC2 specification does not
+limit the types of data serialization or transport protocols
+that can be utilized to deliver the message content. OIF was
+built with the capability to easily add serialization and
+transport functionality in order to be able to represent a
+wide range of use cases. Additionally, OIF allows newcomers
+a lower barrier to entry by providing a framework to work
+within, allowing a developer to focus their product's
+functionality without having to build out the rest of the
+supporting architecture.
 
-**Additions to Statement of Purpose**
+Short term, OIF is being used to work through
+interoperability use cases in order to mature the OpenC2
+specification. Long term, OIF plans to help guide the
+community towards conformance by providing a validation/test
+capability that will determine if the vendor implementation
+meets the requirements set forth in OpenC2 specifications.
 
-Repository Maintainers may include here any additional sections, subsections, and paragraphs that the Maintainer(s) wish to add as descriptive text, reflecting project status, milestones, releases, modifications to statement of purpose, etc.  The project Maintainers will create and maintain this content on behalf of the participants.
 
-## <a id="currentMaintainers"></a>Maintainers
+To get started please reference [README.md in the /docs folder](./docs/README.md)
+
+
+## Maintainers
 
 TC Open Repository [Maintainers](https://www.oasis-open.org/resources/open-repositories/maintainers-guide) are responsible for oversight of this project's community development activities, including evaluation of GitHub [pull requests](https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/CONTRIBUTING.md#fork-and-pull-collaboration-model) and [preserving open source principles of openness and fairness](https://www.oasis-open.org/policies-guidelines/open-repositories#repositoryManagement). Maintainers are recognized and trusted experts who serve to implement community goals and consensus design preferences.
 
@@ -34,9 +68,9 @@ Initially, the associated TC members have designated one or more persons to serv
 
 *Current Maintainers of this TC Open Repository*
 
-- Danny Martinez, danny.martinez@g2-inc.com, [G2, Inc.](http://g2-inc.com)
+- Danny Martinez, danny.martinez@hii-tsd.com, [Huntington Ingalls Industries](https://www.huntingtoningalls.com/)
 
-## <a id="aboutOpenRepos"></a>About OASIS TC Open Repositories
+## About OASIS TC Open Repositories
 
 - [TC Open Repositories: Overview and Resources](https://www.oasis-open.org/resources/open-repositories)
 - [Frequently Asked Questions](https://www.oasis-open.org/resources/open-repositories/faq)
@@ -44,9 +78,6 @@ Initially, the associated TC members have designated one or more persons to serv
 - [Contributor License Agreements (CLAs)](https://www.oasis-open.org/resources/open-repositories/cla)
 - [Maintainers' Guidelines and Agreement](https://www.oasis-open.org/resources/open-repositories/maintainers-guide)
 
-## <a id="feedback"></a>Feedback
+## Feedback
 
-Questions or comments about this TC Open Repository's activities should be composed as GitHub issues or comments. If use of an issue/comment is not possible or appropriate, questions may be directed by email to the Maintainer(s) <a href="#currentMaintainers">listed above</a>. Please send general questions about TC Open Repository participation to OASIS Staff at repository-admin@oasis-open.org and any specific CLA-related questions to repository-cla@oasis-open.org. 
-
-## [OpenC2 Language](https://openc2.org/) Version Compliance
-- This repository complies to the Open C2 Language CS v1.0 specification as of 19 Dec. 2019
+Questions or comments about this TC Open Repository's activities should be composed as GitHub issues or comments. If use of an issue/comment is not possible or appropriate, questions may be directed by email to the Maintainer(s) <a href="#currentMaintainers">listed above</a>. Please send general questions about TC Open Repository participation to OASIS Staff at repository-admin@oasis-open.org and any specific CLA-related questions to repository-cla@oasis-open.org.

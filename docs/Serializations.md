@@ -17,8 +17,8 @@
 - [YAML](https://yaml.org/spec/1.2/spec.html)
 
 ## Adding Additional Serializations
-##### Note: Python is the default language used within the OIF, all python modules can be found on [PyPi](https://pypi.org/) or searching for 'SERIALIZATION python3' on google
-1. Open the `modules/utils/root/sb_utils/message/serialize.py` file
+##### Note: Python is the default language used within the OIF, all python modules can be found on [PyPi](https://pypi.org/)
+1. Open the `../base/modules/utils/root/sb_utils/message/serialize.py` file
 2. Add the serialization to the serializations dictionary
 	- Note: The key should be lowercase and not begin with a number or special character for all serializations added
 	- Simple Serializations, single function - BSON
@@ -56,10 +56,17 @@
 	)
 	```
 
-3. Add the non standard packages used for the encoding to the `modules/utils/root/setup.cfg` under the options/install_requires section
+3. Add the non standard packages used for the encoding to the `../base/modules/utils/root/requirements.txt` and `../base/modules/utils/root/setup.cfg` under the options/install_requires section
 	- Note: A package version is not required, but recommended 
 	- For BSON, bson
 	- For YAML, pyyaml
+
+	```text
+	...
+	bson
+	cbor2
+	...
+	```
 
 	```cfg
 	...

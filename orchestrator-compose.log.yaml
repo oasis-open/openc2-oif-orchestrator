@@ -26,13 +26,21 @@ services:
         syslog-format: rfc5424
         tag: "core-gui"
 
-  transport-mqtt:
+  transport-coap:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "transport-mqtt"
+        tag: "transport-coap"
+
+  transport-http:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "transport-http"
 
   transport-https:
     logging:
@@ -42,13 +50,13 @@ services:
         syslog-format: rfc5424
         tag: "transport-https"
 
-  transport-coap:
+  transport-mqtt:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "transport-coap"
+        tag: "transport-mqtt"
 
   queue:
     logging:

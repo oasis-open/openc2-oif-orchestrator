@@ -7,5 +7,5 @@
     - sb_utils - OpenC2 OIF utilities for message conversion and queue read/write
 
 ### How to use this image
-- Their are no specific instructions for this image as it is a python 3.7 wit added packages
+- Their are no specific instructions for this image as it is a python 3.7 with added packages
 - Use as a standard python 3 images
