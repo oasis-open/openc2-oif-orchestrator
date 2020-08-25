@@ -9,13 +9,6 @@ import stat
 import subprocess
 import sys
 
-from getpass import getpass
-
-try:
-    input = raw_input
-except NameError:
-    pass
-
 try:
     from pip import main as pipmain
 except ImportError:
@@ -332,27 +325,9 @@ def build_image(docker_sys=None, console=None, **kwargs):
 
 
 def human_size(size, units=(" bytes", "KB", "MB", "GB", "TB", "PB", "EB")):
-    """
-    Returns a human readable string reprentation of bytes
-    """
+    """ Returns a human readable string reprentation of bytes"""
     return f"{size:,d}{units[0]}" if size < 1024 else human_size(size >> 10, units[1:])
 
 
 def version_str(ver):
     return ".".join(str(x) for x in ver)
-
-
-def prompt(msg, err_msg, isvalid, password=False):
-    res = None
-    password = password if type(password) == bool else False
-
-    while res is None:
-        if password:
-            res = getpass()
-        else:
-            res = input(str(msg)+': ')
-
-        if not isvalid(res):
-            print(str(err_msg))
-            res = None
-    return res

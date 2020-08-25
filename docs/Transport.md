@@ -3,11 +3,11 @@
 This is a tutorial on adding additional, custom transport mechanisms to the O.I.F.
 
 ## Adding a Transport to the Docker Stack
-- Open the [Orchestrator Compose file](orchestrator-compose.yaml) to add your transport to the stack. You can copy and edit either the `transport-https` or `transport-mqtt` services and replace it with your own transport's info. Read more on Docker Compose [here](https://docs.docker.com/compose/overview/).
+- Open the [Orchestrator Compose file](../orchestrator-compose.yaml) to add your transport to the stack. You can copy-paste either the `transport-https` or `transport-mqtt` services and replace it with your own transport's info. Read more on Docker Compose [here](https://docs.docker.com/compose/overview/).
 - Here is what our HTTPS transport looks like:
 
 	```yaml
-	transport-https:                                 # container name
+    transport-https:                                 # container name
 	    hostname: transport-https                    # hostname of container
 	    image: oif/transport:orchestrator-https      # image name
 	    build:
@@ -15,10 +15,9 @@ This is a tutorial on adding additional, custom transport mechanisms to the O.I.
 	      dockerfile: Dockerfile                     # dockerfile name
 	    env_file:
 	      - ./environment/queue.connect.env          # path to shared environment variables
+	      - ./environment/secuity.env                # path to shared environment variables
 	    external_links:
 	      - queue                                    # link to internal buffer (used to send/receive commands internally within O.I.F.)
-	    ports:
-	      - 5000:5000                                # port exposed for HTTP
 	    depends_on:
 	      - queue                                    # indicates that this container should wait for queue to exist before running
 	```
@@ -26,16 +25,17 @@ This is a tutorial on adding additional, custom transport mechanisms to the O.I.
 - Once added to the compose, your transport will be brought up as a part of the docker-compose stack and be added to the stack's docker network
 - For specific info about a transport, see the read me for each:
 	- [CoAP](../orchestrator/transport/coap/ReadMe.md)
+	- [HTTP](../orchestrator/transport/http/ReadMe.md)
 	- [HTTPS](../orchestrator/transport/https/ReadMe.md)
 	- [MQTT](../orchestrator/transport/mqtt/ReadMe.md)
 
 ## Adding port information to the O.I.F.
 
-When a transport sends a command while residing on a [Docker Network](https://docs.docker.com/network/), the Docker Network will obscure the IP and Port such that it appears that the message came from the location of the Docker Stack and not the originating host machine. To ensure that the response is able to return to the originating machine we need to send the IP and Port as a part of the headers. 
+When a transport sends a command while residing on a [Docker Network](https://docs.docker.com/network/), the Docker Network will obscure the IP and Port such that it appears that the message came from the location of the Docker Stack and not the originating machine. To ensure that the response is able to return to the originating machine we need to send the IP and Port as a part of the headers. 
 
 The IP can be set in the O.I.F. Admin Page > Global Preferences > Orchestrator Host. The default value is `127.0.0.1`.
 
-The Port for each transport needs to have a default set in the data fixtures file [orchestrator.json](../orchestrator/core/orc_server/data/fixtures/orchestrator.json). (See example at bottom of this page.) The port is specified under orchestrator.protocol under the "fields" section once you have added your transport to the list of orchestrator.protocols. 
+The Port for each transport needs to be set in the data fixtures file [orchestrator.json](../orchestrator/core/orc_server/data/fixtures/orchestrator.json). (See example at bottom of this page.) The port is specified under orchestrator.protocol under the "fields" section once you have added your transport to the list of orchestrator.protocols. 
 
 ## Listening to the Internal Buffer
 
@@ -83,7 +83,7 @@ from sb_utils import Producer
 
 ## Utilizing and Formatting the Headers
 
-### In order to make sure that we route all messages properly, the O.I.F. sends *custom* internal headers to each of the transports.
+### In order to make sure that we route all messages properly, the O.I.F. sends *custom* headers to each of the transports.
 
 ```json
 {
@@ -119,10 +119,17 @@ from sb_utils import Producer
 * `socket`: Location of the device which is ready to receive the command.  
 * `profile`: The actuator profile name.  
 * `encoding`: Format in which the message is encoded to.
-* `topic`: Custom topic to publish on, only available if the transport is a Pub/Sub. -> TBD
-* `channel`: Custom topic to publish on, only available if the transport is a Pub/Sub. -> TBD
+* `auth`: Authentication for the transport, optionally included as well as keys are included as needed
+    * `username`: AES encrypted user name
+    * `password`: AES encrypted password
+    * `ca_cert`: AES encrypted CA Certificate
+    * `client_cert`: AES encrypted Client Certificate (public certificate)
+    * `client_key`: AES encrypted Client Key (private certificate)
 
 From this information, you are able to build the headers for your transport as needed to follow existing transport specs as closely as possible.
+##### Recommended Security Suggestions:
+- Change the key in the `TRANSPORT_SECRET` variable in the [security.env](../environment/security.env) file. This is a urlsafe base64 encoded 32 bit string
+- Add a new key to the `FERNET_KEYS` array in the [settings.py](../orchestrator/core/orc_server/orchestrator/settings.py) file on line 350. These are urlsafe base64 encoded 32 bit strings, once added __DO NOT REMOVE THEM__
 
 ### Example OpenC2 Headers for HTTPS (constructed from the headers sent by the O.I.F.):
 

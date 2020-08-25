@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 import atexit
 import os
 import re
-import shutil
 import sys
 
 from datetime import datetime
@@ -124,19 +122,6 @@ if __name__ == "__main__":
         tag=f"{CONFIG.ImagePrefix}/oif-python",
         buildargs=dict(
             BASE_IMAGE=f"{CONFIG.ImagePrefix}/oif-alpine"
-        ),
-        rm=True
-    )
-
-    Stylize.info("Building base alpine python3 twisted image")
-    build_image(
-        docker_sys=system,
-        console=Stylize,
-        path="./base",
-        dockerfile="./Dockerfile_alpine-python3_twisted",
-        tag=f"{CONFIG.ImagePrefix}/oif-python_twisted",
-        buildargs=dict(
-            BASE_IMAGE=f"{CONFIG.ImagePrefix}/oif-python"
         ),
         rm=True
     )

@@ -7,6 +7,7 @@
 
 ### Transport
 - [CoAP](orchestrator/transport/coap/ReadMe.md)
+- [HTTP](orchestrator/transport/http/ReadMe.md)
 - [HTTPS](orchestrator/transport/https/ReadMe.md)
 - [MQTT](orchestrator/transport/mqtt/ReadMe.md)
 
@@ -71,7 +72,7 @@
 - Building Images
 	- Run the `docker-compose` that was used to start the Orchestrator **except** replace `up ...` with `build`
 	- Options
-		- SERVICE_NAME - The name of the service (as named in the specified compose file) to rebuild the image, if not specified all services will build if theirs is a context specified
+		- SERVICE_NAME - The name of the service (as named in the specified compose file) to rebuild the image, if not specified all services will build if their context is specified
 	- Notes
 		- Does not need to be run prior to starting, the containers will autobuild if not available
 		- Should be run after adding a new Protocol or Serialization
@@ -82,7 +83,7 @@
 
 ### Docker Compose Files
 ### Central Logging
-- __Still Developing__
+- __Still in Beta__
 - Run the `docker-compose` as normal with the additional option of a second '-f/--file'
 - Allows for a central location for logging rather than the docker default of per container
 - Runs on default port of 8081 for logger web GUI
@@ -91,10 +92,8 @@
 	docker-compose -f orchestrator-compose.yaml -f orchestrator-compose.log.yaml ...
 	```
 
-#### Standard Logging
+#### Orchestrator
 - Use [`docker-compose`](https://docs.docker.com/compose/reference/overview/) to start the orchestrator on the system
-- Logs are displayed on the terminal with the service name at the start of the line with a randon color for each
-- This is the default option if the `-d/--detached` option or central logging is not used
 
 	```bash
 	docker-compose -f orchestrator-compose.yaml [-p NAME] up [-d]
@@ -104,6 +103,7 @@
 #### Registering a device with the OIF
 - Give Device a name and generate a UUID for it.
 - Select a transport
+    - HTTP: Enter host and port (Default Port 5001)
     - HTTPS: Enter host and port (Default Port 5001)
     - MQTT: Enter host and port of the broker (Default Port 1883)
 	    - See MQTT section in [Transports](./Transport.md) for more info
