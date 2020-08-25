@@ -1,3 +1,6 @@
+import base64
+import bleach
+import re
 import uuid
 
 from django.contrib.auth.models import User
@@ -10,6 +13,7 @@ from django.db.utils import IntegrityError
 from django.dispatch import receiver
 from drf_queryfields import QueryFieldsMixin
 from drf_writable_nested import WritableNestedModelSerializer
+from fernet_fields import EncryptedCharField, EncryptedTextField
 from rest_framework import serializers
 
 # Local imports
@@ -42,7 +46,7 @@ class Transport(models.Model):
         editable=False,
         help_text="Unique ID of the transport",
         max_length=30,
-        unique=True,
+        unique=True
     )
     host = models.CharField(
         default="127.0.0.1",
@@ -66,20 +70,36 @@ class Transport(models.Model):
         Serialization,
         help_text="Serialization(s) supported by the device"
     )
-    topic = models.CharField(
+    # Authentication
+    username = models.CharField(
         default="",
-        help_text="Topic for the specific device, only necessary for Pub/Sub protocols",
+        help_text="Authentication Username",
         max_length=30,
         blank=True
     )
-    channel = models.CharField(
+    password = EncryptedCharField(
         default="",
-        help_text="Channel for the specific device, only necessary for Pub/Sub protocols",
-        max_length=30,
+        help_text="Authentication password",
+        max_length=50,
+        blank=True
+    )
+    ca_cert = EncryptedTextField(
+        default="",
+        help_text="CA Certificate",
+        blank=True
+    )
+    client_cert = EncryptedTextField(
+        default="",
+        help_text="Client Certificate",
+        blank=True
+    )
+    client_key = EncryptedTextField(
+        default="",
+        help_text="Client Key",
         blank=True
     )
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         """
         Override the save function for added validation
         :param args: save args
@@ -92,7 +112,7 @@ class Transport(models.Model):
             if len(trans) > 1:
                 raise DjangoValidationError("host, port, and protocol must make a unique pair unless a pub/sub protocol")
 
-        super(Transport, self).save(force_insert, force_update, using, update_fields)
+        super(Transport, self).save(*args, **kwargs)
 
     def __str__(self):
         return "{}:{} - {}".format(self.host, self.port, self.protocol.name)
@@ -217,22 +237,63 @@ class TransportSerializer(serializers.ModelSerializer):
         queryset=Protocol.objects.all(),
         slug_field="name"
     )
-    topic = serializers.CharField(max_length=30, default="", allow_blank=True, required=False)
-    channel = serializers.CharField(max_length=30, default="", allow_blank=True, required=False)
-    pub_sub = serializers.SerializerMethodField()
+    pub_sub = serializers.SerializerMethodField(read_only=True)
     serialization = serializers.SlugRelatedField(
         queryset=Serialization.objects.all(),
         slug_field="name",
         many=True
     )
+    # Authentication
+    auth = serializers.SerializerMethodField(read_only=True)
+    username = serializers.CharField(max_length=30, required=False)
+    password_1 = serializers.CharField(write_only=True, required=False)
+    password_2 = serializers.CharField(write_only=True, required=False)
+    ca_cert = serializers.CharField(write_only=True, required=False)
+    client_cert = serializers.CharField(write_only=True, required=False)
+    client_key = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Transport
-        fields = ("transport_id", "host", "port", "protocol", "topic", "channel", "pub_sub", "serialization")
+        fields = ("transport_id", "host", "port", "protocol", "pub_sub", "serialization",
+                  # Authentication
+                  "username", "auth", "password_1", "password_2", "ca_cert", "client_cert", "client_key")
 
+    def create(self, validated_data):
+        validated_data = self.verify_pass(validated_data)
+        transport_id = bleach.clean(self.initial_data.get('transport_id', ''))
+        if transport_id != '':
+            instance = Transport.objects.filter(transport_id=transport_id).first()
+            if instance is not None:
+                return self.update(instance, validated_data)
+        return super(TransportSerializer, self).create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data = self.verify_pass(validated_data)
+        return super(TransportSerializer, self).update(instance, validated_data)
+
+    def verify_pass(self, data):
+        pass1 = data.get('password_1')
+        pass2 = data.get('password_2')
+        if pass1 or pass2:
+            if pass1 != pass2:
+                raise DjangoValidationError('Transport authentication passwords do not match')
+            data['password'] = base64.b64decode(pass1).decode('utf-8') if re.match(r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$', pass1) else pass1
+            del data['password_1']
+            del data['password_2']
+        return data
+
+    # Serializer Methods
     def get_pub_sub(self, obj):
         ps = obj.protocol.pub_sub
         return ps if isinstance(ps, bool) else False
+
+    def get_auth(self, obj):
+        return dict(
+            password=obj.password != '',
+            ca_cert=obj.ca_cert != '',
+            client_cert=obj.client_cert != '',
+            client_key=obj.client_key != '',
+        )
 
 
 class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
@@ -241,7 +302,6 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
     """
     device_id = serializers.UUIDField(format="hex_verbose")
     transport = TransportSerializer(many=True)
-    # schema = serializers.JSONField(required=False)
     note = serializers.CharField(allow_blank=True)
 
     class Meta:

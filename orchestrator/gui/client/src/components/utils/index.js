@@ -5,6 +5,8 @@ import {
   mergeByProperty
 } from './array';
 
+import FileBase64 from './base64File';
+
 import {
   checkSchema,
   iso2local,
@@ -27,6 +29,7 @@ import {
 export {
   checkSchema,
   delMultiKey,
+  FileBase64,
   generateUUID4,
   getMultiKey,
   iso2local,

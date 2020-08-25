@@ -100,8 +100,8 @@ class DoubleNav extends Component {
                   Command
                 </DropdownToggle>
                 <DropdownMenu>
-                  <NavItem dropdown href="/command" text="Previous Commands" active={ active } click={ this.navigate } />
                   <NavItem dropdown href="/command/generate" text="Command Generator" active={ active } click={ this.navigate } />
+                  <NavItem dropdown href="/command" text="Previous Commands" active={ active } click={ this.navigate } />
                 </DropdownMenu>
               </UncontrolledDropdown>
 

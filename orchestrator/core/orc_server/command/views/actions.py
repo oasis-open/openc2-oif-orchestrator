@@ -12,7 +12,7 @@ from actuator.models import Actuator, ActuatorProfile
 from device.models import Device
 from orchestrator.models import Protocol, Serialization
 from tracking import log
-from utils import get_or_none, safe_cast
+from utils import get_or_none, safe_cast, to_bytes, to_str
 from ..models import SentHistory, ResponseHistory
 
 global_preferences = global_preferences_registry.manager()
@@ -176,19 +176,20 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
             headers["destination"][idx]["profile"].append(profile)
 
         else:
-            dest = dict(
+            dst = dict(
                 deviceID=str(act.device.device_id),
                 socket=f"{trans.host}:{trans.port}",
                 profile=[profile],
                 encoding=encoding
             )
-            if trans.protocol.pub_sub:
-                dest.update(
-                    topic=trans.topic,
-                    channel=trans.channel
-                )
-
-            headers["destination"].append(dest)
+            # Get Auth
+            auth = {}
+            for key in ["username", "password", "ca_cert", "client_cert", "client_key"]:
+                val = getattr(trans, key, '')
+                if val != '':
+                    auth[key] = to_str(settings.CRYPTO.encrypt(to_bytes(val)))
+            dst.update({'auth': auth} if len(auth.keys()) > 0 else {})
+            headers["destination"].append(dst)
     return headers
 
 

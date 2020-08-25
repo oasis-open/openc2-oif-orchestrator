@@ -139,25 +139,53 @@ class DeviceModal extends Component {
 
   transportValidate() {
     const { device } = this.state;
-    const counts = {};
-    device.transport.forEach(t => {
-      counts[t.protocol] = (counts[t.protocol] || 0) + 1;
-    });
-    return Object.keys(counts).map(k => counts[k] === 1).every(itm => itm);
+    const transports = [];
+    const protocols = [];
+
+    // eslint-disable-next-line guard-for-in, no-restricted-syntax
+    for (const idx in device.transport) {
+      const trans = { ...device.transport[idx] };
+      const {
+        protocol, password_1, password_2
+      } = trans;
+      if (protocols.includes(protocol)) {
+        toast(
+          <div>
+            <p>Error Transport:</p>
+            <p>A device can only have at most one of each type of transport protocol</p>
+          </div>,
+          { type: toast.TYPE.WARNING }
+        );
+        return null;
+      }
+      protocols.push(protocol);
+
+      if (password_1 || password_2) {
+        if (password_1 !== password_2) {
+          toast(
+            <div>
+              <p>Error Transport:</p>
+              <p>Authentication passwords do not match</p>
+            </div>,
+            { type: toast.TYPE.WARNING }
+          );
+          return null;
+        }
+      }
+
+      ['ca_cert', 'client_cert', 'client_key', 'password_1', 'password_2', 'username'].forEach(k => {
+        if (trans[k] === '') {
+          delete trans[k];
+        }
+      });
+      transports.push(trans);
+    }
+    return transports;
   }
 
   registerDevice() {
     const { device } = this.state;
-    if (!this.transportValidate()) {
-      toast(
-        <div>
-          <p>Error Transport:</p>
-          <p>A device can only have at most one of each type of transport protocol</p>
-        </div>,
-        { type: toast.TYPE.WARNING }
-      );
-
-    } else if (!validateUUID4(device.device_id)) {
+    if (!validateUUID4(device.device_id)) {
       toast(
         <div>
           <p>Error Device ID:</p>
@@ -165,30 +193,29 @@ class DeviceModal extends Component {
         </div>,
         { type: toast.TYPE.WARNING }
       );
-
-    } else {
-      const { createDevice } = this.props;
-      createDevice(device);
-      setTimeout(() => this.checkErrors(DeviceActions.CREATE_DEVICE_FAILURE), 1000);
+      return;
     }
+
+    const transports = this.transportValidate();
+    if (transports === null) {
+      return;
+    }
+    device.transport = transports;
+    const { createDevice } = this.props;
+    createDevice(device);
+    setTimeout(() => this.checkErrors(DeviceActions.CREATE_DEVICE_FAILURE), 1000);
   }
 
   saveDevice() {
-    if (!this.transportValidate()) {
-      toast(
-        <div>
-          <p>Error Transport:</p>
-          <p>A device can only have at most one of each type of transport protocol</p>
-        </div>,
-        { type: toast.TYPE.WARNING }
-      );
-
-    } else {
-      const { updateDevice } = this.props;
-      const { device } = this.state;
-      updateDevice(device.device_id, device);
-      setTimeout(() => this.checkErrors(DeviceActions.UPDATE_DEVICE_FAILURE), 1000);
+    const transports = this.transportValidate();
+    if (transports === null) {
+      return;
     }
+    const { updateDevice } = this.props;
+    const { device } = this.state;
+    device.transport = transports;
+    updateDevice(device.device_id, device);
+    setTimeout(() => this.checkErrors(DeviceActions.UPDATE_DEVICE_FAILURE), 1000);
   }
 
   checkErrors(errKey) {
@@ -316,13 +343,13 @@ class DeviceModal extends Component {
                     <FontAwesomeIcon icon={ faPlus } />
                   </Button>
                 </legend>
-                <div style={{maxHeight: '275px', overflowY: 'scroll'}}>
+                <div style={{maxHeight: '325px', overflowY: 'scroll'}}>
                   { transports }
                 </div>
               </fieldset>
 
               <div className="form-row">
-                <div className="form-group col-lg-6">
+                <div className="form-group col-12">
                   <Label for="note">Note</Label>
                   <textarea
                     id="note"
@@ -355,6 +382,7 @@ DeviceModal.propTypes = {
       name: PropTypes.string,
       note: PropTypes.string,
       transport: PropTypes.arrayOf(PropTypes.shape({
+        transport_id: PropTypes.string,
         host: PropTypes.string,
         port: PropTypes.number,
         protocol: PropTypes.string,

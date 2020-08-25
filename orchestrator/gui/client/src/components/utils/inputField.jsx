@@ -1,25 +1,20 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
-  FormGroup,
-  FormFeedback,
-  Input,
-  Label
+  FormGroup, FormFeedback, Input, Label
 } from 'reactstrap';
 
-export default args => {
-  const name = args.name || 'input';
-  const label = args.label || null;
-  const inputType = args.type || 'text';
-  const error = args.error || null;
-  const change = () => {};
-  const onChange = args.onChange || change;
+const InputField = props => {
+  const {
+    name, label, type, error, onChange
+  } = props;
   const id = `id_${name}`;
 
   return (
     <FormGroup color={ error ? 'danger' : '' }>
       {label ? <Label htmlFor={ id }>{ label }</Label> : ''}
       <Input
-        type={ inputType }
+        type={ type }
         name={ name }
         id={ id }
         className={ error ? 'is-invalid' : '' }
@@ -30,3 +25,21 @@ export default args => {
     </FormGroup>
   );
 };
+
+InputField.defaultProps = {
+  name: 'input',
+  label: null,
+  type: 'text',
+  error: null,
+  onChange: () => {}
+};
+
+InputField.propTypes = {
+  name: PropTypes.string,
+  label: PropTypes.string,
+  type: PropTypes.string,
+  error: PropTypes.string,
+  onChange: PropTypes.func
+};
+
+export default InputField;

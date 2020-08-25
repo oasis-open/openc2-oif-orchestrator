@@ -38,6 +38,16 @@ def to_str(s: Any) -> str:
     return s.decode(sys.getdefaultencoding(), "backslashreplace") if hasattr(s, "decode") else str(s)
 
 
+def to_bytes(s: Any) -> bytes:
+    """
+    Convert a given type to a default byte string
+    :param s: item to convert to a byte string
+    :return: converted byte string
+    """
+    enc = sys.getdefaultencoding()
+    return s.encode(enc, "backslashreplace") if hasattr(s, "encode") else bytes(str(s), enc)
+
+
 def randBytes(b: int = 2) -> bytes:
     """
     Get a random number of bytes

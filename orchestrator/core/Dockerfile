@@ -21,13 +21,18 @@ ENV DJANGO_SETTINGS_MODULE=orchestrator.settings \
 
 # Requirements install
 # System packages
-RUN apk add --no-cache --virtual .build-deps \
-    gcc \
-    libc-dev \
-    python3-dev \
-    linux-headers && \
+RUN addgroup -S django && \
+adduser -S django -G django && \
+apk add --no-cache --virtual .build-deps \
+  gcc \
+  libc-dev \
+  libffi-dev \
+  openssl-dev \
+  python3-dev \
+  linux-headers && \
+apk add --no-cache mailcap && \
 # python/pip packages
-pip3 install -r /tmp/requirements.txt && \
+pip3 install --no-cache-dir -r /tmp/requirements.txt && \
 #
 # Collect Static Filesz
 cd /opt/orc_server && \
@@ -38,11 +43,15 @@ cd && \
 chmod +x /docker-entrypoint.sh && \
 chmod +x /opt/orc_server/dev_start.sh && \
 dos2unix /docker-entrypoint.sh && \
-dos2unix /opt/orc_server/dev_start.sh&& \
+dos2unix /opt/orc_server/dev_start.sh && \
+# chown -R django:django /opt/orc_server
 #
 # Cleanup
 apk del .build-deps && \
 rm -rf /var/cache/apk/* *.tar.gz* /usr/src /root/.gnupg /tmp/*
+
+# Set the user for future commands
+USER django
 
 # Ports
 EXPOSE 8080/tcp

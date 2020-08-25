@@ -33,7 +33,7 @@ def command_response(body, message):
         }
 
     else:
-        act_host, act_port = headers.get('socket', '').split(':')[0:2]
+        act_host, act_port = headers.get('socket', '127.0.0.1:0000').split(':', 1)
         correlation_ID = headers.get('correlationID', '')
         opts = {
             '_coap_id' if isHex(correlation_ID) else 'command_id': correlation_ID
