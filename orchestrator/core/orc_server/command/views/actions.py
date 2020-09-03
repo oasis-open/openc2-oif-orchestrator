@@ -182,6 +182,12 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
                 profile=[profile],
                 encoding=encoding
             )
+            # PubSub
+            if trans.protocol.pub_sub:
+                dst.update(
+                    prefix=trans.prefix
+                )
+
             # Get Auth
             auth = {}
             for key in ["username", "password", "ca_cert", "client_cert", "client_key"]:

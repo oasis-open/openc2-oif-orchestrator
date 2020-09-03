@@ -20,7 +20,7 @@ module.exports = {
   'import/max-dependencies': [2, {
     max: 15
   }],
-  'import/named': 0,
+  'import/named': 2,
   'import/namespace': 0,
   'import/newline-after-import': 2,
   'import/no-absolute-path': 2,

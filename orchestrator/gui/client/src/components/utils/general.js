@@ -32,3 +32,17 @@ export const iso2local = date => {
 };
 
 export const objectValues = obj => Object.keys(obj).map(k => obj[k]);
+
+
+export const removeEmpty = (obj, empties = [null, undefined, '']) => {
+  const rtn = { ...obj };
+  Object.keys(rtn).forEach(key => {
+    const val = rtn[key];
+    if (val && typeof val === 'object') {
+      removeEmpty(val);
+    } else if (empties.includes(val)) {
+      delete rtn[key];
+    }
+  });
+  return rtn;
+};

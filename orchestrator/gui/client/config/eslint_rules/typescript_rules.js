@@ -134,6 +134,9 @@ module.exports = {
   '@typescript-eslint/no-non-null-assertion': 1,
   '@typescript-eslint/no-this-alias': 2,
   '@typescript-eslint/no-throw-literal': 2,
+  '@typescript-eslint/no-unsafe-assignment': 2,
+  '@typescript-eslint/no-unsafe-call': 1,
+  '@typescript-eslint/no-unsafe-member-access': 1,
   '@typescript-eslint/no-unused-expressions': [2, {
     allowShortCircuit: false,
     allowTernary: false,

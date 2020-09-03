@@ -11,6 +11,7 @@ import {
   checkSchema,
   iso2local,
   objectValues,
+  removeEmpty,
   safeGet,
   titleCase
 } from './general';
@@ -37,6 +38,7 @@ export {
   mergeByProperty,
   objectValues,
   RemotePageTable,
+  removeEmpty,
   safeGet,
   setMultiKey,
   titleCase,

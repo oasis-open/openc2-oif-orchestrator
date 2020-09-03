@@ -69,8 +69,11 @@ const Home = props => {
                   <a href="https://docs.oasis-open.org/openc2/open-impl-https/v1.0/open-impl-https-v1.0.html" rel="noopener noreferrer" target="_blank">HTTPS</a>
                   <sup>* Official</sup>
                 </li>
-                <li>MQTT - Nonstandard, no specification</li>
-                <li>ZMQ - Nonstandard, no specification</li>
+                <li>
+                  <a href="https://github.com/oasis-tcs/openc2-transf-mqtt" rel="noopener noreferrer" target="_blank">MQTT - In Progress</a>
+                </li>
+                {/* <li>OpenDXL - In Progress</li> */}
+                {/* <li>ZMQ - Nonstandard, no specification</li> */}
               </ul>
             </CardBody>
           </Card>

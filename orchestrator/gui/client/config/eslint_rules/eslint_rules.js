@@ -26,8 +26,8 @@ module.exports = {
   }],
   'callback-return': 0,
   'camelcase': [0, {
-    ignoreDestructuring: false,
-    ignoreImports: false,
+    ignoreDestructuring: true,
+    ignoreImports: true,
     properties: 'never'
   }],
   'capitalized-comments': [0, 'never', {
@@ -134,7 +134,6 @@ module.exports = {
     CallExpression: {
       arguments: 1
     },
-    flatTernaryExpressions: false,
     FunctionDeclaration: {
       parameters: 1,
       body: 1
@@ -143,8 +142,12 @@ module.exports = {
       parameters: 1,
       body: 1
     },
-    ignoreComments: false,
     ImportDeclaration: 1,
+    ObjectExpression: 1,
+    SwitchCase: 1,
+    VariableDeclarator: 1,
+    flatTernaryExpressions: false,
+    ignoreComments: false,
     ignoredNodes: [
       'JSXElement',
       'JSXElement > *',
@@ -163,11 +166,8 @@ module.exports = {
       'JSXEmptyExpression',
       'JSXSpreadChild'
     ],
-    ObjectExpression: 1,
     offsetTernaryExpressions: false,
-    outerIIFEBody: 1,
-    SwitchCase: 1,
-    VariableDeclarator: 1
+    outerIIFEBody: 1
   }],
   'indent-legacy': 0,
   'init-declarations': 0,
@@ -216,14 +216,14 @@ module.exports = {
   }],
   'max-lines': [0, {
     max: 300,
-    skipComments: true,
-    skipBlankLines: true
+    skipBlankLines: true,
+    skipComments: true
   }],
   'max-lines-per-function': [0, {
+    IIFEs: true,
     max: 50,
     skipBlankLines: true,
-    skipComments: true,
-    IIFEs: true
+    skipComments: true
   }],
   'max-nested-callbacks': 0,
   'max-params': [0, 3],
@@ -234,10 +234,10 @@ module.exports = {
   'multiline-comment-style': [0, 'starred-block'],
   'multiline-ternary': [1, 'never'],
   'new-cap': [2, {
-    capIsNew: false,
-    capIsNewExceptions: ['Immutable.Map', 'Immutable.Set', 'Immutable.List'],
     newIsCap: true,
     newIsCapExceptions: [],
+    capIsNew: false,
+    capIsNewExceptions: ['Immutable.Map', 'Immutable.Set', 'Immutable.List'],
     properties: true
   }],
   'new-parens': 0,
@@ -288,7 +288,7 @@ module.exports = {
   }],
   'no-empty': 2,
   'no-empty-character-class': 2,
-  'no-empty-function': [1, {
+  'no-empty-function': [2, {
     allow: ['arrowFunctions', 'functions', 'methods']
   }],
   'no-empty-pattern': 2,
@@ -306,7 +306,7 @@ module.exports = {
     nestedBinaryExpressions: false,
     returnAssign: false
   }],
-  'no-extra-semi': 1,
+  'no-extra-semi': 2,
   'no-fallthrough': 0,
   'no-floating-decimal': 0,
   'no-func-assign': 2,
@@ -320,7 +320,7 @@ module.exports = {
     string: true
   }],
   'no-implicit-globals': 0,
-  'no-implied-eval': 0,
+  'no-implied-eval': 2,
   'no-import-assign': 0,
   'no-inline-comments': 0,
   'no-inner-declarations': 2,
@@ -746,8 +746,8 @@ module.exports = {
   'sort-vars': 0,
   'space-after-function-name': 0,
   'space-after-keywords': 0,
-  'space-before-blocks': 0,
-  'space-before-function-paren': [0, {
+  'space-before-blocks': 2,
+  'space-before-function-paren': [2, {
     anonymous: 'always',
     asyncArrow: 'always',
     named: 'never'

@@ -47,7 +47,7 @@ const FileBase64 = props => {
           }
         }
       };
-    };
+    }
   };
 
   return (

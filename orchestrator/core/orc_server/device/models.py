@@ -70,6 +70,12 @@ class Transport(models.Model):
         Serialization,
         help_text="Serialization(s) supported by the device"
     )
+    prefix = models.CharField(
+        default="",
+        help_text="Pub/Sub Prefix",
+        max_length=30,
+        blank=True
+    )
     # Authentication
     username = models.CharField(
         default="",
@@ -243,6 +249,7 @@ class TransportSerializer(serializers.ModelSerializer):
         slug_field="name",
         many=True
     )
+    prefix = serializers.CharField(max_length=30, required=False)
     # Authentication
     auth = serializers.SerializerMethodField(read_only=True)
     username = serializers.CharField(max_length=30, required=False)
@@ -254,7 +261,7 @@ class TransportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transport
-        fields = ("transport_id", "host", "port", "protocol", "pub_sub", "serialization",
+        fields = ("transport_id", "host", "port", "protocol", "pub_sub", "serialization", "prefix",
                   # Authentication
                   "username", "auth", "password_1", "password_2", "ca_cert", "client_cert", "client_key")
 

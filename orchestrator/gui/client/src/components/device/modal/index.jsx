@@ -9,8 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import Transport, { defaultTransport } from './transport';
-import { generateUUID4, objectValues, validateUUID4 } from '../utils';
-import * as DeviceActions from '../../actions/device';
+import { generateUUID4, objectValues, validateUUID4 } from '../../utils';
+import * as DeviceActions from '../../../actions/device';
 
 const defaultDevice = {
   device_id: 'UUID',
@@ -173,7 +173,7 @@ class DeviceModal extends Component {
         }
       }
 
-      ['ca_cert', 'client_cert', 'client_key', 'password_1', 'password_2', 'username'].forEach(k => {
+      ['ca_cert', 'client_cert', 'client_key', 'password_1', 'password_2', 'username', 'prefix'].forEach(k => {
         if (trans[k] === '') {
           delete trans[k];
         }

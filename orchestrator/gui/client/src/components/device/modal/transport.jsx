@@ -1,38 +1,28 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, FormText, Input, Label } from 'reactstrap';
+import {
+  Button, Input, Label
+} from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-import { FileBase64 } from '../utils';
+import * as ProtocolOptions from './protocols';
 
 export const defaultTransport = {
   transport_id: '',
   host: '127.0.0.1',
   port: 8080,
   protocol: 'HTTPS',
-  serialization: ['JSON'],
-  username: '',
-  password_1: '',
-  password_2: '',
-  ca_cert: '',
-  client_cert: '',
-  client_key: '',
-  auth: {
-    password: false,
-    ca_cert: false,
-    client_cert: false,
-    client_key: false
-  }
+  serialization: ['JSON']
 };
 
 class Transport extends Component {
   constructor(props, context) {
     super(props, context);
-    this.certChange = this.certChange.bind(this);
     this.checkboxChange = this.checkboxChange.bind(this);
+    this.protoChange = this.protoChange.bind(this);
     this.transportRemove = this.transportRemove.bind(this);
     this.transportChange = this.transportChange.bind(this);
 
@@ -66,10 +56,13 @@ class Transport extends Component {
     this.mounted = false;
   }
 
+  protoChange(data) {
+    this.setState(data);
+  }
+
   checkboxChange(e) {
     const { checked, id, name } = e.target;
     const item = id.replace(/^checkbox_\d+_/, '');
-
     // eslint-disable-next-line react/destructuring-assignment, react/no-access-state-in-setstate
     const tmpVal = this.state[name];
     const idx = tmpVal.indexOf(item);
@@ -112,21 +105,10 @@ class Transport extends Component {
     );
   }
 
-  certChange(file) {
-    const { base64, id } = file;
-    this.setState({
-      [id]: base64
-    },
-    () => {
-      const { change, index } = this.props;
-      change(this.state, index);
-    });
-  }
-
   render() {
     const { orchestrator } = this.props;
     const {
-      auth, host, port, password_1, password_2, protocol, serialization, username
+      host, port, protocol, serialization
     } = this.state;
 
     const protocols = Object.keys(orchestrator.protocols).map(p => (
@@ -149,9 +131,16 @@ class Transport extends Component {
       </div>
     ));
 
+    let options = '';
+    // ProtocolOptions
+    if (protocol in ProtocolOptions) {
+      const ProtoOpts = ProtocolOptions[protocol];
+      options = <ProtoOpts data={ this.state } change={ this.protoChange } />;
+    }
+
     return (
-      <div className="border mb-2 p-2">
-        <Button color="danger" size="sm" className="float-right" onClick={ this.transportRemove } >
+      <div className="position-relative border mb-2 p-2">
+        <Button color="danger" size="sm" className="position-absolute" style={{ right: '0.5em', zIndex: 100}} onClick={ this.transportRemove } >
           <FontAwesomeIcon icon={ faTimes } />
         </Button>
 
@@ -201,78 +190,7 @@ class Transport extends Component {
           </div>
         </div>
 
-        <div className="form-row">
-          <h5 className="col-12">Authentication</h5>
-          <div className="form-group col-lg-4">
-            <Label for="username">Username</Label>
-            <Input
-              id="username"
-              className="form-control"
-              type="text"
-              name="username"
-              value={ username }
-              onChange={ this.transportChange }
-            />
-
-          </div>
-          <div className="form-group col-lg-4">
-            <Label for="password_1">Password</Label>
-            <Input
-              id="password_1"
-              className="form-control"
-              type="password"
-              name="password_1"
-              value={ atob(password_1) }
-              onChange={ this.transportChange }
-            />
-            <FormText color={ auth.password ? 'success' : 'muted' }>Password is { auth.password ? '' : 'not ' } set</FormText>
-          </div>
-          <div className="form-group col-lg-4">
-            <Label for="password_2">Password Confirmation</Label>
-            <Input
-              id="password_2"
-              className="form-control"
-              type="password"
-              name="password_2"
-              value={ atob(password_2) }
-              onChange={ this.transportChange }
-            />
-          </div>
-
-          <div className="form-group col-lg-4">
-            <Label for="ca_cert">CA Certificate</Label>
-            <FileBase64
-              id="ca_cert"
-              className="form-control"
-              name="ca_cert"
-              onDone={ this.certChange }
-            />
-            <FormText color={ auth.ca_cert ? 'success' : 'muted' }>CA Certificate is { auth.ca_cert ? '' : 'not ' } set</FormText>
-          </div>
-
-          <div className="form-group col-lg-4">
-            <Label for="client_cert">Client Certificate</Label>
-            <FileBase64
-              id="client_cert"
-              className="form-control"
-              name="client_cert"
-              onDone={ this.certChange }
-            />
-            <FormText color={ auth.client_cert ? 'success' : 'muted' }>Client Certificate is { auth.client_cert ? '' : 'not ' } set</FormText>
-          </div>
-
-          <div className="form-group col-lg-4">
-            <Label for="client_key">Client Key</Label>
-            <FileBase64
-              id="client_key"
-              className="form-control"
-              name="client_key"
-              onDone={ this.certChange }
-            />
-            <FormText color={ auth.client_key ? 'success' : 'muted' }>Client Key is { auth.client_key ? '' : 'not ' } set</FormText>
-          </div>
-
-        </div>
+        { options }
       </div>
     );
   }
