@@ -2,39 +2,42 @@ import json
 import os
 import uuid
 
+from functools import partial
+
 
 def safeJSON(obj):
     if isinstance(obj, uuid.UUID):
-        return str(obj)
+        return obj.hex
 
 
 class Config:
     # Setting Vars
-    settings: dict
+    OrchestratorID: uuid.uuid4
 
     # Helper Vars
-    _slots = ['OrchestratorID']
+    _slots = {
+        'OrchestratorID': partial(uuid.UUID, version=4)
+    }
     _configFile: str
 
     def __init__(self, save: str):
         self._configFile = save
 
+        opts = {}
         if os.path.isfile(self._configFile):
             with open(self._configFile, 'r') as f:
-                self.settings = json.load(f)
+                opts = json.load(f)
 
-        if not hasattr(self, 'OrchestratorID'):
-            self.OrchestratorID = uuid.uuid4()
-            self.save()
-
-    def __dict__(self):
-        rtn = {}
-        for k in self._slots:
-            v = getattr(self, k, None)
-            if v:
-                rtn[k] = v
-        return rtn
+        for k, v in opts.items():
+            if k in self._slots:
+                anot = self._slots[k]
+                try:
+                    setattr(self, k, anot(v))
+                except Exception as e:
+                    setattr(self, k, self.__annotations__[k]())
+        self.save()
 
     def save(self):
+        opts = {k: getattr(self, k, None) for k in self._slots}
         with open(self._configFile, 'w') as f:
-            json.dump(self.__dict__(), f, default=safeJSON, indent=2)
+            json.dump(opts, f, default=safeJSON, indent=2)

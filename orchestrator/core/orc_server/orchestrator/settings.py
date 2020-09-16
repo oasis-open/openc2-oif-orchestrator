@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     # 'conformance',
     'backup',
     'tracking',
+    # Polymorphic Models
+    'polymorphic',
     # Default Modules
     'django.contrib.admin',
     'django.contrib.auth',
@@ -148,6 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

@@ -169,3 +169,5 @@ migrations/*
 orc_server/migration_complete
 dev_start.sh
 /orc_server/data/settings.json
+/orc_server/db_testing/
+/orc_server/db_testing.py

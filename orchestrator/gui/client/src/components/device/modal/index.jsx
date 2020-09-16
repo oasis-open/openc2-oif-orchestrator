@@ -9,7 +9,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import Transport, { defaultTransport } from './transport';
-import { generateUUID4, objectValues, validateUUID4 } from '../../utils';
+import {
+  generateUUID4, objectValues, removeEmpty, validateUUID4
+} from '../../utils';
 import * as DeviceActions from '../../../actions/device';
 
 const defaultDevice = {
@@ -137,52 +139,6 @@ class DeviceModal extends Component {
     }
   }
 
-  transportValidate() {
-    const { device } = this.state;
-    const transports = [];
-    const protocols = [];
-
-    // eslint-disable-next-line guard-for-in, no-restricted-syntax
-    for (const idx in device.transport) {
-      const trans = { ...device.transport[idx] };
-      const {
-        protocol, password_1, password_2
-      } = trans;
-      if (protocols.includes(protocol)) {
-        toast(
-          <div>
-            <p>Error Transport:</p>
-            <p>A device can only have at most one of each type of transport protocol</p>
-          </div>,
-          { type: toast.TYPE.WARNING }
-        );
-        return null;
-      }
-      protocols.push(protocol);
-
-      if (password_1 || password_2) {
-        if (password_1 !== password_2) {
-          toast(
-            <div>
-              <p>Error Transport:</p>
-              <p>Authentication passwords do not match</p>
-            </div>,
-            { type: toast.TYPE.WARNING }
-          );
-          return null;
-        }
-      }
-
-      ['ca_cert', 'client_cert', 'client_key', 'password_1', 'password_2', 'username', 'prefix'].forEach(k => {
-        if (trans[k] === '') {
-          delete trans[k];
-        }
-      });
-      transports.push(trans);
-    }
-    return transports;
-  }
-
   registerDevice() {
     const { device } = this.state;
     if (!validateUUID4(device.device_id)) {
@@ -195,26 +151,17 @@ class DeviceModal extends Component {
       );
       return;
     }
-
-    const transports = this.transportValidate();
-    if (transports === null) {
-      return;
-    }
-    device.transport = transports;
     const { createDevice } = this.props;
-    createDevice(device);
+    const data = removeEmpty(device);
+    createDevice(data);
     setTimeout(() => this.checkErrors(DeviceActions.CREATE_DEVICE_FAILURE), 1000);
   }
 
   saveDevice() {
-    const transports = this.transportValidate();
-    if (transports === null) {
-      return;
-    }
     const { updateDevice } = this.props;
     const { device } = this.state;
-    device.transport = transports;
-    updateDevice(device.device_id, device);
+    const data = removeEmpty(device);
+    updateDevice(device.device_id, data);
     setTimeout(() => this.checkErrors(DeviceActions.UPDATE_DEVICE_FAILURE), 1000);
   }
 

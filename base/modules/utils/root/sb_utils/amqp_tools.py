@@ -9,7 +9,7 @@ import os  # to determine localhost on a given machine
 
 from functools import partial
 from inspect import isfunction
-from multiprocessing import Event, Process
+from multiprocessing import Event, Manager, Process
 from typing import (
     Callable,
     Dict,
@@ -43,8 +43,16 @@ class Consumer(Process):
     """
     The Consumer class reads messages from message queue and determines what to do with them.
     """
+    # Constants
     HOST = os.environ.get("QUEUE_HOST", "localhost")
     PORT = os.environ.get("QUEUE_PORT", 5672)
+    # Class Vars
+    _exit: Event
+    _url: str
+    _debug: bool
+    _queues: List[kombu.Queue]
+    _callbacks: List[Callback]
+    _conn: kombu.Connection
 
     def __init__(self, host: str = HOST, port: int = PORT, binding: BINDINGS = None, callbacks: Callbacks = None, debug: bool = False, **kwargs):
         """
@@ -70,10 +78,11 @@ class Consumer(Process):
             :param routing_key:
         """
         super().__init__()
+        manager = Manager()
         self._exit = Event()
 
         self._url = f"amqp://{host}:{port}"
-        self._callbacks = ()
+        self._callbacks = manager.list()
         self._debug = debug
         self._queues = []
 
@@ -88,15 +97,15 @@ class Consumer(Process):
                 queue_bindings = []
                 for exchange in exchanges:
                     name, _type, key = (exchange, 'direct', queue) if isinstance(exchange, str) else exchange
-                    e = kombu.Exchange(name, type=_type)
-                    queue_bindings.append(kombu.binding(exchange=e, routing_key=key))
+                    queue_bindings.append(kombu.binding(exchange=kombu.Exchange(name, type=_type), routing_key=key))
                 self._queues.append(kombu.Queue(name=queue, bindings=queue_bindings))
 
         elif 'exchange' in kwargs and 'routing_key' in kwargs:
             exchange = kombu.Exchange(kwargs['exchange'], type="direct")
+            key = kwargs['routing_key']
             # At this point, consumers are reading messages regardless of queue name
             # so I am just setting it to be the same as the exchange.
-            self._queues = [kombu.Queue(name=kwargs['routing_key'], exchange=exchange, routing_key=kwargs['routing_key'])]
+            self._queues = [kombu.Queue(name=key, bindings=[kombu.binding(exchange=exchange, routing_key=key)])]
 
         # Start consumer as an independent process
         self.start()
@@ -110,7 +119,8 @@ class Consumer(Process):
         with kombu.Consumer(self._conn, queues=self._queues, callbacks=[self._on_message], accept=["text/plain", "application/json"]):
             if self._debug:
                 for q in self._queues:
-                    print(f"Connected to {self._url} on queue {q.name} with [{q.bindings}] and waiting to consume...")
+                    binds = ','.join(f'Bind:{{{b.exchange}->{b.routing_key}}}' for b in q.bindings)
+                    print(f"Connected to {self._url} on queue {q.name} with [{binds}] and waiting to consume...")
 
             while not self._exit.is_set():
                 try:
@@ -141,7 +151,7 @@ class Consumer(Process):
         if isfunction(fun) or isinstance(fun, partial):
             if fun in self._callbacks:
                 raise ValueError("Duplicate function found in callbacks")
-            self._callbacks = (*self._callbacks, fun)
+            self._callbacks.append(fun)
 
     def get_exchanges(self) -> List[str]:
         """

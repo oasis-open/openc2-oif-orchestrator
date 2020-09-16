@@ -9,6 +9,11 @@ from typing import (
 from .general import safe_cast
 
 
+# Dictionary Methods
+# ...
+
+
+# Dictionary Classes
 class ObjectDict(dict):
     """
     Dictionary that acts like a object

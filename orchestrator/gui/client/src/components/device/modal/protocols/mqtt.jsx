@@ -6,7 +6,11 @@ import Auth from './auth';
 import { removeEmpty } from '../../../utils';
 
 const defaultOptions = {
-  prefix: ''
+  prefix: '',
+  broadcastTopic: '',
+  deviceTopic: '',
+  profileTopic: '',
+  responseTopic: ''
 };
 
 class MQTTOptions extends Component {
@@ -66,14 +70,16 @@ class MQTTOptions extends Component {
   }
 
   render() {
-    const { prefix } = this.state;
+    const {
+      broadcastTopic, deviceTopic, profileTopic, responseTopic, prefix
+    } = this.state;
 
     return (
       <div>
         <div className="form-row border-bottom">
           <h5 className="col-12">MQTT Options</h5>
 
-          <div className="form-group col-lg-4">
+          <div className="form-group col-lg-6">
             <Label for="username">Prefix</Label>
             <Input
               id="prefix"
@@ -84,6 +90,79 @@ class MQTTOptions extends Component {
               onChange={ this.inputChange }
             />
           </div>
+
+          <div className="col-12" />
+
+          <div className="form-group col-lg-6">
+            <Label for="broadcastTopic">Broadcast Topic</Label>
+            <Input
+              id="broadcastTopic"
+              className="form-control"
+              type="text"
+              name="broadcastTopic"
+              value={ broadcastTopic || '' }
+              onChange={ this.inputChange }
+            />
+            <small className='form-text text-muted'>Default: &lsquo;&#123;prefix&#125;oc2/cmd/all&rsquo;</small>
+          </div>
+
+          <div className="col-12" />
+
+          <div className="form-group col-lg-4">
+            <Label for="responseTopic">Response Topic</Label>
+            <Input
+              id="responseTopic"
+              className="form-control"
+              type="text"
+              name="responseTopic"
+              value={ responseTopic || '' }
+              onChange={ this.inputChange }
+            />
+            <small className='form-text text-muted'>Default: &lsquo;&#123;prefix&#125;oc2/rsp&rsquo;</small>
+          </div>
+
+          <div className="form-group col-lg-4">
+            <Label for="deviceTopic">Device Topic</Label>
+            <Input
+              id="deviceTopic"
+              className="form-control"
+              type="text"
+              name="deviceTopic"
+              value={ deviceTopic || '' }
+              onChange={ this.inputChange }
+            />
+            <small className='form-text text-muted'>Default: &lsquo;&#123;prefix&#125;oc2/cmd/device/&#123;device_id&#125;&rsquo;</small>
+          </div>
+          <div className="form-group col-lg-4">
+            <Label for="profileTopic">Profile Topic</Label>
+            <Input
+              id="profileTopic"
+              className="form-control"
+              type="text"
+              name="profileTopic"
+              value={ profileTopic || '' }
+              onChange={ this.inputChange }
+            />
+            <small className='form-text text-muted'>Default: &lsquo;&#123;prefix&#125;oc2/cmd/ap/&#123;profile&#125;&rsquo;</small>
+          </div>
+
+          <small className='form-text text-muted'>
+            <p>All topics will have the following variables, with the default of an empty string</p>
+            <ul>
+              <li>
+                <strong>prefix</strong>
+                &nbsp;- User defined prefix for all topics
+              </li>
+              <li>
+                <strong>device_id</strong>
+                &nbsp;- ID of the device to recieve the message
+              </li>
+              <li>
+                <strong>profile</strong>
+                &nbsp;- profile of the actuator to recieve the message
+              </li>
+            </ul>
+          </small>
         </div>
         <Auth data={ this.state } change={ this.onChange } />
       </div>

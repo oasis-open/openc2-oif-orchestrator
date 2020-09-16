@@ -51,12 +51,12 @@ class Validator:
             return err
 
         actuators = None
-        err = self._val_actuator()
-        if err:
-            if isinstance(err, (Actuator, list)):
-                actuators = err
+        acts = self._val_actuator()
+        if acts:
+            if isinstance(acts[0], (Actuator, list)):
+                actuators = acts
             else:
-                return err
+                return acts
 
         protocol, serialization = self._val_channel(actuators)
 
@@ -83,7 +83,8 @@ class Validator:
         return None
 
     def _val_actuator(self):
-        if self._actuator is None:  # TODO: Actuator broadcast??
+        # TODO: Actuator broadcast??
+        if self._actuator is None:
             log.error(usr=self._usr, msg="User attempted to send to a null actuator")
             return dict(
                 detail="actuator invalid",
@@ -110,7 +111,7 @@ class Validator:
                     detail="actuator invalid",
                     response="Actuator Invalid: actuator must be specified with a command"
                 ), 404
-            return rtn
+            return rtn, 'device'
 
         if _type == "profile":  # Profile Actuators
             actuators = get_or_none(ActuatorProfile, name__iexact=_act_prof)
@@ -119,7 +120,7 @@ class Validator:
                     detail="profile cannot be found",
                     response="Profile Invalid: profile must be a valid registered profile with the orchestrator"
                 ), 400
-            return list(Actuator.objects.filter(profile__iexact=_act_prof.replace(" ", "_")))
+            return list(Actuator.objects.filter(profile__iexact=_act_prof.replace(" ", "_"))), 'profile'
 
         return dict(
             detail="actuator invalid",
@@ -145,7 +146,7 @@ class Validator:
         return None, None
 
 
-def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serialization):
+def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serialization, format: str = None):
     orc_ip = global_preferences.get("orchestrator__host", "127.0.0.1")
     orc_id = global_preferences.get("orchestrator__id", "")
     corr_id = com.coap_id or str(com.command_id)
@@ -185,7 +186,8 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
             # PubSub
             if trans.protocol.pub_sub:
                 dst.update(
-                    prefix=trans.prefix
+                    prefix=trans.prefix,
+                    **({'format': format} if format else {})
                 )
 
             # Get Auth
@@ -209,7 +211,8 @@ def action_send(usr, cmd: dict, actuator: str, channel: dict):
     :return: response Tuple(dict, int)
     """
     val = Validator(usr, cmd, actuator, channel)
-    actuators, protocol, serialization = val.validate()
+    acts, protocol, serialization = val.validate()
+    (actuators, fmt) = acts
 
     # Store command in db
     if "id" in cmd:
@@ -256,7 +259,7 @@ def action_send(usr, cmd: dict, actuator: str, channel: dict):
             log.info(usr=usr, msg=f"Send command {com.command_id}/{com.coap_id.hex()} to buffer")
             settings.MESSAGE_QUEUE.send(
                 msg=json.dumps(cmd),
-                headers=get_headers(proto, com, proto_acts, serialization),
+                headers=get_headers(proto, com, proto_acts, serialization, fmt),
                 routing_key=proto.name.lower().replace(" ", "_")
             )
 

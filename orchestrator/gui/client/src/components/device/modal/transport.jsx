@@ -57,7 +57,13 @@ class Transport extends Component {
   }
 
   protoChange(data) {
-    this.setState(data);
+    this.setState(
+      data,
+      () => {
+        const { change, index } = this.props;
+        change(this.state, index);
+      }
+    );
   }
 
   checkboxChange(e) {
@@ -93,7 +99,7 @@ class Transport extends Component {
     if (reset) {
       tmpState = e;
     } else {
-      tmpState[name] = name.startsWith('password') ? btoa(value) : value;
+      tmpState[name] = value;
     }
 
     this.setState(
@@ -208,7 +214,7 @@ Transport.propTypes = {
 };
 
 Transport.defaultProps = {
-  change: null,
+  change: () => {},
   index: null,
   data: {},
   orchestrator: {

@@ -1,9 +1,11 @@
-bleach==3.1.5
-cryptography==3.0
-django==3.0.9
-django-cors-headers==3.4.0
+bleach==3.2.0
+cryptography==3.1
+django==3.1.1
+django-cors-headers==3.5.0
 django-fernet-fields==0.6
-django-dynamic-preferences==1.10
+django-dynamic-preferences==1.10.1
+django-polymorphic==3.0.0
+django-rest-polymorphic==0.1.9
 django-rest-swagger==2.2.0
 djangorestframework==3.11.1
 djangorestframework-datatables==0.5.2
@@ -14,7 +16,7 @@ djangorestframework-xml==2.0.0
 drf-writable-nested==0.6.1
 elasticsearch-dsl==7.2.1
 jsonfield==3.1.0
-pyexcel-xls==0.5.8
-PyMySQL==0.10.0
+pyexcel-xls==0.5.9
+PyMySQL==0.10.1
 uwsgi==2.0.19.1
 whitenoise==5.2.0

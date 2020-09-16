@@ -35,14 +35,33 @@ export const objectValues = obj => Object.keys(obj).map(k => obj[k]);
 
 
 export const removeEmpty = (obj, empties = [null, undefined, '']) => {
-  const rtn = { ...obj };
-  Object.keys(rtn).forEach(key => {
-    const val = rtn[key];
-    if (val && typeof val === 'object') {
-      removeEmpty(val);
-    } else if (empties.includes(val)) {
-      delete rtn[key];
+  if (obj && typeof obj === 'object') {
+    if (Array.isArray(obj)) {
+      const rtnArr = [ ...obj ];
+      rtnArr.forEach((val, idx) => {
+        if (val && typeof val === 'object') {
+          removeEmpty(val, empties);
+        } else if (empties.includes(val)) {
+          delete rtnArr[idx];
+        }
+      });
+      return rtnArr;
     }
-  });
-  return rtn;
+
+    const rtnObj = { ...obj };
+    Object.keys(rtnObj).forEach(key => {
+      const val = rtnObj[key];
+      if (val && typeof val === 'object') {
+        if (Array.isArray(val)) {
+          rtnObj[key] = val.map(v => removeEmpty(v, empties));
+        } else {
+          removeEmpty(val);
+        }
+      } else if (empties.includes(val)) {
+        delete rtnObj[key];
+      }
+    });
+    return rtnObj;
+  }
+  return obj;
 };

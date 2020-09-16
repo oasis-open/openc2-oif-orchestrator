@@ -1,2 +1,2 @@
 ScreamingBunny_Utils
-jsonschema
+jsonschema==3.2.0
