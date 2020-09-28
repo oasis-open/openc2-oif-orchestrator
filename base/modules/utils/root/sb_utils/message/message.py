@@ -3,7 +3,7 @@ import uuid
 
 from datetime import datetime
 from io import BytesIO
-from typing import List, Union
+from typing import Dict, List, Union
 
 from .enums import MessageType, SerialTypes
 from ..general import toBytes, unixTimeMillis
@@ -51,7 +51,7 @@ class Message:
         raise AttributeError(f'Cannot set an unknown attribute of {key}')
 
     def __str__(self):
-        return f"OpenC2 Message: <{self.msg_type.name}; {self.content}>"
+        return f"Message: <{self.msg_type.name}: {self.content}>"
 
     @property
     def serialization(self) -> str:
@@ -64,8 +64,13 @@ class Message:
     # OpenC2 Specifics
     @property
     def mimetype(self) -> str:
+        msg_type: Dict[MessageType, str] = {
+            MessageType.Request: 'cmd',
+            MessageType.Response: 'rsp',
+            MessageType.Notification: 'notif'
+        }.get(self.msg_type, 'notif')
         # Media Type that identifies the format of the content, including major version
-        return f"application/openc2-{self.msg_type}+{self.content_type};version=1.0"
+        return f"application/openc2-{msg_type}+{self.content_type};version=1.0"
 
     @property
     def dict(self) -> dict:

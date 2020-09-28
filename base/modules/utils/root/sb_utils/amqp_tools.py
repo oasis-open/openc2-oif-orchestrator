@@ -2,14 +2,14 @@
 amqp_tools.py
 Implements wrapper for kombu module to more-easily read/write from message queue.
 """
-import kombu  # handles interaction with AMQP server
-import socket  # identify exceptions that occur with timeout
-import datetime  # print time received message
-import os  # to determine localhost on a given machine
+import kombu
+import socket
+import os
 
+from datetime import datetime
 from functools import partial
 from inspect import isfunction
-from multiprocessing import Event, Manager, Process
+from multiprocessing import Event, Process
 from typing import (
     Callable,
     Dict,
@@ -19,42 +19,43 @@ from typing import (
     Union
 )
 
+# Type Hinting
 Callback = Callable[[any, any], None]
 Callbacks = Union[
     List[Callback],
     Tuple[Callback, ...]
 ]
 
-EXCHANGE_TYPE = Literal['direct', 'fanout', 'headers', 'topic']
-BINDINGS = Dict[
+Exchange_Type = Literal['direct', 'fanout', 'headers', 'topic']
+Bindings = Dict[
     str,  # Queue Name
     List[Union[  # Exchange
-        str,  # Exchange Name, type is direct
+        str,  # Exchange Name, type is direct by default
         Tuple[
             str,  # Exchange Name
-            EXCHANGE_TYPE,  # exchange type
-            str  # routing key
+            Exchange_Type,  # Exchange Type
+            str  # Routing Key
         ]
     ]]
 ]
+
+# Constants
+AMQP_HOST = os.environ.get("QUEUE_HOST", "localhost")
+AMQP_PORT = os.environ.get("QUEUE_PORT", 5672)
 
 
 class Consumer(Process):
     """
     The Consumer class reads messages from message queue and determines what to do with them.
     """
-    # Constants
-    HOST = os.environ.get("QUEUE_HOST", "localhost")
-    PORT = os.environ.get("QUEUE_PORT", 5672)
-    # Class Vars
-    _exit: Event
-    _url: str
-    _debug: bool
-    _queues: List[kombu.Queue]
     _callbacks: List[Callback]
     _conn: kombu.Connection
+    _debug: bool
+    _exit: Event
+    _queues: List[kombu.Queue]
+    _url: str
 
-    def __init__(self, host: str = HOST, port: int = PORT, binding: BINDINGS = None, callbacks: Callbacks = None, debug: bool = False, **kwargs):
+    def __init__(self, host: str = AMQP_HOST, port: int = AMQP_PORT, binding: Bindings = None, callbacks: Callbacks = None, debug: bool = False, **kwargs):
         """
         Consume message from the given bindings
         :param host: host running RabbitMQ
@@ -78,17 +79,16 @@ class Consumer(Process):
             :param routing_key:
         """
         super().__init__()
-        manager = Manager()
         self._exit = Event()
 
         self._url = f"amqp://{host}:{port}"
-        self._callbacks = manager.list()
         self._debug = debug
         self._queues = []
 
         if isinstance(callbacks, (list, tuple)):
-            for func in callbacks:
-                self.add_callback(func)
+            self._callbacks = [f for f in callbacks if isfunction(f) or isinstance(f, partial)]
+        else:
+            self._callbacks = []
 
         # Initialize connection we are consuming from based on defaults/passed params
         self._conn = kombu.Connection(hostname=host, port=port, userid="guest", password="guest", virtual_host="/")
@@ -137,21 +137,11 @@ class Consumer(Process):
         :param message: contains meta data about the message sent (ie. delivery_info)
         """
         if self._debug:
-            print(f"Message Received @ {datetime.datetime.now()}")
+            print(f"Message Received @ {datetime.now()}")
 
         message.ack()
         for func in self._callbacks:
             func(body, message)
-
-    def add_callback(self, fun: Callback) -> None:
-        """
-        Add a function to the list of callback functions.
-        :param fun: function to add to callbacks
-        """
-        if isfunction(fun) or isinstance(fun, partial):
-            if fun in self._callbacks:
-                raise ValueError("Duplicate function found in callbacks")
-            self._callbacks.append(fun)
 
     def get_exchanges(self) -> List[str]:
         """
@@ -210,12 +200,11 @@ class Producer:
     """
     The Producer class writes messages to the message queue to be consumed.
     """
-    HOST = os.environ.get("QUEUE_HOST", "localhost")
-    PORT = os.environ.get("QUEUE_PORT", 5672)
-    EXCHANGE = "transport"
-    ROUTING_KEY = "*"
+    _conn: kombu.Connection
+    _debug: bool
+    _url: str
 
-    def __init__(self, host: str = HOST, port: int = PORT, debug: bool = False):
+    def __init__(self, host: str = AMQP_HOST, port: int = AMQP_PORT, debug: bool = False):
         """
         Sets up connection to broker to write to.
         :param host: hostname for the queue server
@@ -226,7 +215,7 @@ class Producer:
         self._debug = debug
         self._conn = kombu.Connection(hostname=host, port=port, userid="guest", password="guest", virtual_host="/")
 
-    def publish(self, message: Union[dict, str], headers: dict = None, exchange: str = EXCHANGE, routing_key: str = ROUTING_KEY, exchange_type: EXCHANGE_TYPE = 'direct') -> None:
+    def publish(self, message: Union[dict, str], headers: dict = None, exchange: str = 'transport', routing_key: str = '*', exchange_type: Exchange_Type = 'direct') -> None:
         """
         Publish a message to th AMQP Queue
         :param message: message to be published

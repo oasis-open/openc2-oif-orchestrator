@@ -20,3 +20,8 @@ pyexcel-xls==0.5.9
 PyMySQL==0.10.1
 uwsgi==2.0.19.1
 whitenoise==5.2.0
+pyexcel-xls==0.5.8
+PyMySQL==0.9.3
+uwsgi==2.0.19
+whitenoise==5.1.0
+python-etcd==0.4.3
