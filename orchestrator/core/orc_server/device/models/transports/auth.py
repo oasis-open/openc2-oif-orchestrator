@@ -1,8 +1,10 @@
 import base64
 import re
 
+from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
+from django.db.models.signals import post_save, pre_save
 from fernet_fields import EncryptedCharField, EncryptedTextField
 from rest_framework import serializers
 
@@ -10,7 +12,8 @@ from rest_framework import serializers
 from .base import Transport, TransportSerializer
 
 
-TransportAuthSerializerFields = ("username", "auth", "password_1", "password_2", "ca_cert", "client_cert", "client_key")
+TransportAuthSerializerFields = (
+    "username", "auth", "password_1", "password_2", "ca_cert", "client_cert", "client_key")
 
 
 class TransportAuth(Transport):
@@ -63,7 +66,8 @@ class TransportAuthSerializer(TransportSerializer):
 
     class Meta:
         model = TransportAuth
-        fields = (*TransportSerializer.Meta.fields, *TransportAuthSerializerFields)
+        fields = (*TransportSerializer.Meta.fields,
+                  *TransportAuthSerializerFields)
 
     def create_or_update(self, instance, validated_data):
         validated_data = self.verify_pass(validated_data)
@@ -75,8 +79,10 @@ class TransportAuthSerializer(TransportSerializer):
         pass2 = data.get('password_2')
         if pass1 or pass2:
             if pass1 != pass2:
-                raise DjangoValidationError('Transport authentication passwords do not match')
-            data['password'] = base64.b64decode(pass1).decode('utf-8') if re.match(r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$', pass1) else pass1
+                raise DjangoValidationError(
+                    'Transport authentication passwords do not match')
+            data['password'] = base64.b64decode(pass1).decode('utf-8') if re.match(
+                r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$', pass1) else pass1
             del data['password_1']
             del data['password_2']
         return data
@@ -88,3 +94,18 @@ class TransportAuthSerializer(TransportSerializer):
             client_cert=obj.client_cert != '',
             client_key=obj.client_key != '',
         )
+
+
+@receiver(post_save, sender=TransportAuth)
+def transport_post_save(sender, instance=None, **kwargs):
+    # to_str(settings.CRYPTO.encrypt(to_bytes(val)))
+    etcdKeys = {
+        f'{instance.protocol.name}/{instance.transport_id}/username': instance.username,
+        f'{instance.protocol.name}/{instance.transport_id}/password': to_str(settings.CRYPTO.encrypt(to_bytes(instance.password))),
+        f'{instance.protocol.name}/{instance.transport_id}/ca_cert': to_str(settings.CRYPTO.encrypt(to_bytes(instance.ca_cert))),
+        f'{instance.protocol.name}/{instance.transport_id}/client_cert': to_str(settings.CRYPTO.encrypt(to_bytes(instance.client_cert))),
+        f'{instance.protocol.name}/{instance.transport_id}/client_key': to_str(settings.CRYPTO.encrypt(to_bytes(instance.client_key))),
+    }
+
+    for key, val in etcdKeys.items():
+        settings.ETCD_CLIENT.write(f'/transport/{key}', val)
