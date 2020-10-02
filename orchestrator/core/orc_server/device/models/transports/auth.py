@@ -100,12 +100,16 @@ class TransportAuthSerializer(TransportSerializer):
 def transport_post_save(sender, instance=None, **kwargs):
     # to_str(settings.CRYPTO.encrypt(to_bytes(val)))
     etcdKeys = {
-        f'{instance.protocol.name}/{instance.transport_id}/username': instance.username,
-        f'{instance.protocol.name}/{instance.transport_id}/password': to_str(settings.CRYPTO.encrypt(to_bytes(instance.password))),
-        f'{instance.protocol.name}/{instance.transport_id}/ca_cert': to_str(settings.CRYPTO.encrypt(to_bytes(instance.ca_cert))),
-        f'{instance.protocol.name}/{instance.transport_id}/client_cert': to_str(settings.CRYPTO.encrypt(to_bytes(instance.client_cert))),
-        f'{instance.protocol.name}/{instance.transport_id}/client_key': to_str(settings.CRYPTO.encrypt(to_bytes(instance.client_key))),
+        'username': instance.username,
+        'host': instance.host,
+        'port': instance.port,
+        'serialization': ','.join(s.name for s in instance.serialization.all()),
+        'password': to_str(settings.CRYPTO.encrypt(to_bytes(instance.password))),
+        'ca_cert': to_str(settings.CRYPTO.encrypt(to_bytes(instance.ca_cert))),
+        'client_cert': to_str(settings.CRYPTO.encrypt(to_bytes(instance.client_cert))),
+        'client_key': to_str(settings.CRYPTO.encrypt(to_bytes(instance.client_key))),
     }
 
     for key, val in etcdKeys.items():
-        settings.ETCD_CLIENT.write(f'/transport/{key}', val)
+        settings.ETCD_CLIENT.write(
+            f'/transport/{instance.protocol.name}/{instance.transport_id}/{key}', val)
