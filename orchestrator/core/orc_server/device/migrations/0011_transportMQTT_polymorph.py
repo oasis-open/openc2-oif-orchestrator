@@ -38,7 +38,7 @@ def update_mqtt(apps, schema_editor):
         trans.serialization.set(serials)
         trans.save()
         for d in devs:
-            d.transport.add(d)
+            d.transport.add(trans)
             d.save()
 
 

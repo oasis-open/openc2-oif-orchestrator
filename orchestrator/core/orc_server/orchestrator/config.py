@@ -7,7 +7,7 @@ from functools import partial
 
 def safeJSON(obj):
     if isinstance(obj, uuid.UUID):
-        return obj.hex
+        return str(obj)
 
 
 class Config:

@@ -54,15 +54,6 @@ class Message:
         return f"Message: <{self.msg_type.name}: {self.content}>"
 
     @property
-    def serialization(self) -> str:
-        # message encoding
-        return self.content_type.name
-
-    def serialize(self) -> Union[bytes, str]:
-        return encode_msg(self.dict, self.content_type, raw=True)
-
-    # OpenC2 Specifics
-    @property
     def mimetype(self) -> str:
         msg_type: Dict[MessageType, str] = {
             MessageType.Request: 'cmd',
@@ -73,10 +64,17 @@ class Message:
         return f"application/openc2-{msg_type}+{self.content_type};version=1.0"
 
     @property
-    def dict(self) -> dict:
+    def serialization(self) -> str:
+        # message encoding
+        return self.content_type.name
+
+    def serialize(self) -> Union[bytes, str]:
+        return self.oc2_message(serialize=True)
+
+    # OpenC2 Specifics
+    @property
+    def oc2_headers(self) -> dict:
         return {
-            # Message body as specified by msg_type (the ID/Name of Content)
-            'content': self.content,
             # A unique identifier created by Producer and copied by Consumer into responses
             'request_id': str(self.request_id),
             # Creation date/time of the content
@@ -88,23 +86,42 @@ class Message:
         }
 
     @property
-    def list(self) -> list:
-        return [
-            # Message body as specified by msg_type (the ID/Name of Content)
-            self.content,
-            # A unique identifier created by Producer and copied by Consumer into responses
-            str(self.request_id),
-            # Creation date/time of the content
-            int(unixTimeMillis(self.created)),
-            # Authenticated identifier of the creator of/authority for a request
-            self.origin or None,
-            # Authenticated identifier(s) of the authorized recipient(s) of a message
-            self.recipients or []
-        ]
+    def oc2_body(self) -> dict:
+        return {
+            "openc2": {
+                # Message body as specified by msg_type (the ID/Name of Content)
+                self.msg_type.name.lower(): self.content
+            }
+        }
+
+    def oc2_message(self, serialize: bool = False) -> Union[bytes, dict, str]:
+        msg = {
+            "headers": self.oc2_headers,
+            "body": self.oc2_body
+        }
+        return encode_msg(msg, self.content_type, raw=True) if serialize else msg
+
+    @classmethod
+    def oc2_loads(cls, m: Union[bytes, str], serial: SerialFormats = SerialFormats.JSON) -> 'Message':
+        msg = decode_msg(m, serial)
+        if len({'headers', 'body'} - {*msg.keys()}) != 0:
+            raise KeyError('Message is not properly formatted with keys of `headers` and `body`')
+
+        headers = msg['headers']
+        msgType = MessageType.from_name(list(msg['body']['openc2'].keys())[0])
+        return cls(
+            recipients=headers['to'] if 'to' in headers else None,
+            origin=headers['from'] if 'from' in headers else None,
+            created=datetime.fromtimestamp(headers['created'] / 1000) if 'created' in headers else None,
+            msg_type=msgType,
+            request_id=uuid.UUID(headers['request_id']) if 'request_id' in headers else None,
+            serialization=serial,
+            content=msg['body']['openc2'][msgType.name.lower()]
+        )
 
     # Struct like options
     def pack(self) -> bytes:
-        b_msg = toBytes(self.serialize())
+        b_msg = toBytes(self.oc2_message(serialize=True))
 
         return bytes([
             self.msg_type,

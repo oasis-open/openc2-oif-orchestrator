@@ -3,6 +3,7 @@ import bleach
 from rest_polymorphic.serializers import PolymorphicSerializer
 from .base import Transport, TransportSerializer
 from .auth import TransportAuth, TransportAuthSerializer, TransportAuthSerializerFields
+from .https import TransportHTTPS, TransportHTTPSSerializer
 from .mqtt import TransportMQTT, TransportMQTTSerializer
 
 
@@ -12,6 +13,7 @@ class TransportPolymorphicSerializer(PolymorphicSerializer):
         Transport: TransportSerializer,
         TransportAuth: TransportAuthSerializer,
         # Protocol Specific
+        TransportHTTPS: TransportHTTPSSerializer,
         TransportMQTT: TransportMQTTSerializer
     }
     model_names = [m.__name__ for m in model_serializer_mapping]
@@ -80,10 +82,12 @@ __all__ = [
     'TransportPolymorphicSerializer',
     # Base
     'Transport',
-    'TransportSerializer',
     'TransportAuth',
+    'TransportSerializer',
     'TransportAuthSerializer',
     # Transport Specific
+    'TransportHTTPS',
     'TransportMQTT',
+    'TransportHTTPSSerializer',
     'TransportMQTTSerializer'
 ]

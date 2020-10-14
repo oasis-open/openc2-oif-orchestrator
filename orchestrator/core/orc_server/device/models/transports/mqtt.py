@@ -42,6 +42,10 @@ class TransportMQTT(TransportAuth):
         blank=True
     )
 
+    def etcd_data(self):
+        etcdKeys = ["prefix", "response_topic", "broadcast_topic", "device_topic", "profile_topic"]
+        return {k: getattr(self, k, None) for k in etcdKeys}
+
 
 class TransportMQTTSerializer(TransportAuthSerializer):
     """
@@ -54,6 +58,6 @@ class TransportMQTTSerializer(TransportAuthSerializer):
     profile_topic = serializers.CharField(max_length=60, required=False)
 
     class Meta:
-        model = TransportAuth
+        model = TransportMQTT
         fields = (*TransportAuthSerializer.Meta.fields,
                   "prefix", "response_topic", "broadcast_topic", "device_topic", "profile_topic")

@@ -4,12 +4,12 @@ import re
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
-from django.db.models.signals import post_save, pre_save
 from fernet_fields import EncryptedCharField, EncryptedTextField
 from rest_framework import serializers
 
-
+# Local imports
 from .base import Transport, TransportSerializer
+from utils import to_bytes, to_str
 
 
 TransportAuthSerializerFields = (
@@ -50,6 +50,15 @@ class TransportAuth(Transport):
         help_text="Client Key",
         blank=True
     )
+
+    def etcd_data(self):
+        return {
+            'username': self.username,
+            'password': to_str(settings.CRYPTO.encrypt(to_bytes(self.password))),
+            'ca_cert': to_str(settings.CRYPTO.encrypt(to_bytes(self.ca_cert))),
+            'client_cert': to_str(settings.CRYPTO.encrypt(to_bytes(self.client_cert))),
+            'client_key': to_str(settings.CRYPTO.encrypt(to_bytes(self.client_key)))
+        }
 
 
 class TransportAuthSerializer(TransportSerializer):
@@ -94,22 +103,3 @@ class TransportAuthSerializer(TransportSerializer):
             client_cert=obj.client_cert != '',
             client_key=obj.client_key != '',
         )
-
-
-@receiver(post_save, sender=TransportAuth)
-def transport_post_save(sender, instance=None, **kwargs):
-    # to_str(settings.CRYPTO.encrypt(to_bytes(val)))
-    etcdKeys = {
-        'username': instance.username,
-        'host': instance.host,
-        'port': instance.port,
-        'serialization': ','.join(s.name for s in instance.serialization.all()),
-        'password': to_str(settings.CRYPTO.encrypt(to_bytes(instance.password))),
-        'ca_cert': to_str(settings.CRYPTO.encrypt(to_bytes(instance.ca_cert))),
-        'client_cert': to_str(settings.CRYPTO.encrypt(to_bytes(instance.client_cert))),
-        'client_key': to_str(settings.CRYPTO.encrypt(to_bytes(instance.client_key))),
-    }
-
-    for key, val in etcdKeys.items():
-        settings.ETCD_CLIENT.write(
-            f'/transport/{instance.protocol.name}/{instance.transport_id}/{key}', val)

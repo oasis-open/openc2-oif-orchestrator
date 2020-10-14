@@ -25,8 +25,7 @@ class OrchestratorConfig(AppConfig):
             return
 
         from command.processors import command_response  # pylint: disable=import-outside-toplevel
-        settings.MESSAGE_QUEUE = MessageQueue(
-            **settings.QUEUE, callbacks=[command_response])
+        settings.MESSAGE_QUEUE = MessageQueue(**settings.QUEUE, callbacks=[command_response])
         settings.ETCD_CLIENT = etcd.Client(**settings.ETCD)
 
 

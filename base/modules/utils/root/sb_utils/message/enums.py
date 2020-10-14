@@ -11,7 +11,7 @@ class MessageType(int, Enum):
 
     @classmethod
     def from_name(cls, fmt: str):
-        name = fmt.upper()
+        name = fmt.capitalize()
         if name in cls.__members__:
             return cls.__getattr__(name)
         raise ValueError(f'{name} is not a valid format name')

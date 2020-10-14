@@ -1,16 +1,11 @@
-from .config import Config
-from cryptography.fernet import Fernet
-import etcd
 import re
 import pymysql
 import os
 import datetime
-from tracking import REQUEST_LEVELS  # pylint: disable=wrong-import-position
 import base64
-<< << << < Updated upstream
-== == == =
->>>>>> > Stashed changes
-
+from cryptography.fernet import Fernet
+from sb_utils import safe_cast
+from .config import Config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -311,6 +306,7 @@ LOGGING = {
 }
 
 # Tracking
+from tracking import REQUEST_LEVELS  # pylint: disable=wrong-import-position
 TRACKING = {
     'URL_PREFIXES': [
         '^/(?!admin)'  # Don't log /admin/*
@@ -330,7 +326,7 @@ TRACKING = {
 # Elasticsearch Model Mirroring
 ES_MIRROR = {
     'host': os.environ.get('ES_HOST', None),
-    'prefix': os.environ.get('ES_PREFIX', ''),
+    'prefix': os.environ.get('ES_PREFIX', '')
 }
 
 # Message Queue
@@ -349,8 +345,7 @@ QUEUE = {
 MESSAGE_QUEUE = None
 
 # Security
-CRYPTO = Fernet(os.environ['TRANSPORT_SECRET']
-                ) if 'TRANSPORT_SECRET' in os.environ else None
+CRYPTO = Fernet(os.environ['TRANSPORT_SECRET']) if 'TRANSPORT_SECRET' in os.environ else None
 
 # First key will be used to encrypt all new data
 # Decryption of existing values will be attempted with all given keys in order
@@ -359,9 +354,11 @@ FERNET_KEYS = [k.decode('utf-8') if isinstance(k, bytes) else str(k) for k in [
     '4k1wW0AwvNpOYLUazdXtpwLBc6MOaflTKV4UkkzVhS8=',
     base64.urlsafe_b64encode(SECRET_KEY[:32].encode('utf-8'))
 ] if k]
+
+# ETCD
 ETCD = {
-    'host': os.environ.get('ETCD_PORT', 'localhost')
-    'port': os.environ.get('ETCD_HOST', '4001')
+    'host': os.environ.get('ETCD_HOST', 'localhost'),
+    'port': safe_cast(os.environ.get('ETCD_PORT', 4001), int, 4001)
 }
 
 ETCD_CLIENT = None

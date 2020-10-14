@@ -1,8 +1,12 @@
 import bleach
+import etcd
 
+from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.db.models.query import QuerySet
 from polymorphic.models import PolymorphicModel
 from rest_framework import serializers
@@ -41,7 +45,7 @@ class Transport(PolymorphicModel):
             MaxValueValidator(65535)
         ]
     )
-    protocol = models.ForeignKey(
+    protocol = models.ForeignKey( 
         Protocol,
         help_text="Protocol supported by the device",
         on_delete=models.CASCADE
@@ -50,6 +54,47 @@ class Transport(PolymorphicModel):
         Serialization,
         help_text="Serialization(s) supported by the device"
     )
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        post_save.connect(etcd_save, sender=cls)
+        if 'etcd_data' not in vars(cls):
+            raise NotImplementedError(f'{cls.__name__} does not implement `etcd_data`')
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        instance._state.adding = False
+        instance._state.db = db
+        instance._old_values = dict(zip(field_names, values))
+        return instance
+
+    @classmethod
+    def model_fields(cls):
+        return [f.name for f in cls._meta.get_fields()]
+
+    def data_changed(self, fields):
+        """
+        example:
+        if self.data_changed(['street', 'street_no', 'zip_code', 'city', 'country']):
+            print("one of the fields changed")
+
+        returns true if the model saved the first time and _old_values doesnt exist
+
+        :param fields:
+        :return:
+        """
+        if hasattr(self, '_old_values'):
+            if not self.pk or not self._old_values:
+                return True
+
+            for field in fields:
+                if getattr(self, field, None) != self._old_values.get(field, None):
+                    return True
+            return False
+
+        return True
 
     def save(self, *args, **kwargs):
         """
@@ -72,12 +117,12 @@ class Transport(PolymorphicModel):
             data[f] = getattr(self, f, None)
         return data
 
-    def set_default_values(self):
-        pass
-
-    @classmethod
-    def model_fields(cls):
-        return [f.name for f in cls._meta.fields]
+    def etcd_data(self):
+        return {
+            'host': self.host,
+            'port': self.port,
+            'serialization': ','.join(s.name for s in self.serialization.all())
+        }
 
     def __str__(self):
         return "{}:{} - {}".format(self.host, self.port, self.protocol.name)
@@ -122,3 +167,29 @@ class TransportSerializer(serializers.ModelSerializer):
     def get_pub_sub(self, obj):
         ps = obj.protocol.pub_sub
         return ps if isinstance(ps, bool) else False
+
+
+@receiver(post_save, sender=Transport)
+def etcd_save(sender, instance=None, **kwargs):
+    empty_values = ['', None]
+    key_base = f'/transport/{instance.protocol.name}/{instance.transport_id}'
+
+    # Get local etcd data
+    etcd_data = {}
+    for base in list(reversed(instance.__class__.__mro__))[3:]:
+        etcd_data.update(getattr(base, 'etcd_data')(instance))
+    # Clear empty values
+    etcd_data = {k: v for k, v in etcd_data.items() if v not in empty_values}
+
+    # Get data from etcd
+    try:
+        for eKey in settings.ETCD_CLIENT.read(key_base, recursive=True).children:
+            key = eKey.key.replace(f'{key_base}/', '')
+            if key in etcd_data and instance.data_changed([key]):
+                eKey.value = etcd_data[key]
+                settings.ETCD_CLIENT.update(eKey)
+            elif key not in etcd_data:
+                settings.ETCD_CLIENT.delete(f'{key_base}/{key}')
+    except etcd.EtcdKeyNotFound:
+        for key, val in etcd_data.items():
+            settings.ETCD_CLIENT.write(f'{key_base}/{key}', val)
