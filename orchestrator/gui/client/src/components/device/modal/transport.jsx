@@ -145,56 +145,60 @@ class Transport extends Component {
     }
 
     return (
-      <div className="position-relative border mb-2 p-2">
-        <Button color="danger" size="sm" className="position-absolute" style={{ right: '0.5em', zIndex: 100}} onClick={ this.transportRemove } >
+      <div className="position-relative border border-primary mb-2 p-2">
+        <Button color="danger" size="sm" className="position-absolute" style={{ right: '1em', zIndex: 100}} onClick={ this.transportRemove } >
           <FontAwesomeIcon icon={ faTimes } />
         </Button>
 
-        <div className="form-row border-bottom">
-          <h5 className="col-12">Connection</h5>
-          <div className="form-group col-lg-4">
-            <Label for="protocol">Protocol</Label>
-            <select
-              className="form-control"
-              name="protocol"
-              value={ protocol }
-              onChange={ this.transportChange }
-            >
-              { protocols }
-            </select>
-          </div>
+        <fieldset className="border border-info p-2">
+          <legend>Connection</legend>
+          <div className="form-row m-0 p-0">
+            <div className="form-group col-lg-4">
+              <Label for="protocol">Protocol</Label>
+              <select
+                className="form-control"
+                name="protocol"
+                value={ protocol }
+                onChange={ this.transportChange }
+              >
+                { protocols }
+              </select>
+            </div>
 
-          <div className="form-group col-lg-4">
-            <Label for="host">Host</Label>
-            <Input
-              id="host"
-              className="form-control"
-              type="text"
-              name="host"
-              value={ host }
-              onChange={ this.transportChange }
-            />
-          </div>
+            <div className="form-group col-lg-4">
+              <Label for="host">Host</Label>
+              <Input
+                id="host"
+                className="form-control"
+                type="text"
+                name="host"
+                value={ host }
+                onChange={ this.transportChange }
+              />
+            </div>
 
-          <div className="form-group col-lg-4">
-            <Label for="port">Port</Label>
-            <Input
-              id="port"
-              className="form-control"
-              type="text"
-              name="port"
-              value={ port }
-              onChange={ this.transportChange }
-            />
+            <div className="form-group col-lg-4">
+              <Label for="port">Port</Label>
+              <Input
+                id="port"
+                className="form-control"
+                type="text"
+                name="port"
+                value={ port }
+                onChange={ this.transportChange }
+              />
+            </div>
           </div>
-        </div>
+        </fieldset>
 
-        <div className="form-row border-bottom">
-          <h5 className="col-12">Serializations</h5>
-          <div className="form-group col-12">
-            { serializations }
+        <fieldset className="border border-info p-2">
+          <legend>Serialization</legend>
+          <div className="form-row m-0 p-0">
+            <div className="form-group col-12">
+              { serializations }
+            </div>
           </div>
-        </div>
+        </fieldset>
 
         { options }
       </div>

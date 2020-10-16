@@ -5,12 +5,19 @@ import { toast } from 'react-toastify';
 import {
   Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader
 } from 'reactstrap';
-import JSONInput from 'react-json-editor';
-import locale from 'react-json-editor/dist/locale/en';
+import JSONInput from 'react-json-editor-ajrm/dist';
+import locale from 'react-json-editor-ajrm/dist/locale/en';
 
-import { objectValues, generateUUID4, validateUUID4 } from '../utils';
+import { generateUUID4, objectValues, safeGet, validateUUID4 } from '../utils';
 import * as ActuatorActions from '../../actions/actuator';
 import * as DeviceActions from '../../actions/device';
+
+const defaultActuator = {
+  name: 'Actuator',
+  actuator_id: 'UUID',
+  device: 'Parent UUID',
+  schema: {}
+};
 
 class ActuatorModal extends Component {
   constructor(props, context) {
@@ -29,17 +36,10 @@ class ActuatorModal extends Component {
     this.schemaUpload = null;
     this.defaultParent = {};
 
-    this.defaultActuator = {
-      name: 'Actuator',
-      actuator_id: 'UUID',
-      device: this.defaultParent.name || 'Parent UUID',
-      schema: {}
-    };
-
     this.state = {
       modal: false,
       actuator: {
-        ...this.defaultActuator
+        ...defaultActuator
       }
     };
   }
@@ -65,7 +65,12 @@ class ActuatorModal extends Component {
         getDevice(data.device);
       }
     }
-    this.defaultActuator.device = this.defaultParent.name || 'Parent UUID';
+    this.setState(prevState => ({
+      actuator: {
+        ...prevState.actuator,
+        device: safeGet(this.defaultParent, 'name', 'Parent UUID')
+      }
+    }));
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -79,7 +84,7 @@ class ActuatorModal extends Component {
       this.defaultParent = tmpParent.length === 1 ? tmpParent[0] : devices[0] || {};
 
       // eslint-disable-next-line no-param-reassign
-      nextState.actuator.device = this.defaultActuator.device;
+      nextState.actuator.device = defaultActuator.device;
     }
     return propsUpdate || stateUpdate;
   }
@@ -98,7 +103,7 @@ class ActuatorModal extends Component {
     this.setState(prevState => ({
       modal: !prevState.modal,
       actuator: {
-        ...this.defaultActuator,
+        ...defaultActuator,
         ...(this.register ? {} : data)
       }
     }));
@@ -247,7 +252,7 @@ class ActuatorModal extends Component {
                     id="name"
                     className="form-control"
                     type="text"
-                    value={ actuator.name }
+                    value={ actuator.name || '' }
                     onChange={ this.updateActuator }
                   />
                 </div>
@@ -294,7 +299,7 @@ class ActuatorModal extends Component {
                       if (val.jsObject) {
                         this.setState(prevState => ({
                           actuator: {
-                            ...prevState.schema,
+                            ...prevState.actuator,
                             schema: val.jsObject
                           }
                         }));

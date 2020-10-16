@@ -17,8 +17,8 @@
 }
 
 /* Vars */
-@X-OFFSET: 40px;
-@Y-OFFSET: 28px;
+$X-OFFSET: 40px;
+$Y-OFFSET: 28px;
 
 .corner-ribbon, .corner-ribbon * {
   margin: 0;
@@ -33,8 +33,8 @@
   position: absolute;
   font-family: 'Noto Sans', sans-serif;
   font-size: 1em;
-  top: @Y-OFFSET;
-  left: -@X-OFFSET;
+  top: $Y-OFFSET;
+  left: -$X-OFFSET;
   text-align: center;
   line-height: 35px;
   letter-spacing: 1px;
@@ -51,22 +51,22 @@
   }
   &.opacity {
     opacity: 0.75;
-    each(range(0.1, 0.9, 0.1), {
-      &-@{key} {
-        opacity: @value;
+    @for $val from 1 through 9 {
+      &-#{$val} {
+        opacity: $val/10;
       }
-    });
+    }
   }
   /* Different positions */
   &.top {
-    top: @Y-OFFSET;
+    top: $Y-OFFSET;
     &-left{
-      left: -@X-OFFSET;
+      left: -$X-OFFSET;
       transform: rotate(-45deg);
       -webkit-transform: rotate(-45deg);
     }
     &-right{
-      right: -@X-OFFSET;
+      right: -$X-OFFSET;
       left: auto;
       transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
@@ -74,14 +74,14 @@
   }
   &.bottom {
     top: auto;
-    bottom: @Y-OFFSET;
+    bottom: $Y-OFFSET;
     &-left {
-      left: -@X-OFFSET;
+      left: -$X-OFFSET;
       transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
     }
     &-right {
-      right: -@X-OFFSET;
+      right: -$X-OFFSET;
       left: auto;
       transform: rotate(-45deg);
       -webkit-transform: rotate(-45deg);

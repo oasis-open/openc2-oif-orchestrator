@@ -39,7 +39,6 @@ export default {
     new webpack.EnvironmentPlugin({
       NODE_ENV
     }),
-    new webpack.NamedModulesPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(DEPEND_DIR, 'index.html')
@@ -78,11 +77,18 @@ export default {
         }
       },
       {
-        test: /\.(c|le)ss$/,
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          Loaders.css
+        ]
+      },
+      {
+        test: /\.s[ac]ss$/,
         use: [
           'style-loader',
           Loaders.css,
-          Loaders.less
+          'sass-loader'
         ]
       },
       {  // WOFF Font

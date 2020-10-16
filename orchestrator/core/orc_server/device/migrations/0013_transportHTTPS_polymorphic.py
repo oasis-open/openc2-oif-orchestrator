@@ -45,7 +45,7 @@ def update_https(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('device', '0011_transportMQTT_polymorph'),
+        ('device', '0012_transportHTTP_polymorphic'),
     ]
 
     operations = [
@@ -54,6 +54,7 @@ class Migration(migrations.Migration):
             name='TransportHTTPS',
             fields=[
                 ('transportauth_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='device.transportauth')),
+                ('path', models.CharField(blank=True, default='', help_text='URL endpoint path', max_length=60)),
             ],
             options={
                 'verbose_name': 'HTTPS Transport',

@@ -1,3 +1,3 @@
-kombu
-paho-mqtt
-cbor2
+ScreamingBunny_Utils
+paho-mqtt==1.5.1
+python-etcd==0.4.5

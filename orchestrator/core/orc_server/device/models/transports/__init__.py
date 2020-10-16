@@ -2,7 +2,8 @@ import bleach
 
 from rest_polymorphic.serializers import PolymorphicSerializer
 from .base import Transport, TransportSerializer
-from .auth import TransportAuth, TransportAuthSerializer, TransportAuthSerializerFields
+from .auth import TransportAuth, TransportAuthSerializer, TransportAuthFields
+from .http import TransportHTTP, TransportHTTPSerializer
 from .https import TransportHTTPS, TransportHTTPSSerializer
 from .mqtt import TransportMQTT, TransportMQTTSerializer
 
@@ -13,6 +14,7 @@ class TransportPolymorphicSerializer(PolymorphicSerializer):
         Transport: TransportSerializer,
         TransportAuth: TransportAuthSerializer,
         # Protocol Specific
+        TransportHTTP: TransportHTTPSerializer,
         TransportHTTPS: TransportHTTPSSerializer,
         TransportMQTT: TransportMQTTSerializer
     }
@@ -57,7 +59,7 @@ class TransportPolymorphicSerializer(PolymorphicSerializer):
 
         if resource in self.model_names:
             resource_type = resource
-        elif any(k in TransportAuthSerializerFields for k in data.keys()):
+        elif any(k in TransportAuthFields for k in data.keys()):
             resource_type = 'TransportAuth'
 
         if data.get(self.resource_type_field_name, '') != resource_type:
@@ -86,8 +88,10 @@ __all__ = [
     'TransportSerializer',
     'TransportAuthSerializer',
     # Transport Specific
+    'TransportHTTP',
     'TransportHTTPS',
     'TransportMQTT',
+    'TransportHTTPSerializer',
     'TransportHTTPSSerializer',
     'TransportMQTTSerializer'
 ]

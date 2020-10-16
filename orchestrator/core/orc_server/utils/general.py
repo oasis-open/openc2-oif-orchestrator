@@ -6,7 +6,7 @@ import string
 import sys
 import uuid
 
-from typing import Any
+from typing import Any, Tuple
 
 valid_hex = set(string.hexdigits)
 valid_hex.add(" ")
@@ -65,3 +65,8 @@ def isHex(val: str) -> bool:
     """
     val = ''.join(val.split("0x"))
     return len(set(val) - valid_hex) == 0
+
+
+def removeDuplicates(*args: Tuple[list]):
+    combo = [i for a in args for i in a]
+    return tuple(set(combo))

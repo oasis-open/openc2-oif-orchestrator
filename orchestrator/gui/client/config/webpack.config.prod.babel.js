@@ -114,11 +114,19 @@ export default merge(baseConfig, {
   module: {
     rules: [
       {
-        test: /\.(c|le)ss$/,
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          Loaders.css
+        ]
+      },
+
+      {
+        test: /\.s[ac]ss$/,
         use: [
           MiniCssExtractPlugin.loader,
           Loaders.css,
-          Loaders.less,
+          'sass-loader'
         ]
       }
     ]

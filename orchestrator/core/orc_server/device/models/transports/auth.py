@@ -12,8 +12,7 @@ from .base import Transport, TransportSerializer
 from utils import to_bytes, to_str
 
 
-TransportAuthSerializerFields = (
-    "username", "auth", "password_1", "password_2", "ca_cert", "client_cert", "client_key")
+TransportAuthFields = ("username", "auth", "password_1", "password_2", "ca_cert", "client_cert", "client_key")
 
 
 class TransportAuth(Transport):
@@ -76,7 +75,7 @@ class TransportAuthSerializer(TransportSerializer):
     class Meta:
         model = TransportAuth
         fields = (*TransportSerializer.Meta.fields,
-                  *TransportAuthSerializerFields)
+                  *TransportAuthFields)
 
     def create_or_update(self, instance, validated_data):
         validated_data = self.verify_pass(validated_data)

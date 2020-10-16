@@ -1,6 +1,5 @@
 from django.contrib import admin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
-from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
 from .models import Device, DeviceGroup
 from .models.transports import (
@@ -8,6 +7,8 @@ from .models.transports import (
     Transport,
     TransportAuth,
     # Transport Specific
+    TransportHTTP,
+    TransportHTTPS,
     TransportMQTT
 )
 
@@ -29,6 +30,16 @@ class TransportAuthAdmin(TransportChildAdmin):
     base_model = TransportAuth
 
 
+@admin.register(TransportHTTP)
+class TransportHTTPAdmin(TransportChildAdmin):
+    base_model = TransportHTTP
+
+
+@admin.register(TransportHTTPS)
+class TransportHTTPSAdmin(TransportChildAdmin):
+    base_model = TransportHTTPS
+
+
 @admin.register(TransportMQTT)
 class TransportMQTTAdmin(TransportChildAdmin):
     base_model = TransportMQTT
@@ -41,7 +52,7 @@ class TransportParentAdmin(TransportSharedOptions, PolymorphicParentModelAdmin):
     """
     # Polymorphic Options
     base_model = Transport  # Optional, explicitly set here.
-    child_models = (Transport, TransportAuth, TransportMQTT)
+    child_models = (Transport, TransportAuth, TransportHTTP, TransportHTTPS, TransportMQTT)
     list_filter = (PolymorphicChildModelFilter, )
 
 

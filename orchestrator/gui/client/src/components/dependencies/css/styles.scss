@@ -1,6 +1,3 @@
-/* Less Imports */
-@import 'ribbon.less';
-
 /* Font Imports  */
 @font-face {
     font-family: 'Roboto';
@@ -21,8 +18,8 @@
     src: local('Roboto Bold'), local('Roboto-Bold'), url('/assets/fonts/Roboto-Bold.ttf') format('truetype');
 }
 
-@max-width: 1400px;
-@max-scroll: 20em;
+$max-width: 1400px;
+$max-scroll: 20em;
 
 /* Custom CSS Styles */
 body {
@@ -37,7 +34,7 @@ body {
 }
 nav > .container-fluid,
 #contents.container-fluid > .row {
-	max-width: @max-width;
+	max-width: $max-width;
 }
 .code, textarea {
 	font-family: 'Roboto Mono', Consolas, monaco, monospace;
@@ -60,14 +57,14 @@ fieldset {
 
 div {
     &.scroll {
-        max-height: @max-scroll;
+        max-height: $max-scroll;
         overflow: auto;
 		&-lg {
-			max-height: @max-scroll*2;
+			max-height: $max-scroll*2;
 			overflow: auto;
 		}
 		&-xl {
-			max-height: @max-scroll*3;
+			max-height: $max-scroll*3;
 			overflow: auto;
 		}
     }

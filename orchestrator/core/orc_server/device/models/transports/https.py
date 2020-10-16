@@ -1,10 +1,15 @@
 # from django.db import models
 # from rest_framework import serializers
 
-from .auth import TransportAuth, TransportAuthSerializer
+from typing import Tuple
+
+# Local imports
+from .auth import  TransportAuth, TransportAuthSerializer
+from .http import BaseHTTP, TransportHTTPSerializer
+from utils import removeDuplicates
 
 
-class TransportHTTPS(TransportAuth):
+class TransportHTTPS(BaseHTTP, TransportAuth):
     """
     HTTPS Transport instance object base
     """
@@ -12,14 +17,17 @@ class TransportHTTPS(TransportAuth):
         verbose_name = 'HTTPS Transport'
 
     def etcd_data(self):
-        return {}
+        return BaseHTTP.etcd_data(self)
 
 
-class TransportHTTPSSerializer(TransportAuthSerializer):
+class TransportHTTPSSerializer(TransportHTTPSerializer, TransportAuthSerializer):
     """
     HTTPS Transport API Serializer
     """
 
     class Meta:
         model = TransportHTTPS
-        fields = (*TransportAuthSerializer.Meta.fields, )
+        fields = removeDuplicates(
+            TransportHTTPSerializer.Meta.fields,
+            TransportAuthSerializer.Meta.fields
+        )

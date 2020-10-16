@@ -5,7 +5,11 @@ import uuid
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from dynamic_preferences.registries import global_preferences_registry
+from typing import (
+    List
+)
 
 # Local imports
 from actuator.models import Actuator, ActuatorProfile
@@ -24,7 +28,7 @@ class Validator:
     _actuator: str
     _channel: dict
 
-    def __init__(self, usr, cmd: dict, actuator: str, channel: dict):
+    def __init__(self, usr: User, cmd: dict, actuator: str, channel: dict):
         """
         Process a command prior to sending it to the specified actuator(s)/profile
         :param usr: user sending command
@@ -59,7 +63,6 @@ class Validator:
                 return acts
 
         protocol, serialization = self._val_channel(actuators)
-
         return actuators, protocol, serialization
 
     def _val_user(self):
@@ -83,28 +86,28 @@ class Validator:
         return None
 
     def _val_actuator(self):
-        # TODO: Actuator broadcast??
         if self._actuator is None:
+            # TODO: Actuator broadcast??
             log.error(usr=self._usr, msg="User attempted to send to a null actuator")
             return dict(
                 detail="actuator invalid",
                 response="Actuator Invalid: actuator cannot be none"
             ), 400
 
-        act_type = self._actuator.split("/", 1)
-        if len(act_type) != 2:
+        act_arr = self._actuator.split("/", 1)
+        if len(act_arr) != 2:
             log.error(usr=self._usr, msg=f"User attempted to send to an invalid actuator - {self._actuator}")
             return dict(
                 detail="actuator invalid",
                 response="Actuator Invalid: application error"
             ), 400
 
-        _type, _act_prof = act_type
-        _type = bleach.clean(str(_type))
-        _act_prof = bleach.clean(str(_act_prof).replace("_", " "))
+        act_type, act = act_arr
+        act_type = bleach.clean(str(act_type))
+        act = bleach.clean(str(act).replace("_", " "))
 
-        if _type == "actuator":  # Single Actuator
-            actuators = get_or_none(Actuator, actuator_id=_act_prof)
+        if act_type == "actuator":  # Single Actuator
+            actuators = get_or_none(Actuator, actuator_id=act)
             rtn = [actuators, ]
             if actuators is None:
                 rtn = dict(
@@ -113,14 +116,14 @@ class Validator:
                 ), 404
             return rtn, 'device'
 
-        if _type == "profile":  # Profile Actuators
-            actuators = get_or_none(ActuatorProfile, name__iexact=_act_prof)
+        if act_type == "profile":  # Profile Actuators
+            actuators = get_or_none(ActuatorProfile, name__iexact=act)
             if actuators is None:
                 return dict(
                     detail="profile cannot be found",
                     response="Profile Invalid: profile must be a valid registered profile with the orchestrator"
                 ), 400
-            return list(Actuator.objects.filter(profile__iexact=_act_prof.replace(" ", "_"))), 'profile'
+            return list(Actuator.objects.filter(profile__iexact=act.replace(" ", "_"))), 'profile'
 
         return dict(
             detail="actuator invalid",
@@ -128,13 +131,12 @@ class Validator:
         ), 400
 
     def _val_channel(self, act: Actuator):
-        if len(act) == 1:
+        if isinstance(act, list) and len(act) == 1:
             act = act[0]
             if isinstance(act, Actuator):
-                dev = get_or_none(Device, device_id=act.device.device_id)
-
                 proto = self._channel.get("protocol", None)
                 if proto:
+                    dev = get_or_none(Device, device_id=act.device.device_id)
                     proto = get_or_none(dev.transport, protocol__name=bleach.clean(str(proto)))
                     proto = proto.protocol if proto else None
 
@@ -146,19 +148,17 @@ class Validator:
         return None, None
 
 
-def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serialization, format: str = None):
+def get_headers(proto: Protocol, com: SentHistory, proto_acts: List[Actuator], serial: Serialization, fmt: str):
     orc_ip = global_preferences.get("orchestrator__host", "127.0.0.1")
-    orc_id = global_preferences.get("orchestrator__id", "")
-    corr_id = com.coap_id or str(com.command_id)
 
     headers = dict(
         source=dict(
-            orchestratorID=orc_id,
+            orchestratorID=global_preferences.get("orchestrator__id", ""),
             transport=dict(
                 type=proto.name,
                 socket=f"{orc_ip}:{proto.port}"
             ),
-            correlationID=corr_id,
+            correlationID=to_str(com.coap_id or com.command_id),
             date=f"{com.received_on:%a, %d %b %Y %X %Z}"
         ),
         destination=[]
@@ -168,7 +168,6 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
         com.actuators.add(act)
         trans = act.device.transport.filter(protocol__name=proto.name).first()
         encoding = (serial if serial else trans.serialization.first()).name.lower()
-
         dev = [d for d in headers["destination"] if d["deviceID"] == str(act.device.device_id)]
         profile = str(act.profile).lower()
 
@@ -179,6 +178,7 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
         else:
             dst = dict(
                 deviceID=str(act.device.device_id),
+                transport=trans.transport_id,
                 socket=f"{trans.host}:{trans.port}",
                 profile=[profile],
                 encoding=encoding
@@ -187,7 +187,7 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
             if trans.protocol.pub_sub:
                 dst.update(
                     prefix=trans.prefix,
-                    **({'format': format} if format else {})
+                    **({'format': fmt} if fmt else {})
                 )
 
             # Get Auth
@@ -201,7 +201,7 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
     return headers
 
 
-def action_send(usr, cmd: dict, actuator: str, channel: dict):
+def action_send(usr: User, cmd: dict, actuator: str, channel: dict):
     """
     Process a command prior to sending it to the specified actuator(s)/profile
     :param usr: user sending command

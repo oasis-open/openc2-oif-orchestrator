@@ -180,6 +180,7 @@ def etcd_save(sender, instance=None, **kwargs):
         etcd_data.update(getattr(base, 'etcd_data')(instance))
     # Clear empty values
     etcd_data = {k: v for k, v in etcd_data.items() if v not in empty_values}
+    print(f'{instance.protocol.name} - {etcd_data}')
 
     # Get data from etcd
     try:

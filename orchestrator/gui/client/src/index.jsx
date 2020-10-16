@@ -9,7 +9,8 @@ import registerServiceWorker from './registerServiceWorker';
 // Styles
 // import 'bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
-import './components/dependencies/css/styles.less';
+import './components/dependencies/css/ribbon.scss';
+import './components/dependencies/css/styles.scss';
 
 // Orchestrator Application
 import App from './app';

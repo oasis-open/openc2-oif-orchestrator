@@ -89,74 +89,75 @@ class Auth extends Component {
     } = this.state;
 
     return (
-      <div className="form-row">
-        <h5 className="col-12">Authentication</h5>
-
-        <div className="form-group col-lg-4">
-          <Label for="username">Username</Label>
-          <Input
-            id="username"
-            className="form-control"
-            type="text"
-            name="username"
-            value={ username || '' }
-            onChange={ this.inputChange }
-          />
+      <fieldset className="border border-info p-2">
+        <legend>Authentication</legend>
+        <div className="form-row">
+          <div className="form-group col-lg-4">
+            <Label for="username">Username</Label>
+            <Input
+              id="username"
+              className="form-control"
+              type="text"
+              name="username"
+              value={ username || '' }
+              onChange={ this.inputChange }
+            />
+          </div>
+          <div className="form-group col-lg-4">
+            <Label for="password_1">Password</Label>
+            <Input
+              id="password_1"
+              className="form-control"
+              type="password"
+              name="password_1"
+              value={ atob(password_1 || '') }
+              onChange={ this.inputChange }
+            />
+            <FormText color={ auth.password ? 'success' : 'muted' }>{ `Password is ${auth.password ? '' : 'not '} set` }</FormText>
+          </div>
+          <div className="form-group col-lg-4">
+            <Label for="password_2">Password Confirmation</Label>
+            <Input
+              id="password_2"
+              className="form-control"
+              type="password"
+              name="password_2"
+              value={ atob(password_2 || '') }
+              onChange={ this.inputChange }
+            />
+          </div>
+          <div className="form-group col-lg-4">
+            <Label for="ca_cert">CA Certificate</Label>
+            <FileBase64
+              id="ca_cert"
+              className="form-control"
+              name="ca_cert"
+              onDone={ this.certChange }
+            />
+            <FormText color={ auth.ca_cert ? 'success' : 'muted' }>{ `CA Certificate is ${auth.ca_cert ? '' : 'not '} set` }</FormText>
+          </div>
+          <div className="form-group col-lg-4">
+            <Label for="client_cert">Client Certificate</Label>
+            <FileBase64
+              id="client_cert"
+              className="form-control"
+              name="client_cert"
+              onDone={ this.certChange }
+            />
+            <FormText color={ auth.client_cert ? 'success' : 'muted' }>{ `Client Certificate is ${auth.client_cert ? '' : 'not '} set` }</FormText>
+          </div>
+          <div className="form-group col-lg-4">
+            <Label for="client_key">Client Key</Label>
+            <FileBase64
+              id="client_key"
+              className="form-control"
+              name="client_key"
+              onDone={ this.certChange }
+            />
+            <FormText color={ auth.client_key ? 'success' : 'muted' }>{ `Client Key is ${auth.client_key ? '' : 'not '} set` }</FormText>
+          </div>
         </div>
-        <div className="form-group col-lg-4">
-          <Label for="password_1">Password</Label>
-          <Input
-            id="password_1"
-            className="form-control"
-            type="password"
-            name="password_1"
-            value={ atob(password_1 || '') }
-            onChange={ this.inputChange }
-          />
-          <FormText color={ auth.password ? 'success' : 'muted' }>{ `Password is ${auth.password ? '' : 'not '} set` }</FormText>
-        </div>
-        <div className="form-group col-lg-4">
-          <Label for="password_2">Password Confirmation</Label>
-          <Input
-            id="password_2"
-            className="form-control"
-            type="password"
-            name="password_2"
-            value={ atob(password_2 || '') }
-            onChange={ this.inputChange }
-          />
-        </div>
-        <div className="form-group col-lg-4">
-          <Label for="ca_cert">CA Certificate</Label>
-          <FileBase64
-            id="ca_cert"
-            className="form-control"
-            name="ca_cert"
-            onDone={ this.certChange }
-          />
-          <FormText color={ auth.ca_cert ? 'success' : 'muted' }>{ `CA Certificate is ${auth.ca_cert ? '' : 'not '} set` }</FormText>
-        </div>
-        <div className="form-group col-lg-4">
-          <Label for="client_cert">Client Certificate</Label>
-          <FileBase64
-            id="client_cert"
-            className="form-control"
-            name="client_cert"
-            onDone={ this.certChange }
-          />
-          <FormText color={ auth.client_cert ? 'success' : 'muted' }>{ `Client Certificate is ${auth.client_cert ? '' : 'not '} set` }</FormText>
-        </div>
-        <div className="form-group col-lg-4">
-          <Label for="client_key">Client Key</Label>
-          <FileBase64
-            id="client_key"
-            className="form-control"
-            name="client_key"
-            onDone={ this.certChange }
-          />
-          <FormText color={ auth.client_key ? 'success' : 'muted' }>{ `Client Key is ${auth.client_key ? '' : 'not '} set` }</FormText>
-        </div>
-      </div>
+      </fieldset>
     );
   }
 }
