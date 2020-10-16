@@ -65,3 +65,20 @@ export const removeEmpty = (obj, empties = [null, undefined, '']) => {
   }
   return obj;
 };
+
+/**
+  * Check if the given value is a function
+  * @param {any} obj - value to validate is a function
+  * @return {boolean} - bool if the given value is a function
+  */
+ export function isFunction(obj) {
+  return obj && {}.toString.call(obj) === '[object Function]';
+}
+
+export function pick(obj, keys) {
+  const ret = Object.create(null);
+  for (const k of keys) {
+    ret[k] = obj[k];
+  }
+  return ret;
+}

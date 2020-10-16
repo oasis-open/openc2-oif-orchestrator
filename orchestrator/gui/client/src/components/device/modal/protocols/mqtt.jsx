@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, Label } from 'reactstrap';
 
 import Auth from './auth';
-import { removeEmpty } from '../../../utils';
+import BaseOptions from './base';
+import { pick, removeEmpty } from '../../../utils';
 
-const defaultOptions = {
+const defaultState = {
   prefix: '',
   broadcastTopic: '',
   deviceTopic: '',
@@ -13,63 +14,30 @@ const defaultOptions = {
   responseTopic: ''
 };
 
-class MQTTOptions extends Component {
+class MQTTOptions extends BaseOptions {
   constructor(props, context) {
     super(props, context);
-    this.onChange = this.onChange.bind(this);
-    this.inputChange = this.inputChange.bind(this);
-
     const { data } = this.props;
+    this.initial = pick(data, Object.keys(defaultState));
 
     this.state = {
-      ...defaultOptions,
-      ...data
+      ...defaultState,
+      ...this.initial
     };
   }
 
-  componentDidMount() {
-    this.mounted = true;
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const propsUpdate = this.props !== nextProps;
-    const stateUpdate = this.state !== nextState;
-
-    if (propsUpdate && this.mounted) {
-      setTimeout(() => {
-        const { data } = this.props;
-        this.setState({
-          ...defaultOptions,
-          ...data
-        });
-      }, 10);
+  cleanState(nextState) {
+    const stateChange = {};
+    for (const k in this.initial) {
+      if (this.initial[k] !== nextState[k]) {
+        stateChange[k] = nextState[k]
+      }
     }
-
-    return propsUpdate || stateUpdate;
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  onChange(d) {
-    const data = removeEmpty(d || this.state);
-    this.setState(data, () => {
-      const { change } = this.props;
-      change(data);
-    });
-  }
-
-  inputChange(e) {
-    const { name, value } = e.target;
-    this.setState({
-      [name]: name.startsWith('password') ? btoa(value) : value
-    }, () => {
-      this.onChange();
-    });
+    return stateChange;
   }
 
   render() {
+    const { data } = this.props;
     const {
       broadcastTopic, deviceTopic, profileTopic, responseTopic, prefix
     } = this.state;
@@ -86,7 +54,7 @@ class MQTTOptions extends Component {
                 className="form-control"
                 type="text"
                 name="prefix"
-                value={ prefix || '' }
+                value={ prefix }
                 onChange={ this.inputChange }
               />
             </div>
@@ -100,7 +68,7 @@ class MQTTOptions extends Component {
                 className="form-control"
                 type="text"
                 name="broadcastTopic"
-                value={ broadcastTopic || '' }
+                value={ broadcastTopic }
                 onChange={ this.inputChange }
               />
               <small className='form-text text-muted'>Default: &lsquo;&#123;prefix&#125;oc2/cmd/all&rsquo;</small>
@@ -115,7 +83,7 @@ class MQTTOptions extends Component {
                 className="form-control"
                 type="text"
                 name="responseTopic"
-                value={ responseTopic || '' }
+                value={ responseTopic }
                 onChange={ this.inputChange }
               />
               <small className='form-text text-muted'>Default: &lsquo;&#123;prefix&#125;oc2/rsp&rsquo;</small>
@@ -128,7 +96,7 @@ class MQTTOptions extends Component {
                 className="form-control"
                 type="text"
                 name="deviceTopic"
-                value={ deviceTopic || '' }
+                value={ deviceTopic }
                 onChange={ this.inputChange }
               />
               <small className='form-text text-muted'>Default: &lsquo;&#123;prefix&#125;oc2/cmd/device/&#123;device_id&#125;&rsquo;</small>
@@ -140,7 +108,7 @@ class MQTTOptions extends Component {
                 className="form-control"
                 type="text"
                 name="profileTopic"
-                value={ profileTopic || '' }
+                value={ profileTopic }
                 onChange={ this.inputChange }
               />
               <small className='form-text text-muted'>Default: &lsquo;&#123;prefix&#125;oc2/cmd/ap/&#123;profile&#125;&rsquo;</small>
@@ -166,7 +134,7 @@ class MQTTOptions extends Component {
           </div>
         </fieldset>
 
-        <Auth data={ this.state } change={ this.onChange } />
+        <Auth data={ data } change={ this.onChange } />
       </div>
     );
   }

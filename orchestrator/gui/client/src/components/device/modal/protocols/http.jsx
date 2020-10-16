@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, Label } from 'reactstrap';
 
-import Auth from './auth';
 import BaseOptions from './base';
 import { pick, removeEmpty } from '../../../utils';
 
@@ -26,13 +25,12 @@ class HTTPSOptions extends BaseOptions {
   }
 
   render() {
-    const { data } = this.props;
     const { path } = this.state;
 
     return (
       <div>
         <fieldset className="border border-info p-2">
-          <legend>HTTPS Options</legend>
+          <legend>HTTP Options</legend>
 
           <div className="form-row">
             <div className="form-group col-lg-4">
@@ -49,8 +47,6 @@ class HTTPSOptions extends BaseOptions {
             </div>
           </div>
         </fieldset>
-
-        <Auth data={ data } change={ this.onChange } />
       </div>
     );
   }

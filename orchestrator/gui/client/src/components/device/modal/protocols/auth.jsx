@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { FormText, Input, Label } from 'reactstrap';
 
-import { removeEmpty, FileBase64 } from '../../../utils';
+import BaseOptions from './base';
+import { FileBase64, pick, removeEmpty } from '../../../utils';
 
-const defaultAuth = {
+const defaultState = {
   username: '',
   password_1: '',
   password_2: '',
@@ -19,68 +20,37 @@ const defaultAuth = {
   }
 };
 
-class Auth extends Component {
+class Auth extends BaseOptions {
   constructor(props, context) {
     super(props, context);
     this.certChange = this.certChange.bind(this);
-    this.inputChange = this.inputChange.bind(this);
-
     const { data } = this.props;
+    this.initial = pick(data, Object.keys(defaultState));
 
     this.state = {
-      ...defaultAuth,
-      ...data
+      ...defaultState,
+      ...this.initial
     };
   }
 
-  componentDidMount() {
-    this.mounted = true;
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const propsUpdate = this.props !== nextProps;
-    const stateUpdate = this.state !== nextState;
-
-    if (propsUpdate && this.mounted) {
-      setTimeout(() => {
-        const { data } = this.props;
-        this.setState({
-          ...defaultAuth,
-          ...data
-        });
-      }, 10);
+  cleanState(nextState) {
+    const stateChange = {};
+    for (const k in this.initial) {
+      if (this.initial[k] !== nextState[k]) {
+        stateChange[k] = nextState[k]
+      }
     }
-
-    return propsUpdate || stateUpdate;
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  onChange() {
-    const { change } = this.props;
-    const data = removeEmpty(this.state);
-    delete data['auth'];
-    change(data);
+    return stateChange;
   }
 
   certChange(file) {
     const { base64, id } = file;
-    this.setState({
-      [id]: base64
-    }, () => {
-      this.onChange();
-    });
-  }
-
-  inputChange(e) {
-    const { name, value } = e.target;
-    this.setState({
-      [name]: name.startsWith('password') ? btoa(value) : value
-    }, () => {
-      this.onChange();
-    });
+    this.setState(
+      {
+        [id]: base64
+      },
+      this.onStateChange
+    );
   }
 
   render() {
@@ -99,7 +69,7 @@ class Auth extends Component {
               className="form-control"
               type="text"
               name="username"
-              value={ username || '' }
+              value={ username }
               onChange={ this.inputChange }
             />
           </div>

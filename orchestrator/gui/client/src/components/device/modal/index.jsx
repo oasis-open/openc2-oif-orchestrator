@@ -160,8 +160,7 @@ class DeviceModal extends Component {
   saveDevice() {
     const { updateDevice } = this.props;
     const { device } = this.state;
-    const data = removeEmpty(device);
-    updateDevice(device.device_id, data);
+    updateDevice(device.device_id, device);
     setTimeout(() => this.checkErrors(DeviceActions.UPDATE_DEVICE_FAILURE), 1000);
   }
 
@@ -219,12 +218,12 @@ class DeviceModal extends Component {
   }
 
   updateDevice(e) {
-    const target = e.currentTarget;
+    const { id, value } = e.currentTarget;
 
     this.setState(prevState => ({
       device: {
         ...prevState.device,
-        [target.id]: target.value
+        [id]: value
       }
     }));
   }

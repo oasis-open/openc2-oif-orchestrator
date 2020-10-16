@@ -74,17 +74,22 @@ class Transport extends Component {
     const idx = tmpVal.indexOf(item);
 
     if (checked) {
-      if (idx === -1) tmpVal.push(item);
+      if (idx === -1) {
+        tmpVal.push(item);
+      }
     } else if (idx >= 0 && tmpVal.length > 1) {
       tmpVal.splice(idx, 1);
     }
 
-    this.setState({
-      [name]: tmpVal
-    }, () => {
-      const { change, index } = this.props;
-      change(this.state, index);
-    });
+    this.setState(
+      {
+        [name]: tmpVal
+      },
+      () => {
+        const { change, index } = this.props;
+        change(this.state, index);
+      }
+    );
   }
 
   transportRemove(e) {
@@ -106,6 +111,7 @@ class Transport extends Component {
       tmpState,
       () => {
         const { change, index } = this.props;
+        console.log(this.state)
         change(this.state, index);
       }
     );
