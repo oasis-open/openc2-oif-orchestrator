@@ -77,8 +77,10 @@ export const removeEmpty = (obj, empties = [null, undefined, '']) => {
 
 export function pick(obj, keys) {
   const ret = Object.create(null);
-  for (const k of keys) {
-    ret[k] = obj[k];
-  }
+  keys.forEach(k => {
+    if (k in obj) {
+      ret[k] = obj[k];
+    }
+  });
   return ret;
 }

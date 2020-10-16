@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FormText, Input, Label } from 'reactstrap';
 
 import BaseOptions from './base';
-import { FileBase64, pick, removeEmpty } from '../../../utils';
+import { FileBase64, pick } from '../../../utils';
 
 const defaultState = {
   username: '',
@@ -35,11 +35,11 @@ class Auth extends BaseOptions {
 
   cleanState(nextState) {
     const stateChange = {};
-    for (const k in this.initial) {
+    this.initial.forEach(k => {
       if (this.initial[k] !== nextState[k]) {
-        stateChange[k] = nextState[k]
+        stateChange[k] = nextState[k];
       }
-    }
+    });
     return stateChange;
   }
 

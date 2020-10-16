@@ -5,10 +5,12 @@ import { toast } from 'react-toastify';
 import {
   Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader
 } from 'reactstrap';
-import JSONInput from 'react-json-editor-ajrm/dist';
-import locale from 'react-json-editor-ajrm/dist/locale/en';
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
 
-import { generateUUID4, objectValues, safeGet, validateUUID4 } from '../utils';
+import {
+  generateUUID4, objectValues, safeGet, validateUUID4
+} from '../utils';
 import * as ActuatorActions from '../../actions/actuator';
 import * as DeviceActions from '../../actions/device';
 

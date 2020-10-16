@@ -4,7 +4,7 @@ import { Input, Label } from 'reactstrap';
 
 import Auth from './auth';
 import BaseOptions from './base';
-import { pick, removeEmpty } from '../../../utils';
+import { pick } from '../../../utils';
 
 const defaultState = {
   prefix: '',
@@ -28,11 +28,11 @@ class MQTTOptions extends BaseOptions {
 
   cleanState(nextState) {
     const stateChange = {};
-    for (const k in this.initial) {
+    this.initial.forEach(k => {
       if (this.initial[k] !== nextState[k]) {
-        stateChange[k] = nextState[k]
+        stateChange[k] = nextState[k];
       }
-    }
+    });
     return stateChange;
   }
 

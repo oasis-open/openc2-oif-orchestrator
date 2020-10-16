@@ -111,7 +111,6 @@ class Transport extends Component {
       tmpState,
       () => {
         const { change, index } = this.props;
-        console.log(this.state)
         change(this.state, index);
       }
     );

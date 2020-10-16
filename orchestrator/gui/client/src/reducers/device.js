@@ -1,6 +1,6 @@
 import * as actuator from '../actions/actuator';
 import * as device from '../actions/device';
-import { checkSchema, mergeByProperty } from '../components/utils';
+import { mergeByProperty } from '../components/utils';
 
 const initialState = {
   devices: [],

@@ -20,8 +20,8 @@ class HTTPSOptions extends BaseOptions {
     };
   }
 
-  cleanState(nextState) {
-    return removeEmpty(nextState);
+  cleanState() {
+    return removeEmpty(this.state);
   }
 
   render() {

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -16,22 +17,23 @@ class BaseOptions extends Component {
     this.mounted = true;
   }
 
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     const propsUpdate = this.props !== nextProps;
     if (propsUpdate && this.mounted) {
       const { data } = this.props;
+      // eslint-disable-next-line no-param-reassign
       nextState = {
         ...nextState,
         ...data
       };
     }
-    
+
     const stateUpdate = this.state !== nextState;
     return propsUpdate || stateUpdate;
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   onChange(data) {
