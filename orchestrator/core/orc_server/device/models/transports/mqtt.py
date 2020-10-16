@@ -2,6 +2,7 @@ from django.db import models
 from rest_framework import serializers
 
 from .auth import TransportAuth, TransportAuthSerializer
+from .base import EmptySerializerCharField
 
 
 class TransportMQTT(TransportAuth):
@@ -51,11 +52,11 @@ class TransportMQTTSerializer(TransportAuthSerializer):
     """
     MQTT Transport API Serializer
     """
-    prefix = serializers.CharField(max_length=30, required=False, allow_blank=True, default="")
-    response_topic = serializers.CharField(max_length=60, required=False, allow_blank=True, default="")
-    broadcast_topic = serializers.CharField(max_length=60, required=False, allow_blank=True, default="")
-    device_topic = serializers.CharField(max_length=60, required=False, allow_blank=True, default="")
-    profile_topic = serializers.CharField(max_length=60, required=False, allow_blank=True, default="")
+    prefix = serializers.CharField(max_length=30, **EmptySerializerCharField)
+    response_topic = serializers.CharField(max_length=60, **EmptySerializerCharField)
+    broadcast_topic = serializers.CharField(max_length=60, **EmptySerializerCharField)
+    device_topic = serializers.CharField(max_length=60, **EmptySerializerCharField)
+    profile_topic = serializers.CharField(max_length=60, **EmptySerializerCharField)
 
     class Meta:
         model = TransportMQTT

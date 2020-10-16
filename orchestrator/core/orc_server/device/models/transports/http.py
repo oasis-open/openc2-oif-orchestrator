@@ -1,7 +1,7 @@
 from django.db import models
 from rest_framework import serializers
 
-from .base import Transport, TransportSerializer
+from .base import EmptySerializerCharField, Transport, TransportSerializer
 
 
 class BaseHTTP(models.Model):
@@ -39,7 +39,7 @@ class TransportHTTPSerializer(TransportSerializer):
     """
     HTTP Transport API Serializer
     """
-    path = serializers.CharField(max_length=60, default="")
+    path = serializers.CharField(max_length=60, **EmptySerializerCharField)
 
     class Meta:
         model = TransportHTTP

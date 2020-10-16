@@ -17,6 +17,12 @@ from utils import get_or_none
 
 from ..utils import shortID
 
+EmptySerializerCharField = dict(
+    required=False,
+    allow_blank=True,
+    default=""
+)
+
 
 class Transport(PolymorphicModel):
     """
