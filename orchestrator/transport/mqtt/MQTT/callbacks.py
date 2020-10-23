@@ -1,12 +1,11 @@
 # callbacks.py
 import json
 import os
-import re
 import uuid
 
 from multiprocessing import Manager
 from paho.mqtt import client as mqtt, publish
-from sb_utils import Auth, Message, MessageType, Producer, SerialFormats, decode_msg, safe_cast, toBytes
+from sb_utils import Auth, Message, MessageType, Producer, SerialFormats, safe_cast
 
 # maintains a list of active devices we can receive responses from
 manager = Manager()
