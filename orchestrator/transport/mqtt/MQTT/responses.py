@@ -43,14 +43,15 @@ def mqtt_on_message(client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage) -
     payload = Message.unpack(msg.payload)
     print(f'Received: {payload}')
     # TODO: validate origin format
-    orc_id, broker_socket = payload.origin.rsplit("@", 1)
+    profile, broker_socket = payload.origin.rsplit("@", 1)
 
     # Copy necessary headers
     header = {
         "socket": broker_socket,
         "correlationID": str(payload.request_id),
-        "orchestratorID": orc_id,
-        "encoding": payload.serialization
+        "profile": profile,
+        "encoding": payload.serialization,
+        "transport": "mqtt"
     }
 
     # Connect and publish to internal buffer
