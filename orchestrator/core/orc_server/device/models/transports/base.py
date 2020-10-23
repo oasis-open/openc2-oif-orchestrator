@@ -181,22 +181,25 @@ def etcd_save(sender, instance=None, **kwargs):
     key_base = f'/transport/{instance.protocol.name}/{instance.transport_id}'
 
     # Get local etcd data
-    etcd_data = {}
+    db_data = {}
     for base in list(reversed(instance.__class__.__mro__))[3:]:
-        etcd_data.update(getattr(base, 'etcd_data')(instance))
+        db_data.update(getattr(base, 'etcd_data')(instance))
     # Clear empty values
-    etcd_data = {k: v for k, v in etcd_data.items() if v not in empty_values}
-    print(f'{instance.protocol.name} - {etcd_data}')
+    db_data = {k: v for k, v in db_data.items() if v not in empty_values}
 
     # Get data from etcd
     try:
-        for eKey in settings.ETCD_CLIENT.read(key_base, recursive=True).children:
-            key = eKey.key.replace(f'{key_base}/', '')
-            if key in etcd_data and instance.data_changed([key]):
-                eKey.value = etcd_data[key]
-                settings.ETCD_CLIENT.update(eKey)
-            elif key not in etcd_data:
+        etcd_data = {k.key.replace(f'{key_base}/', ''): k for k in settings.ETCD_CLIENT.read(key_base, recursive=True).children}
+        for key in {*db_data.keys(), *etcd_data.keys()}:
+            db_val = db_data.get(key, None)
+            e_key = etcd_data.get(key, None)
+            if db_val and not e_key:
+                settings.ETCD_CLIENT.write(f'{key_base}/{key}', db_val)
+            elif e_key and not db_val:
                 settings.ETCD_CLIENT.delete(f'{key_base}/{key}')
+            elif instance.data_changed([key]):
+                    e_key.value = db_val
+                    settings.ETCD_CLIENT.update(e_key)
     except etcd.EtcdKeyNotFound:
-        for key, val in etcd_data.items():
+        for key, val in db_data.items():
             settings.ETCD_CLIENT.write(f'{key_base}/{key}', val)

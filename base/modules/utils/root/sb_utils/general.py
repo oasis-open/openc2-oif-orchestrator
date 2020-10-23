@@ -7,6 +7,14 @@ import sys
 import uuid
 
 from datetime import datetime
+from functools import partial
+from types import (
+    BuiltinFunctionType,
+    BuiltinMethodType,
+    FunctionType,
+    MethodType,
+    LambdaType
+)
 from typing import (
     Any,
     Callable,
@@ -144,6 +152,15 @@ def default_decode(itm: Any, decoders: Dict[Type, Callable[[Any], Any]] = None) 
         return check_values(itm)
 
     return itm
+
+
+def isFunction(obj: Any) -> bool:
+    """
+    Determine if the given object is a function
+    :param obj: object to check if function
+    :return: bool if function
+    """
+    return isinstance(obj, (BuiltinFunctionType, BuiltinMethodType,  FunctionType, MethodType, LambdaType, partial))
 
 
 def isBase64(sb: Union[bytes, str]) -> bool:

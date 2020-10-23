@@ -62,7 +62,6 @@ class DeviceAdmin(admin.ModelAdmin):
     """
     Device model admin
     """
-    readonly_fields = ('device_id', )
     list_display = ('device_id', 'name', )
     filter_horizontal = ('transport', )
 

@@ -47,7 +47,6 @@ class BaseOptions extends Component {
     const { change } = this.props;
     const nextState = isFunction(this.cleanState) ? this.cleanState(this.state) : this.state;
     change(nextState);
-
   }
 
   inputChange(e) {

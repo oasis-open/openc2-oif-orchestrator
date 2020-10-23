@@ -8,7 +8,7 @@ from fernet_fields import EncryptedCharField, EncryptedTextField
 from rest_framework import serializers
 
 # Local imports
-from .base import Transport, TransportSerializer
+from .base import EmptySerializerCharField, Transport, TransportSerializer
 from utils import to_bytes, to_str
 
 
@@ -65,7 +65,7 @@ class TransportAuthSerializer(TransportSerializer):
     Authenticated Transport API Serializer
     """
     auth = serializers.SerializerMethodField(read_only=True)
-    username = serializers.CharField(max_length=30, required=False)
+    username = serializers.CharField(max_length=30, **EmptySerializerCharField)
     password_1 = serializers.CharField(write_only=True, required=False)
     password_2 = serializers.CharField(write_only=True, required=False)
     ca_cert = serializers.CharField(write_only=True, required=False)

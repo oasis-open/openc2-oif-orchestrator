@@ -61,6 +61,23 @@ class FrozenDict(ObjectDict):
     """
     _hash: hash
 
+    def __init__(self, seq: Sequence = None, **kwargs) -> None:
+        """
+        Initialize an QueryDict
+        :param seq: initial Sequence data
+        :param kwargs: key/value parameters
+        """
+        if seq:
+            ObjectDict.__init__(self, seq, **kwargs)
+        else:
+            ObjectDict.__init__(self, **kwargs)
+
+        for k, v in self.items():
+            if isinstance(v, dict) and not isinstance(v, self.__class__):
+                ObjectDict.__setitem__(self, k, FrozenDict(v))
+            elif isinstance(v, (list, tuple)):
+                ObjectDict.__setitem__(self, k, tuple(FrozenDict(i) if isinstance(i, dict) else i for i in v))
+
     def __hash__(self) -> hash:
         """
         Create a hash for the FrozenDict

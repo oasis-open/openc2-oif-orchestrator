@@ -35,7 +35,7 @@ class Auth extends BaseOptions {
 
   cleanState(nextState) {
     const stateChange = {};
-    this.initial.forEach(k => {
+    Object.keys(defaultState).forEach(k => {
       if (this.initial[k] !== nextState[k]) {
         stateChange[k] = nextState[k];
       }
@@ -104,6 +104,7 @@ class Auth extends BaseOptions {
               name="ca_cert"
               onDone={ this.certChange }
             />
+            <small className='form-text text-info'>Only use unencrypted &lsquo;.cert&rsquo; files</small>
             <FormText color={ auth.ca_cert ? 'success' : 'muted' }>{ `CA Certificate is ${auth.ca_cert ? '' : 'not '} set` }</FormText>
           </div>
           <div className="form-group col-lg-4">
@@ -114,6 +115,7 @@ class Auth extends BaseOptions {
               name="client_cert"
               onDone={ this.certChange }
             />
+            <small className='form-text text-info'>Only use unencrypted &lsquo;.cert&rsquo; files</small>
             <FormText color={ auth.client_cert ? 'success' : 'muted' }>{ `Client Certificate is ${auth.client_cert ? '' : 'not '} set` }</FormText>
           </div>
           <div className="form-group col-lg-4">
@@ -124,6 +126,7 @@ class Auth extends BaseOptions {
               name="client_key"
               onDone={ this.certChange }
             />
+            <small className='form-text text-info'>Only use unencrypted &lsquo;.key&rsquo; files</small>
             <FormText color={ auth.client_key ? 'success' : 'muted' }>{ `Client Key is ${auth.client_key ? '' : 'not '} set` }</FormText>
           </div>
         </div>

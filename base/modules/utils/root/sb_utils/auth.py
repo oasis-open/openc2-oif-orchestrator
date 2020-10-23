@@ -27,7 +27,7 @@ class Auth:
         crypto = Fernet(os.environ['TRANSPORT_SECRET']) if 'TRANSPORT_SECRET' in os.environ else None
         if crypto is None:
             raise ValueError('ENV variable of `TRANSPORT_SECRET` is not set')
-        self.username = toStr(crypto.decrypt(auth['username'])) if 'username' in auth else None
+        self.username = toStr(auth.get('username', ''))
         self.password = toStr(crypto.decrypt(auth['password'])) if 'password' in auth else None
         self._certsDir = TemporaryDirectory()
         for cert in ['ca_cert', 'client_cert', 'client_key']:

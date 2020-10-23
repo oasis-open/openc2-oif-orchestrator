@@ -1,22 +1,35 @@
-# Screaming Bunny Utils
+# Utils
 
 ## Installing
 ### On a standalone System via pip
 - Install requires Python 3.6+ and pip
 
 - Install via pip
+    - Base package
     ```bash
-    pip install git+https://gitlab.labs.g2-inc.net/ScreamingBunny/Utils.git
+    pip install git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
     ```
-        
+  
+    - Actuator package
+    ```bash
+    pip install git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
+    pip install git+https://github.com/ScreamBun/SB_utils.git#subdirectory=actuator
+    ```
+
 - To update if already installed
-	 
-   ```bash
-   pip install --upgrade git+https://gitlab.labs.g2-inc.net/ScreamingBunny/Utils.git
-   ```
+    - Base package
+    ```bash
+    pip install --update git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
+    ```
+  
+    - Actuator package
+    ```bash
+    pip install --update git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
+    pip install --update git+https://github.com/ScreamBun/SB_utils.git#subdirectory=actuator
+    ```
 
 ### On a standalone System via submodule source
-- Install requires Python 2.7+ and pip
+- Install requires Python 3.6+ and pip
 
 - Add the submodule to the repo
     - Add `--branch=BRANCH` to use a branch instead of master
@@ -49,16 +62,3 @@
 	```bash
 	python setup.py install
 	```
-
-   
-### Gitlab CI
-- Submodule init and update are handled by the CI Runner
-- The submodule will be available where its folder is specified
-- This repo is recommended to be used as a python pkg, the following is how to install and use it
-	- Standalone
-		- See the Installing on a standalone system via submodule source
-
-	- Docker
-		- Add the submodule directory to the image, a tmp directory is preferred
-		- See the Installing on a standalone system via submodule source
-		- Cleanup the tmp directory and remove the submodule directory

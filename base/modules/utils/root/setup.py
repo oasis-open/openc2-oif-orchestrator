@@ -9,11 +9,9 @@ def get_requirements():
 
 
 setup(
-    name='ScreamingBunny Utils',
+    name='SB Utils',
     package_data={
-        'SB_Utils': [
-            './sb_utils/*',
-        ]
+        'SB_Utils': ['./sb_utils/*']
     },
     install_requires=get_requirements()
 )

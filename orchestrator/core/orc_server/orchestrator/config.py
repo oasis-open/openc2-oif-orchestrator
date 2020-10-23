@@ -26,7 +26,8 @@ class Config:
         opts = {}
         if os.path.isfile(self._configFile):
             with open(self._configFile, 'r') as f:
-                opts = json.load(f)
+                tmp = f.read()
+            opts = json.loads(tmp)
 
         for k, v in opts.items():
             if k in self._slots:

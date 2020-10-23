@@ -28,7 +28,7 @@ class MQTTOptions extends BaseOptions {
 
   cleanState(nextState) {
     const stateChange = {};
-    this.initial.forEach(k => {
+    Object.keys(this.initial).forEach(k => {
       if (this.initial[k] !== nextState[k]) {
         stateChange[k] = nextState[k];
       }

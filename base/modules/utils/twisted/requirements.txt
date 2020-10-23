@@ -1,4 +1,4 @@
-ScreamingBunny_Utils
+SB-Utils@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
 twisted==20.3.0
 pika==1.1.0
 requests==2.24.0
