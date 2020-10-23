@@ -6,6 +6,7 @@ import uuid
 from multiprocessing import Manager
 from paho.mqtt import client as mqtt, publish
 from sb_utils import Auth, Message, MessageType, Producer, SerialFormats, safe_cast
+from typing import Any
 
 # maintains a list of active devices we can receive responses from
 manager = Manager()
@@ -30,7 +31,7 @@ class Callbacks:
     required_device_keys = {"encoding", "profile", "socket"}
 
     @staticmethod
-    def on_connect(client, userdata, flags, rc):
+    def on_connect(client: mqtt.Client, userdata: Any, flags: dict, rc: int):
         """
         MQTT Callback for when client receives connection-acknowledgement response from MQTT server.
         :param client: Class instance of connection to server
@@ -38,7 +39,7 @@ class Callbacks:
         :param flags: Response flags sent by broker
         :param rc: Connection result, Successful = 0
         """
-        print(f"Connected with result code {rc}")
+        print(f"Connected with result code {rc} -> {mqtt.connack_string(rc)}")
         # Subscribing in on_connect() allows us to renew subscriptions if disconnected
 
         if isinstance(userdata, list):
@@ -49,7 +50,7 @@ class Callbacks:
                 print(f"Listening on {topic.lower()}")
 
     @staticmethod
-    def on_message(client, userdata, msg):
+    def on_message(client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage):
         """
         MQTT Callback for when a PUBLISH message is received from the server.
         :param client: Class instance of connection to server.
@@ -180,31 +181,3 @@ def send_error_response(e, header):
         exchange="orchestrator",
         routing_key="response"
     )
-
-
-def get_response(ip, port, orc_id):
-    """
-    Waits for response from actuator at server at given ip:port
-    :param ip: IP Address specified from destination sent from orchestrator
-    :param port: Port specified from destination sent from orchestrator
-    :param orc_id: Indicates where message was sent from - used in topic to receive responses
-    """
-    print(f'Get MQTT Response - {ACTIVE_CONNECTIONS}')
-    # if we are already connected to an ip, don"t try to connect again
-    if ip not in ACTIVE_CONNECTIONS:
-        ACTIVE_CONNECTIONS.append(ip)
-        client = mqtt.Client(
-            client_id="oif-orchestrator-subscribe"
-        )
-        print(f"New connection: {ip}:{port}", flush=True)
-
-        try:
-            client.connect(ip, int(port))
-        except Exception as e:
-            print(f"ERROR: Connection to {ip}:{port} has been refused - {e}", flush=True)
-
-        response_topic = f"{orc_id}/response"
-        client.user_data_set([response_topic])
-        client.on_connect = Callbacks.on_connect
-        client.on_message = Callbacks.on_message
-        client.loop_start()

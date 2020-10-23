@@ -34,4 +34,5 @@ if __name__ == '__main__':
     except Exception as err:
         print(f"Consumer Error: {err}")
         consumer.shutdown()
+        rsps.shutdown()
 
