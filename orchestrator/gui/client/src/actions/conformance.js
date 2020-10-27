@@ -62,7 +62,9 @@ export const runUnittest = (actuator, tests) => ({
 const GET_TESTS_REQUEST = '@@conformance/CONFORMANCE_GET_TESTS_REQUEST';
 export const GET_TESTS_SUCCESS = '@@conformance/CONFORMANCE_GET_TESTS_SUCCESS';
 export const GET_TESTS_FAILURE = '@@conformance/CONFORMANCE_GET_TESTS_FAILURE';
-export const getConformanceTests = ({page=1, count=10, sort='test_time', refresh=false}={}) => ({
+export const getConformanceTests = ({
+  page=1, count=10, sort='test_time', refresh=false
+}={}) => ({
   [RSAA]: {
     endpoint: `${baseAPI}/test/?page=${page}&length=${count}&ordering=${sort}`,
     method: 'GET',

@@ -4,7 +4,8 @@ module.exports = {
   'array-bracket-newline': [0, 'consistent'],
   'array-bracket-spacing': [0, 'never'],
   'array-callback-return': [2, {
-    allowImplicit: true
+    allowImplicit: true,
+    checkForEach: false
   }],
   'array-element-newline': [0, {
     multiline: true,
@@ -24,7 +25,7 @@ module.exports = {
     allowSingleLine: true
   }],
   'callback-return': 0,
-  'camelcase': [1, {
+  'camelcase': [0, {
     ignoreDestructuring: true,
     ignoreImports: true,
     properties: 'never'
@@ -83,18 +84,20 @@ module.exports = {
   }],
   'complexity': [0, 11],
   'computed-property-spacing': [0, 'never'],
-  'consistent-return': 0,
+  'consistent-return': 2,
   'consistent-this': 0,
   'constructor-super': 2,
   'curly': [2, 'multi-line'],
   'default-case': [2, {
     commentPattern: '^no default$'
   }],
+  'default-case-last': 0,
   'default-param-last': 0,
   'dot-location': [0, 'property'],
-  'dot-notation': [2, {
+  'dot-notation': [0, {
     allowKeywords: true,
-    allowPattern: ''
+    allowPattern: '',
+    allowPrivateClassPropertyAccess: false
   }],
   'eol-last': [0, 'always'],
   'eqeqeq': [2, 'always', {
@@ -127,24 +130,6 @@ module.exports = {
   'id-match': 0,
   'implicit-arrow-linebreak': [2, 'beside'],
   'indent': [0, 2, {
-    ignoreComments: false,
-    ignoredNodes: [
-      'JSXElement',
-      'JSXElement > *',
-      'JSXAttribute',
-      'JSXIdentifier',
-      'JSXNamespacedName',
-      'JSXMemberExpression',
-      'JSXSpreadAttribute',
-      'JSXExpressionContainer',
-      'JSXOpeningElement',
-      'JSXClosingElement',
-      'JSXText',
-      'JSXEmptyExpression',
-      'JSXSpreadChild'
-    ],
-    flatTernaryExpressions: false,
-    outerIIFEBody: 1,
     ArrayExpression: 1,
     CallExpression: {
       arguments: 1
@@ -160,7 +145,29 @@ module.exports = {
     ImportDeclaration: 1,
     ObjectExpression: 1,
     SwitchCase: 1,
-    VariableDeclarator: 1
+    VariableDeclarator: 1,
+    flatTernaryExpressions: false,
+    ignoreComments: false,
+    ignoredNodes: [
+      'JSXElement',
+      'JSXElement > *',
+      'JSXAttribute',
+      'JSXIdentifier',
+      'JSXNamespacedName',
+      'JSXMemberExpression',
+      'JSXSpreadAttribute',
+      'JSXExpressionContainer',
+      'JSXOpeningElement',
+      'JSXClosingElement',
+      'JSXFragment',
+      'JSXOpeningFragment',
+      'JSXClosingFragment',
+      'JSXText',
+      'JSXEmptyExpression',
+      'JSXSpreadChild'
+    ],
+    offsetTernaryExpressions: false,
+    outerIIFEBody: 1
   }],
   'indent-legacy': 0,
   'init-declarations': 0,
@@ -196,7 +203,7 @@ module.exports = {
     before: 'always'
   }],
   'lines-between-class-members': [2, 'always', {
-    exceptAfterSingleLine: false
+    exceptAfterSingleLine: true
   }],
   'max-classes-per-file': [2, 1],
   'max-depth': [0, 4],
@@ -213,10 +220,10 @@ module.exports = {
     skipComments: true
   }],
   'max-lines-per-function': [0, {
+    IIFEs: true,
     max: 50,
     skipBlankLines: true,
-    skipComments: true,
-    IIFEs: true
+    skipComments: true
   }],
   'max-nested-callbacks': 0,
   'max-params': [0, 3],
@@ -240,7 +247,7 @@ module.exports = {
     ignoreChainWithDepth: 4
   }],
   'no-alert': 1,
-  'no-array-constructor': 2,
+  'no-array-constructor': 0,
   'no-arrow-condition': 0,
   'no-async-promise-executor': 2,
   'no-await-in-loop': 2,
@@ -256,7 +263,12 @@ module.exports = {
   'no-confusing-arrow': [0, {
     allowParens: true
   }],
-  'no-console': 0,
+  'no-console': [2, {
+    allow: [
+      'warn',
+      'error'
+    ]
+  }],
   'no-const-assign': 2,
   'no-constant-condition': 1,
   'no-constructor-return': 0,
@@ -267,12 +279,12 @@ module.exports = {
   'no-div-regex': 0,
   'no-dupe-args': 2,
   'no-dupe-class-members': 2,
-  'no-dupe-else-if': 0,
+  'no-dupe-else-if': 2,
   'no-dupe-keys': 2,
   'no-duplicate-case': 2,
   'no-duplicate-imports': 0,
   'no-else-return': [2, {
-    allowElseIf: true
+    allowElseIf: false
   }],
   'no-empty': 2,
   'no-empty-character-class': 2,
@@ -294,7 +306,7 @@ module.exports = {
     nestedBinaryExpressions: false,
     returnAssign: false
   }],
-  'no-extra-semi': 0,
+  'no-extra-semi': 2,
   'no-fallthrough': 0,
   'no-floating-decimal': 0,
   'no-func-assign': 2,
@@ -324,6 +336,7 @@ module.exports = {
   'no-lone-blocks': 2,
   'no-lonely-if': 2,
   'no-loop-func': 2,
+  'no-loss-of-precision': 0,
   'no-magic-numbers': [0, {
     detectObjects: false,
     enforceConst: true,
@@ -346,8 +359,8 @@ module.exports = {
     allowSamePrecedence: false
   }],
   'no-mixed-requires': [0, false],
-  'no-mixed-spaces-and-tabs': 0,
-  'no-multi-assign': 0,
+  'no-mixed-spaces-and-tabs': 1,
+  'no-multi-assign': 2,
   'no-multi-spaces': [0, {
     ignoreEOLComments: false
   }],
@@ -370,20 +383,8 @@ module.exports = {
   'no-obj-calls': 2,
   'no-octal': 2,
   'no-octal-escape': 2,
-  'no-param-reassign': [1, {
-    props: true,
-    ignorePropertyModificationsFor: [
-      'acc',
-      'accumulator',
-      'e',
-      'ctx',
-      'req',
-      'request',
-      'res',
-      'response',
-      '$scope',
-      'staticContext'
-    ]
+  'no-param-reassign': [2, {
+    props: false
   }],
   'no-path-concat': 2,
   'no-plusplus': [2, {
@@ -396,6 +397,9 @@ module.exports = {
   'no-redeclare': 2,
   'no-regex-spaces': 2,
   'no-reserved-keys': 0,
+  'no-restricted-exports': [0, {
+    restrictedNamedExports: ['default', 'then']
+  }],
   'no-restricted-globals': [2,
     'isFinite',
     'isNaN',
@@ -543,14 +547,14 @@ module.exports = {
   'no-shadow': 2,
   'no-shadow-restricted-names': 2,
   'no-space-before-semi': 0,
-  'no-spaced-func': 2,
+  'no-spaced-func': 0,
   'no-sparse-arrays': 2,
   'no-sync': 0,
   'no-tabs': 0,
   'no-template-curly-in-string': 2,
   'no-ternary': 0,
   'no-this-before-super': 2,
-  'no-throw-literal': 2,
+  'no-throw-literal': 0,
   'no-trailing-spaces': [2, {
     ignoreComments: false,
     skipBlankLines: false
@@ -558,14 +562,17 @@ module.exports = {
   'no-undef': 2,
   'no-undef-init': 2,
   'no-undefined': 0,
-  'no-underscore-dangle': [1, {
-    allow: ['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'],
-    allowAfterSuper: false,
-    allowAfterThis: false,
+  'no-underscore-dangle': [2, {
+    allow: [
+      '__REDUX_DEVTOOLS_EXTENSION_COMPOSE__',
+      '^_[^_]'
+    ],
+    allowAfterSuper: true,
+    allowAfterThis: true,
     allowAfterThisConstructor: false,
-    enforceInMethodNames: true
+    enforceInMethodNames: false
   }],
-  'no-unexpected-multiline': 0,
+  'no-unexpected-multiline': 1,
   'no-unmodified-loop-condition': 0,
   'no-unneeded-ternary': [2, {
     defaultAssignment: false
@@ -589,11 +596,12 @@ module.exports = {
     functions: true,
     variables: true
   }],
+  'no-useless-backreference': 0,
   'no-useless-call': 0,
   'no-useless-catch': 2,
   'no-useless-computed-key': 2,
   'no-useless-concat': 2,
-  'no-useless-constructor': 2,
+  'no-useless-constructor': 1,
   'no-useless-escape': 2,
   'no-useless-rename': [2, {
     ignoreDestructuring: false,
@@ -620,6 +628,16 @@ module.exports = {
       multiline: true
     },
     ImportDeclaration: {
+      consistent: true,
+      minProperties: 4,
+      multiline: true
+    },
+    ObjectExpression: {
+      consistent: true,
+      minProperties: 4,
+      multiline: true
+    },
+    ObjectPattern: {
       consistent: true,
       minProperties: 4,
       multiline: true
@@ -661,7 +679,7 @@ module.exports = {
     destructuring: 'any',
     ignoreReadBeforeAssign: true
   }],
-  'prefer-destructuring': [0,
+  'prefer-destructuring': [2,
     {
       AssignmentExpression: {
         array: true,
@@ -754,13 +772,13 @@ module.exports = {
     },
     line: {
       exceptions: ['-', '+'],
-      markers: ['=', '!']
+      markers: ['=', '!', '/']
     }
   }],
   'strict': [2, 'never'],
   'switch-colon-spacing': [0, {
-    before: false,
-    after: true
+    after: true,
+    before: false
   }],
   'symbol-description': 2,
   'template-curly-spacing': 0,
@@ -778,4 +796,4 @@ module.exports = {
   'wrap-regex': 0,
   'yield-star-spacing': [0, 'after'],
   'yoda': 2
-}
+};

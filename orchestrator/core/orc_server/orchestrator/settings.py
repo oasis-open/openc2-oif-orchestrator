@@ -1,8 +1,10 @@
-import datetime
-import os
-import pymysql
 import re
-
+import pymysql
+import os
+import datetime
+import base64
+from cryptography.fernet import Fernet
+from sb_utils import safe_cast
 from .config import Config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -51,6 +53,8 @@ INSTALLED_APPS = [
     # 'conformance',
     'backup',
     'tracking',
+    # Polymorphic Models
+    'polymorphic',
     # Default Modules
     'django.contrib.admin',
     'django.contrib.auth',
@@ -146,6 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -310,13 +315,18 @@ TRACKING = {
         REQUEST_LEVELS.Redirect,
         REQUEST_LEVELS.Client_Error,
         REQUEST_LEVELS.Server_Error
+    ],
+    'SENSITIVE_FIELDS': [
+        'ca_cert',
+        'client_cert',
+        'client_key'
     ]
 }
 
 # Elasticsearch Model Mirroring
 ES_MIRROR = {
     'host': os.environ.get('ES_HOST', None),
-    'prefix': os.environ.get('ES_PREFIX', ''),
+    'prefix': os.environ.get('ES_PREFIX', '')
 }
 
 # Message Queue
@@ -333,6 +343,25 @@ QUEUE = {
 }
 
 MESSAGE_QUEUE = None
+
+# Security
+CRYPTO = Fernet(os.environ['TRANSPORT_SECRET']) if 'TRANSPORT_SECRET' in os.environ else None
+
+# First key will be used to encrypt all new data
+# Decryption of existing values will be attempted with all given keys in order
+FERNET_KEYS = [k.decode('utf-8') if isinstance(k, bytes) else str(k) for k in [
+    # Key Generation - URLSAFE_BASE64_ENCRYPT(RANDOM_32_BITS)
+    '4k1wW0AwvNpOYLUazdXtpwLBc6MOaflTKV4UkkzVhS8=',
+    base64.urlsafe_b64encode(SECRET_KEY[:32].encode('utf-8'))
+] if k]
+
+# ETCD
+ETCD = {
+    'host': os.environ.get('ETCD_HOST', 'localhost'),
+    'port': safe_cast(os.environ.get('ETCD_PORT', 4001), int, 4001)
+}
+
+ETCD_CLIENT = None
 
 # App stats function
 STATS_FUN = 'app_stats'

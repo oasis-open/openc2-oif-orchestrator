@@ -1,6 +1,6 @@
 import * as actuator from '../actions/actuator';
 import * as device from '../actions/device';
-import { checkSchema, mergeByProperty } from '../components/utils';
+import { mergeByProperty } from '../components/utils';
 
 const initialState = {
   devices: [],
@@ -10,17 +10,15 @@ const initialState = {
 };
 
 export default (state=initialState, action=null) => {
-  let devices = [];
 
   switch (action.type) {
     case device.GET_DEVICES_SUCCESS:
       const newDevs = action.payload.results || [];
-      devices = action.meta.refresh ? newDevs : mergeByProperty(state.devices, newDevs, 'device_id');
 
       return {
         ...state,
         count: action.payload.count || 0,
-        devices: devices.map(dev => ({ ...dev, schema: checkSchema(dev.schema || {})})),
+        devices: action.meta.refresh ? newDevs : mergeByProperty(state.devices, newDevs, 'device_id'),
         sort: action.meta.sort,
         errors: {
           ...state.errors,
@@ -48,11 +46,10 @@ export default (state=initialState, action=null) => {
 
     case device.GET_DEVICE_SUCCESS:
       const newDev = [action.payload] || [];
-      devices = mergeByProperty(state.devices, newDev, 'device_id');
 
       return {
         ...state,
-        devices: devices.map(dev => ({ ...dev, schema: checkSchema(dev.schema || {})})),
+        devices: mergeByProperty(state.devices, newDev, 'device_id'),
         errors: {
           ...state.errors,
           [device.GET_DEVICE_FAILURE]: {}
@@ -101,7 +98,6 @@ export default (state=initialState, action=null) => {
     case device.GET_DEVICE_FAILURE:
     case device.UPDATE_DEVICE_FAILURE:
     case device.DELETE_DEVICE_FAILURE:
-      console.log('Device Failure', action.type, action);
       return {
         ...state,
         errors: {

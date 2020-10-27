@@ -1,3 +1,2 @@
-kombu
-paho-mqtt
-cbor2
+paho-mqtt==1.5.1
+python-etcd==0.4.5

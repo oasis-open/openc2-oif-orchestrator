@@ -1,14 +1,15 @@
 /**
  * Base webpack config used across other specific configs
  */
-import webpack from 'webpack';
-import merge from 'webpack-merge';
 import path from 'path';
+import webpack from 'webpack';
+import { merge } from 'webpack-merge';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import Loaders from './webpack.loaders';
 
 const NODE_ENV = 'production';
+
 const ROOT_DIR = path.join(__dirname, '..');
 const BUILD_DIR = path.join(ROOT_DIR, 'build');
 const COMPONENTS_DIR = path.join(ROOT_DIR, 'src', 'components');
@@ -17,11 +18,12 @@ const DEPEND_DIR = path.join(COMPONENTS_DIR, 'dependencies');
 export default {
   devtool: 'inline-source-map',
   entry: {
-    main: path.join(ROOT_DIR, 'src', 'index.js'),
-    account: path.join(COMPONENTS_DIR, 'account', 'index.js'),
-    device: path.join(COMPONENTS_DIR, 'device', 'index.js'),
-    actuator: path.join(COMPONENTS_DIR, 'actuator', 'index.js'),
-    command: path.join(COMPONENTS_DIR, 'command', 'index.js')
+    main: path.join(ROOT_DIR, 'src', 'index'),
+    account: path.join(COMPONENTS_DIR, 'account', 'index'),
+    actuator: path.join(COMPONENTS_DIR, 'actuator', 'index'),
+    command: path.join(COMPONENTS_DIR, 'command', 'index'),
+    conformance: path.join(COMPONENTS_DIR, 'conformance', 'index'),
+    device: path.join(COMPONENTS_DIR, 'device', 'index')
   },
   output: {
     path: BUILD_DIR,
@@ -37,7 +39,6 @@ export default {
     new webpack.EnvironmentPlugin({
       NODE_ENV
     }),
-    new webpack.NamedModulesPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(DEPEND_DIR, 'index.html')
@@ -55,7 +56,7 @@ export default {
           chunks: 'all'
         },
         utils: {
-          test: /components\/utils[\\/]/,
+          test: /components\/(static|utils)[\\/]/,
           name: 'utils',
           chunks: 'all'
         }
@@ -66,7 +67,7 @@ export default {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
@@ -76,16 +77,23 @@ export default {
         }
       },
       {
-        test: /\.(c|le)ss$/,
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          Loaders.css
+        ]
+      },
+      {
+        test: /\.s[ac]ss$/,
         use: [
           'style-loader',
           Loaders.css,
-          Loaders.less
+          'sass-loader'
         ]
       },
       {  // WOFF Font
         test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-        use: merge.smart(Loaders.url, {
+        use: merge(Loaders.url, {
           options: {
             mimetype: 'application/font-woff'
           }
@@ -93,7 +101,7 @@ export default {
       },
       {  // WOFF2 Font
         test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-        use: merge.smart(Loaders.url, {
+        use: merge(Loaders.url, {
           options: {
             mimetype: 'application/font-woff'
           }
@@ -101,7 +109,7 @@ export default {
       },
       {  // TTF Font
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        use: merge.smart(Loaders.url, {
+        use: merge(Loaders.url, {
           options: {
             mimetype: 'application/octet-stream'
           }

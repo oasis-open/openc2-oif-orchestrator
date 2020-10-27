@@ -1,18 +1,16 @@
 import base64
 import bleach
-import coreschema
 
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from rest_framework import filters, permissions, status, viewsets
-from rest_framework.compat import coreapi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # Local imports
 from command.models import SentHistory, HistorySerializer
-from utils import get_or_none, IsAdminOrIsSelf, OrcSchema
+from utils import get_or_none, IsAdminOrIsSelf
 from ..models import UserSerializer, PasswordSerializer
 
 
@@ -28,7 +26,7 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('last_name', 'first_name', 'username', 'email_address', 'active')
 
-    @action(methods=['POST'], detail=False, permission_classes=[IsAdminOrIsSelf], serializer_class=PasswordSerializer)
+    @action(methods=['POST'], detail=True, permission_classes=[IsAdminOrIsSelf], serializer_class=PasswordSerializer)
     def change_password(self, request, username=None):  # pylint: disable=unused-argument
         """
         Change user password, passwords sent as base64 encoded strings
@@ -56,19 +54,6 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'command_id'
 
     queryset = SentHistory.objects.order_by('-received_on')
-
-    schema = OrcSchema(
-        manual_fields=[
-            coreapi.Field(
-                "username",
-                required=True,
-                location="path",
-                schema=coreschema.String(
-                    description='Username to list the command history'
-                )
-            )
-        ]
-    )
 
     def list(self, request, *args, **kwargs):  # pylint: disable=unused-argument
         """

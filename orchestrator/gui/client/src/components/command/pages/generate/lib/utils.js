@@ -1,3 +1,4 @@
+// Command Generator Utilities
 import PropTypes from 'prop-types';
 
 export const JSON_SCHEMA_PROPS = PropTypes.shape({
@@ -5,9 +6,11 @@ export const JSON_SCHEMA_PROPS = PropTypes.shape({
   $id: PropTypes.string.isRequired,
   title: PropTypes.string,
   type: (props, propName, componentName) => {
+    // eslint-disable-next-line react/destructuring-assignment
     if (props[propName] !== 'object') {
       return new Error(`Invalid prop '${propName}' supplied to '${componentName}'. Validation failed.`);
     }
+    return null;
   },
   description: PropTypes.string,
   oneOf: PropTypes.arrayOf(PropTypes.exact({
@@ -19,7 +22,7 @@ export const JSON_SCHEMA_PROPS = PropTypes.shape({
 
 export const isOptionalJSON = (req, field) => {
   if (req && Array.isArray(req)) {
-    return req.indexOf(field) >= 0;
+    return req.includes(field);
   }
   return false;
 };

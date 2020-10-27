@@ -1,6 +1,3 @@
-import coreapi
-import coreschema
-
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.decorators import action
@@ -8,7 +5,6 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 # Local imports
-import utils
 from .actions import action_send
 from ..models import SentHistory, HistorySerializer
 
@@ -34,27 +30,6 @@ class HistoryViewSet(viewsets.ModelViewSet):
     queryset = SentHistory.objects.order_by('-received_on')
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('command_id', 'user', 'received_on', 'actuators', 'status', 'details')
-
-    schema = utils.OrcSchema(
-        send_fields=[
-            coreapi.Field(
-                "actuator",
-                required=False,
-                location="json",
-                schema=coreschema.String(
-                    description='Actuator/Type that is to receive the command.'
-                )
-            ),
-            coreapi.Field(
-                "command",
-                required=True,
-                location="json",
-                schema=coreschema.Object(
-                    description='Command that is to be sent to the actuator(s).'
-                )
-            )
-        ]
-    )
 
     def get_permissions(self):
         """

@@ -57,10 +57,4 @@ The body is the content of the OpenC2 Command/Response.
 - All ports can be edited under the Docker Compose file under the queue port options.
 
 ## Adding certificates for TLS
-- To enable TLS set the environment variable `MQTT_TLS_ENABLE` to `1`
-- To indicate the use of self-signed certificates (not for production use) set the environment variable `MQTT_TLS_SELF_SIGNED` to `1`. For self-signed certificates, RabbitMQ recommends [tls-gen](https://github.com/michaelklishin/tls-gen).
-- The cert files needed to activate TLS are specified as environment variables: `MQTT_CAFILE`, `MQTT_CLIENT_CERT`, `MQTT_CLIENT_KEY`
-- If your broker is configured to require a username and password, use environment variables: `MQTT_DEFAULT_USERNAME`, `MQTT_DEFAULT_PASS`
-- To add the certificates uncomment the line in the Dockerfile `ADD certs /opt/transport/MQTT/certs` where `ADD <source> <dest>`
-
-
+- Certificated will be added by the transport within the Orchestrator

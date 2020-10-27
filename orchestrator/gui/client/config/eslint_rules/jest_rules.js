@@ -10,10 +10,9 @@ module.exports = {
   'jest/no-jest-import': 2,
   'jest/no-mocks-import': 2,
   'jest/no-standalone-expect': 2,
-  'jest/no-test-callback': 2,
   'jest/no-test-prefixes': 2,
   'jest/no-try-expect': 2,
   'jest/valid-describe': 2,
   'jest/valid-expect': 2,
   'jest/valid-expect-in-promise': 2,
-}
+};

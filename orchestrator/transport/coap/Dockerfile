@@ -11,15 +11,15 @@ description="This is the Transport Module container"
 
 ADD requirements.txt /tmp/requirements.txt
 ADD COAP/ /opt/transport/COAP
-ADD docker_dev_start.sh /dev_start.sh
+ADD docker_dev_start.sh /opt/transport/dev_start.sh
 
 RUN pip3 install -r /tmp/requirements.txt && \
-  dos2unix /dev_start.sh && \
-  chmod +x /dev_start.sh
+  dos2unix /opt/transport/dev_start.sh && \
+  chmod +x /opt/transport/dev_start.sh
 
 # Set working directory
 WORKDIR /opt/transport
 
 # Run command when container launches
-CMD ["/dev_start.sh"]
+CMD ["./dev_start.sh"]
 

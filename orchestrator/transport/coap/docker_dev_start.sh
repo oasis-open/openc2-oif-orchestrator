@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-cd /opt/transport
 
 echo "Running COAP Transport Module."
 dockerize -wait tcp://$QUEUE_HOST:$QUEUE_PORT -timeout 30s

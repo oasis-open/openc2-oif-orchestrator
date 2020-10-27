@@ -4,14 +4,13 @@ const initialState = {
   connected: false,
   connection: null,
   // eslint-disable-next-line no-restricted-globals
-  endpoint: `ws://${location.hostname}:8080`,
+  endpoint: `ws://${location.host}:8080`,
   queue: []
 };
 
 export default (state=initialState, action=null) => {
   switch (action.type) {
     case socket.SOCKET_SETUP:
-      console.log('WebSocket Setup', action.payload);
       return {
         ...state,
         connection: action.payload.socket || state.socket,
@@ -20,33 +19,30 @@ export default (state=initialState, action=null) => {
       };
 
     case socket.SOCKET_CONNECTED:
-      console.log('WebSocket Connected');
       return {
         ...state,
         connected: action.payload.connected || true
       };
 
     case socket.SOCKET_DISCONNECTED:
-      console.log('WebSocket Disconnected');
+      console.warn('WebSocket Disconnected');
       return {
         ...state,
         connected: action.payload.connected || false
       };
 
     case socket.RECEIVED_SOCKET_DATA:
-      console.log('WebSocket Data');
       try {
         const act = JSON.parse(action.payload.data);
-        console.log(act);
         action.asyncDispatch(act);
       } catch (err) {
-        console.log(err);
+        console.error(err);
         action.asyncDispatch(socket.createErrorAction(state.endpoint, err));
       }
       return state;
 
     case socket.SOCKET_ERROR:
-      console.log('WebSocket Error', action.payload);
+      console.error('WebSocket Error', action.payload);
       return {
         ...state,
         error: action.payload.error || ''

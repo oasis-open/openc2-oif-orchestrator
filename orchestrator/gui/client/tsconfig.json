@@ -2,17 +2,13 @@
   "compilerOptions": {
     "target": "ES2018",
     "module": "CommonJS",
-    "lib": ["dom", "esnext"],
-    "declaration": true,
-    "declarationMap": true,
-    "noEmit": true,
-    "jsx": "react",
     "strict": true,
     "pretty": true,
-    "sourceMap": true,
+    "sourceMap": false,
     /* Additional Checks */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noImplicitAny" : true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     /* Module Resolution Options */
@@ -20,11 +16,25 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "allowJs": true
+    "typeRoots": [
+      "src/@types",
+      "node_modules/@types"
+    ],
+    /* Additional Options */
+    "baseUrl": "src",
+    "declaration": true,
+    "removeComments": true,
+    "jsx": "react",
+    "outDir": "lib"
   },
   "exclude": [
-    "release",
-    "app/dist",
-    "dll"
+    ".eslintrc.js",
+    "config",
+    "scripts",
+    "test"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ]
 }

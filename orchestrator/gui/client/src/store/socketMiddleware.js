@@ -33,8 +33,6 @@ export default ({ getState, dispatch }) => {
         return next(action);
       } */
     }
-    if ('type' in action) {
-      return next(action);
-    }
+    return next(action);
   };
 };

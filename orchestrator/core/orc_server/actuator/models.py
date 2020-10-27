@@ -195,14 +195,6 @@ class ActuatorSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     )
     schema = serializers.JSONField()
 
-    def create(self, validated_data):
-        dev = validated_data.get('device')
-        if dev:
-            if dev.actuator_set.count() == 1 and not dev.multi_actuator:
-                raise ValidationError("Cannot add actuators to a combination device/actuator")
-
-        return super().create(validated_data)
-
     class Meta:
         model = Actuator
         fields = ('actuator_id', 'name', 'device', 'profile', 'schema')

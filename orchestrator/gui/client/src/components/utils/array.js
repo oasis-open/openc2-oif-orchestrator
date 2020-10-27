@@ -1,5 +1,6 @@
 // Array utility functions
 
+// eslint-disable-next-line import/prefer-default-export
 export const mergeByProperty = (arr1, arr2, prop) => {
   const rtn = [...(arr1 || [])];
 

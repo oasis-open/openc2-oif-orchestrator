@@ -1,6 +1,4 @@
 import bleach
-import coreapi
-import coreschema
 
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions
@@ -9,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # Local imports
-import utils
 from actuator.models import ActuatorGroup
 
 
@@ -18,31 +15,6 @@ class ActuatorAccess(APIView):
     API endpoint that allows users actuator access to be viewed or edited.
     """
     permission_classes = (permissions.IsAdminUser, )
-
-    schema = utils.OrcSchema(
-        manual_fields=[
-            coreapi.Field(
-                "username",
-                required=True,
-                location="path",
-                schema=coreschema.String(
-                    description='Username to list the accessible actuators'
-                )
-            )
-        ],
-        put_fields=[
-            coreapi.Field(
-                "actuators",
-                required=True,
-                location="body",
-                schema=coreschema.Array(
-                    items=coreschema.String(),
-                    min_items=1,
-                    unique_items=True
-                )
-            )
-        ]
-    )
 
     def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
         """

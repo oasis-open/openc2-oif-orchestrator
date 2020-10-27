@@ -29,7 +29,6 @@ pip3 install -r /tmp/requirements.txt && \
 #
 # Script Setup
 chmod +x /opt/transport/dev_start.sh && \
-chmod +w /opt/transport/HTTPS/certs && \
 dos2unix /opt/transport/dev_start.sh && \
 #
 # Cleanup
