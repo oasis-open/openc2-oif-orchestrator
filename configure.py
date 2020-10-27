@@ -5,6 +5,8 @@ import re
 import sys
 
 from datetime import datetime
+from functools import partial
+from multiprocessing import Pool
 from optparse import OptionParser
 
 from base.modules.script_utils import (
@@ -103,20 +105,20 @@ if __name__ == "__main__":
     # -------------------- Build Base Images -------------------- #
     Stylize.h1(f"[Step {get_count()}]: Build Base Images ...")
 
-    Stylize.info("Building base alpine image")
     build_image(
         docker_sys=system,
         console=Stylize,
+        name="base alpine",
         path="./base",
         dockerfile="./Dockerfile_alpine",
         tag=f"{CONFIG.ImagePrefix}/oif-alpine",
         rm=True
     )
 
-    Stylize.info("Building base alpine python3 image")
     build_image(
         docker_sys=system,
         console=Stylize,
+        name="base alpine python3",
         path="./base",
         dockerfile="./Dockerfile_alpine-python3",
         tag=f"{CONFIG.ImagePrefix}/oif-python",
@@ -141,17 +143,19 @@ if __name__ == "__main__":
     for compose in CONFIG.Composes:
         with open(f"./{compose}", "r") as orc_compose:
             for service, opts in load(orc_compose.read(), Loader=Loader)["services"].items():
-                if "build" in opts and opts["image"] not in compose_images:
-                    compose_images.append(opts["image"])
-                    Stylize.info(f"Building {opts['image']} image")
-                    build_image(
-                        docker_sys=system,
-                        console=Stylize,
-                        rm=True,
+                if "build" in opts and any(opts["image"] != img["image"] for img in compose_images):
+                    compose_images.append(dict(
+                        name=service,
                         path=opts["build"]["context"],
                         dockerfile=opts["build"].get("dockerfile", "Dockerfile"),
-                        tag=opts["image"]
-                    )
+                        tag=opts["image"],
+                        rm=True
+                    ))
+
+    builders = Pool(processes=os.cpu_count()-1)
+    buildFun = partial(build_image, docker_sys=system, console=Stylize)
+    builders.map(buildFun, compose_images)
+    builders.close()
 
     # -------------------- Cleanup Images -------------------- #
     Stylize.h1(f"[Step {get_count()}]: Cleanup unused images ...")

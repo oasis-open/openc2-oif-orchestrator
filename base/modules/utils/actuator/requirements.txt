@@ -1,3 +1,0 @@
-SB-Utils@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
-jsonschema==3.2.0
-python-etcd==0.4.5

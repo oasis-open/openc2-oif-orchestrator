@@ -300,6 +300,8 @@ def build_image(docker_sys=None, console=None, **kwargs):
         exit(1)
 
     img = None
+    name = kwargs.pop("name") or kwargs["tag"]
+    console.info(f"Building {name} image")
     try:
         img = docker_sys.images.build(**kwargs)
     except docker.errors.ImageNotFound as e:
