@@ -123,12 +123,16 @@ if __name__ == '__main__':
 
     Stylize.underline('Starting Update')
 
+    # -------------------- Modules -------------------- #
+    with Stage('Modules', 'base/modules/tmp'):
+        Stylize.h2("Updating Utilities")
+        update_repo(f"{CONFIG.BaseRepo}/Utils.git", 'sb_utils', options.repo_branch)
+
     # -------------------- Orchestrator -------------------- #
     with Stage('Orchestrator', 'orchestrator'):
         for repo in CONFIG.Repos.Orchestrator:
             Stylize.h2(f"Updating {repo}")
-            err = update_repo(f"{CONFIG.BaseRepo}/Orchestrator/{repo}.git", repo.lower(), options.repo_branch)
-            print(err)
+            update_repo(f"{CONFIG.BaseRepo}/Orchestrator/{repo}.git", repo.lower(), options.repo_branch)
 
     # -------------------- Orchestrator Transport -------------------- #
     with Stage(f'Orchestrator Transport', os.path.join('orchestrator', 'transport')):

@@ -30,7 +30,7 @@ description="This is the Base Alpine Python3 with SB_Utils container for Screami
 
 ENV PYTHONUNBUFFERED=0
 
-COPY modules/tmp/* /tmp/
+COPY modules/tmp/ /tmp/
 COPY --from=builder /opt/velocitypack /
 
 # Package Installation
@@ -38,7 +38,6 @@ COPY --from=builder /opt/velocitypack /
 RUN apk add --no-cache libressl libstdc++ python3 && \
 apk add --no-cache --virtual .build-deps \
   gcc \
-  git \
   libffi-dev \
   libressl-dev \
   linux-headers \
@@ -51,7 +50,9 @@ python3 /tmp/get-pip.py && \
 pip3 install --no-cache-dir --upgrade pip && \
 #
 # SB_Utils install
-pip3 install --no-cache-dir git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root && \
+cd /tmp/sb_utils/root && \
+python3 setup.py install && \
+cd && \
 #
 # Cleanup
 apk del --no-cache .build-deps && \

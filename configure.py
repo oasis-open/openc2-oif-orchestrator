@@ -5,8 +5,6 @@ import re
 import sys
 
 from datetime import datetime
-from functools import partial
-from multiprocessing import Pool
 from optparse import OptionParser
 
 from base.modules.script_utils import (
@@ -139,23 +137,20 @@ if __name__ == "__main__":
 
     compose_images = []
 
-    Stylize.h1(f"Build images ...")
     for compose in CONFIG.Composes:
         with open(f"./{compose}", "r") as orc_compose:
             for service, opts in load(orc_compose.read(), Loader=Loader)["services"].items():
-                if "build" in opts and any(opts["image"] != img["image"] for img in compose_images):
-                    compose_images.append(dict(
+                if "build" in opts and opts["image"] not in compose_images:
+                    compose_images.append(opts["image"])
+                    build_image(
+                        docker_sys=system,
+                        console=Stylize,
                         name=service,
                         path=opts["build"]["context"],
                         dockerfile=opts["build"].get("dockerfile", "Dockerfile"),
                         tag=opts["image"],
                         rm=True
-                    ))
-
-    builders = Pool(processes=os.cpu_count()-1)
-    buildFun = partial(build_image, docker_sys=system, console=Stylize)
-    builders.map(buildFun, compose_images)
-    builders.close()
+                    )
 
     # -------------------- Cleanup Images -------------------- #
     Stylize.h1(f"[Step {get_count()}]: Cleanup unused images ...")
