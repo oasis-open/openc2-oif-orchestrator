@@ -1,0 +1,53 @@
+/*
+Custom CSS Styles
+*/
+body {
+	padding-top: 60px;
+}
+.navbar-brand > img {
+  max-height: 2em;
+  width: auto;
+  -moz-padding: 15px; /* firefox bug fix */
+}
+#alert-container {
+	z-index: 100;
+	position: fixed;
+	bottom: 1em;
+	right: 1em;
+}
+.container-fluid .row > * {
+    max-width: 1200px;
+}
+.code, textarea {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 1em;
+	white-space: pre-wrap;
+}
+div.scroll {
+    max-height: 20em;
+    overflow: scroll;
+}
+div.scroll-large {
+    max-height: 40em;
+    overflow: scroll;
+}
+
+// Extra small devices (portrait phones, less than 576px)
+// No media query since this is the default in Bootstrap
+
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) {
+}
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+	
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+}
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+}

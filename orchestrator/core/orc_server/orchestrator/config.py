@@ -12,7 +12,7 @@ def safeJSON(obj):
 
 class Config:
     # Setting Vars
-    OrchestratorID: uuid.uuid4
+    OrchestratorID: uuid.uuid4 = uuid.uuid4()
 
     # Helper Vars
     _slots = {

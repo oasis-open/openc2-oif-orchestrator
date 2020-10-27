@@ -1,0 +1,37 @@
+import React from 'react';
+import { connect } from 'react-redux';
+import { Redirect, Route } from 'react-router-dom';
+
+import * as AuthActions from '../../actions/auth';
+
+class PrivateRoute extends Route {
+  render() {
+    const {
+      adminRequired, isAdmin, isAuthenticated, location
+    } = this.props;
+
+    // TODO: check if auth??
+    if (adminRequired && isAdmin) {
+      return super.render();
+    }
+    if (isAuthenticated) {
+      return super.render();
+    }
+    return (
+      <Redirect
+        to={{
+          pathname: '/login',
+          state: { from: location }
+        }}
+      />
+    );
+  }
+}
+
+const mapStateToProps = (state) => ({
+  authErrors: state.Auth.errors,
+  isAdmin: state.Auth.access ? state.Auth.access.admin : false,
+  isAuthenticated: AuthActions.isAuthenticated(state.Auth)
+});
+
+export default connect(mapStateToProps)(PrivateRoute);
