@@ -50,8 +50,7 @@ python3 /tmp/get-pip.py && \
 pip3 install --no-cache-dir --upgrade pip && \
 #
 # SB_Utils install
-cd /tmp/sb_utils/root && \
-python3 setup.py install && \
+pip3 install /tmp/sb_utils/root && \
 cd && \
 #
 # Cleanup
