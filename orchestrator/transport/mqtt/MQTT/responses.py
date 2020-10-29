@@ -131,15 +131,12 @@ class ResponseSubscriptions:
                         keyfile=auth.clientKey
                     )
 
-                try:
-                    client.connect(
-                        host=data['host'],
-                        port=safe_cast(data['port'], int, 1883),
-                        # keepalive=60,
-                        # clean_start=MQTT_CLEAN_START_FIRST_ONLY
-                    )
-                except Exception as e:
-                    print(f'MQTT Error: {e}')
+                client.connect(
+                    host=data['host'],
+                    port=safe_cast(data['port'], int, 1883),
+                    # keepalive=60,
+                    # clean_start=MQTT_CLEAN_START_FIRST_ONLY
+                )
 
                 # Set topics
                 # TODO: Set topics based on prefix

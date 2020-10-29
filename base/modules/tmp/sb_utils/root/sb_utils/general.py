@@ -25,6 +25,14 @@ from typing import (
 
 
 # Util Functions
+def camelCase(s: str, delim: str = '_') -> str:
+    s = s.split(delim)
+    camel = s[0]
+    for p in s[1:]:
+        camel += f'{p[0].upper()}{p[1:]}'
+    return camel
+
+
 def toBytes(b: Any) -> bytes:
     """
     Convert a given type to a default byte string

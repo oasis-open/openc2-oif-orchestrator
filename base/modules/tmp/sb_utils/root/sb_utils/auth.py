@@ -9,6 +9,7 @@ from typing import (
     Union
 )
 from .general import (
+    camelCase,
     toBytes,
     toStr
 )
@@ -36,7 +37,7 @@ class Auth:
                 path = os.path.join(self._certsDir.name, cert)
                 with open(path, 'w+b') as f:
                     f.write(base64.b64decode(val.split(b'base64,')[1]))
-                setattr(self, cert, path)
+                setattr(self, camelCase(cert), path)
 
     def __enter__(self):
         return self
