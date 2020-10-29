@@ -28,7 +28,8 @@ def mqtt_on_connect(client: mqtt.Client, userdata: Any, flags: dict, rc: int) ->
         if not all(isinstance(t, str) for t in userdata):
             print("Error in on_connect. Expected topic to be type a list of strings.")
             return
-        print(f"{client} listening on `{'`, `'.join(t.lower() for t in userdata)}`")
+        (host, port) = client.socket().getpeername()
+        print(f"{host}:{port} listening on `{'`, `'.join(t.lower() for t in userdata)}`")
         for topic in userdata:
             client.subscribe(topic.lower(), qos=1)
 
@@ -40,35 +41,39 @@ def mqtt_on_message(client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage) -
     :param userdata: User-defined data passed to callbacks
     :param msg: Contains payload, topic, qos, retain
     """
-    payload = Message.unpack(msg.payload)
-    print(f'Received: {payload}')
-    # TODO: validate origin format
-    profile, broker_socket = payload.origin.rsplit("@", 1)
+    try:
+        payload = Message.unpack(msg.payload)
+        print(f'Received: {payload}')
+        # TODO: validate origin format
+        profile, broker_socket = payload.origin.rsplit("@", 1)
 
-    # Copy necessary headers
-    header = {
-        "socket": broker_socket,
-        "correlationID": str(payload.request_id),
-        "profile": profile,
-        "encoding": payload.serialization,
-        "transport": "mqtt"
-    }
+        # Copy necessary headers
+        header = {
+            "socket": broker_socket,
+            "correlationID": str(payload.request_id),
+            "profile": profile,
+            "encoding": payload.serialization,
+            "transport": "mqtt"
+        }
 
-    # Connect and publish to internal buffer
-    exchange = "orchestrator"
-    route = "response"
-    producer = Producer(
-        os.environ.get("QUEUE_HOST", "queue"),
-        os.environ.get("QUEUE_PORT", "5672")
-    )
+        # Connect and publish to internal buffer
+        exchange = "orchestrator"
+        route = "response"
+        producer = Producer(
+            os.environ.get("QUEUE_HOST", "queue"),
+            os.environ.get("QUEUE_PORT", "5672")
+        )
 
-    producer.publish(
-        headers=header,
-        message=payload.content,
-        exchange=exchange,
-        routing_key=route
-    )
-    print(f"Received: {payload} \nPlaced message onto exchange [{exchange}] queue [{route}].")
+        producer.publish(
+            headers=header,
+            message=payload.content,
+            exchange=exchange,
+            routing_key=route
+        )
+        print(f"Received: {payload} \nPlaced message onto exchange [{exchange}] queue [{route}].")
+    except Exception as e:
+        print(f"Received: {msg.payload}")
+        print(f"MQTT message error: {e}")
 
 
 # TODO: MQTT subscribe to responses
@@ -80,20 +85,13 @@ class ResponseSubscriptions:
     client_id: str
     debug: bool
     # Dict['socket', mqtt.Client]
-    mqtt_clients = Dict[str, mqtt.Client]
+    mqtt_clients: Dict[str, mqtt.Client]
 
-    def __init__(self, debug: bool = False):
+    def __init__(self, client_id: str = "oif-orchestrator-subscribe", debug: bool = False):
         super().__init__()
-        self.mqtt_clients = {}
+        self.client_id = client_id
         self.debug = debug
-
-    def start(self, data: FrozenDict) -> None:
-        for t_id, args in data.items():
-            self._check_subscribe(args)
-
-    def update(self, data: FrozenDict) -> None:
-        for t_id, args in data.items():
-            self._check_subscribe(args)
+        self.mqtt_clients = {}
 
     def shutdown(self):
         for socket, client in self.mqtt_clients.items():
@@ -102,16 +100,33 @@ class ResponseSubscriptions:
             client.loop_stop()  # stop loop
 
     # Helper functions
+    def _subscribe(self, data: FrozenDict) -> None:
+        for args in data.values():
+            self._check_subscribe(args)
+        print(self.mqtt_clients.keys())
+
+    # Use same function for starting and updating
+    start = _subscribe
+    update = _subscribe
+
     def _check_subscribe(self, data: FrozenDict) -> None:
         socket = '{host}:{port}'.format(**data)
         client = self.mqtt_clients.setdefault(socket, mqtt.Client(
-            # TODO: add orc_id ??
-            client_id=f"oif-orchestrator-subscribe"
+            client_id=self.client_id,
             # clean_session=None
+            # Subscriptions topics
+            # TODO: Set topics based on prefix
+            userdata=['+/+/oc2/rsp', '+/oc2/rsp', 'oc2/rsp']
         ))
 
         if client.is_connected():
             # TODO: Update connection??
+
+            # Set topics
+            # TODO: Set topics based on prefix
+            # topics = ['+/+/oc2/rsp', '+/oc2/rsp', 'oc2/rsp']
+            # client.user_data_set(topics)
+
             pass
         else:
             # Auth
@@ -131,17 +146,15 @@ class ResponseSubscriptions:
                         keyfile=auth.clientKey
                     )
 
-                client.connect(
-                    host=data['host'],
-                    port=safe_cast(data['port'], int, 1883),
-                    # keepalive=60,
-                    # clean_start=MQTT_CLEAN_START_FIRST_ONLY
-                )
-
-                # Set topics
-                # TODO: Set topics based on prefix
-                topics = ['+/+/oc2/rsp', '+/oc2/rsp', 'oc2/rsp']
-                client.user_data_set(topics)
+                try:
+                    client.connect(
+                        host=data['host'],
+                        port=safe_cast(data['port'], int, 1883),
+                        # keepalive=60,
+                        # clean_start=MQTT_CLEAN_START_FIRST_ONLY
+                    )
+                except Exception as e:
+                    print(f'MQTT Error: {e}')
 
                 # Set callbacks
                 client.on_connect = mqtt_on_connect

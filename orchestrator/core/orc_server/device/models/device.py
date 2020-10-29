@@ -133,7 +133,7 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
     """
     device_id = serializers.UUIDField(format="hex_verbose")
     transport = TransportPolymorphicSerializer(many=True, read_only=True)
-    note = serializers.CharField(allow_blank=True)
+    note = serializers.CharField(allow_blank=True, default="")
 
     class Meta:
         model = Device

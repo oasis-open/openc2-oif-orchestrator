@@ -20,13 +20,14 @@ def command_response(body, message):
     actuator = None
 
     if headers.get('error', False):
-        correlation_ID = headers['source'].get('correlationID', '')
+        corr_ID = headers.get('source', {}).get('correlationID', '')
         opts = {
-            '_coap_id' if isHex(correlation_ID) else 'command_id': correlation_ID
+            '_coap_id' if isHex(corr_ID) else 'command_id': corr_ID
         }
 
         command = get_or_none(SentHistory, **opts)
-        log.error(msg=f'Message Failure: cmd - {command.command_id}, {body}')
+        info = command.command_id if command else headers
+        log.error(msg=f'Message Failure: cmd - {info}, {body}')
 
         response = {
             'error': body
@@ -34,9 +35,9 @@ def command_response(body, message):
 
     else:
         act_host, act_port = headers.get('socket', '127.0.0.1:0000').split(':', 1)
-        correlation_ID = headers.get('correlationID', '')
+        corr_ID = headers.get('correlationID', '')
         opts = {
-            '_coap_id' if isHex(correlation_ID) else 'command_id': correlation_ID
+            '_coap_id' if isHex(corr_ID) else 'command_id': corr_ID
         }
 
         command = get_or_none(SentHistory, **opts)

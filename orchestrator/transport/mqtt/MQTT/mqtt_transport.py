@@ -7,7 +7,10 @@ from responses import ResponseSubscriptions
 
 if __name__ == '__main__':
     # Initialize responses object
-    rsps = ResponseSubscriptions()
+    rsps = ResponseSubscriptions(
+        # TODO: add orc_id to client_id ??
+        # client_id=
+    )
 
     # Gather transport from etcd
     transport_cache = EtcdCache(

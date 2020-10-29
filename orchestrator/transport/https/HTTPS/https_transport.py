@@ -23,6 +23,7 @@ def process_message(body, message):
     for device in rcv_headers["destination"]:
         device_socket = device["socket"]  # device IP:port
         encoding = device["encoding"]  # message encoding
+        path = f"/{device['path']}" if "path" in device else ""
 
         if device_socket and encoding and orc_socket:
             with Auth(device.get("auth", {})) as auth:
@@ -38,9 +39,9 @@ def process_message(body, message):
 
                     try:
                         rslt = requests.post(
-                            url=f"https://{device_socket}",
+                            url=f"https://{device_socket}{path}",
                             headers={
-                                "Content-type": f"application/openc2-cmd+{encoding};version=1.0",
+                                "Content-Type": f"application/openc2-cmd+{encoding};version=1.0",
                                 # Numeric status code supplied by Actuator's OpenC2-Response
                                 # "Status": ...,
                                 "X-Request-ID": corr_id,

@@ -190,9 +190,14 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts: List[Actuator], s
                     **({'format': fmt} if fmt else {})
                 )
 
+            if trans.protocol.name.startswith('HTTP'):
+                dst.update(
+                    path=trans.path
+                )
+
             # Get Auth
-            auth = {}
-            for key in ["username", "password", "ca_cert", "client_cert", "client_key"]:
+            auth = {"username": trans.username} if hasattr(trans, "username") else {}
+            for key in ["password", "ca_cert", "client_cert", "client_key"]:
                 val = getattr(trans, key, '')
                 if val != '':
                     auth[key] = to_str(settings.CRYPTO.encrypt(to_bytes(val)))
