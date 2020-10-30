@@ -1,8 +1,10 @@
+import etcd
 import re
 import pymysql
 import os
 import datetime
 import base64
+
 from cryptography.fernet import Fernet
 from sb_utils import safe_cast
 from .config import Config
@@ -18,9 +20,6 @@ FIXTURE_DIRS = [
 
 if not os.path.isdir(DATA_DIR):
     os.mkdir(DATA_DIR)
-
-CONF_FILE = os.path.join(DATA_DIR, 'settings.json')
-CONFIG = Config(CONF_FILE)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -356,12 +355,11 @@ FERNET_KEYS = [k.decode('utf-8') if isinstance(k, bytes) else str(k) for k in [
 ] if k]
 
 # ETCD
-ETCD = {
-    'host': os.environ.get('ETCD_HOST', 'localhost'),
-    'port': safe_cast(os.environ.get('ETCD_PORT', 4001), int, 4001)
-}
-
-ETCD_CLIENT = None
+ETCD_CLIENT = etcd.Client(
+    host=os.environ.get('ETCD_HOST', 'localhost'),
+    port=safe_cast(os.environ.get('ETCD_PORT', 2379), int, 2379)
+)
+CONFIG = Config(ETCD_CLIENT)
 
 # App stats function
 STATS_FUN = 'app_stats'

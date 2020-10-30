@@ -1,18 +1,15 @@
-import json
-import os
+import etcd
+import re
 import uuid
 
 from functools import partial
 
 
-def safeJSON(obj):
-    if isinstance(obj, uuid.UUID):
-        return str(obj)
-
-
 class Config:
+    _etcd: etcd.Client
+    _prefix: str
     # Setting Vars
-    OrchestratorID: uuid.uuid4 = uuid.uuid4()
+    OrchestratorID: uuid.uuid4
 
     # Helper Vars
     _slots = {
@@ -20,25 +17,24 @@ class Config:
     }
     _configFile: str
 
-    def __init__(self, save: str):
-        self._configFile = save
-
-        opts = {}
-        if os.path.isfile(self._configFile):
-            with open(self._configFile, 'r') as f:
-                tmp = f.read()
-            opts = json.loads(tmp)
-
-        for k, v in opts.items():
-            if k in self._slots:
-                anot = self._slots[k]
+    def __init__(self, conn: etcd.Client, prefix: str = 'orchestrator'):
+        self._etcd = conn
+        self._prefix = prefix if prefix.endswith('/') else f'{prefix}/'
+        self._prefix = self._prefix if self._prefix.startswith('/') else f'/{self._prefix}'
+        try:
+            for k in self._etcd.read(self._prefix, recursive=True).children:
+                key = re.sub(fr'^{self._prefix}', '', k.key)
                 try:
-                    setattr(self, k, anot(v))
-                except Exception as e:
-                    setattr(self, k, self.__annotations__[k]())
-        self.save()
+                    annot = self._slots.get(key, None)
+                    setattr(self, key, annot(k.value))
+                except Exception:
+                    setattr(self, key, self.__annotations__[key]())
+        except etcd.EtcdKeyNotFound:
+            for key in self._slots.keys():
+                setattr(self, key, self.__annotations__[key]())
 
-    def save(self):
-        opts = {k: getattr(self, k, None) for k in self._slots}
-        with open(self._configFile, 'w') as f:
-            json.dump(opts, f, default=safeJSON, indent=2)
+    def __setattr__(self, key, value):
+        if key in self._slots:
+            if getattr(self, key, None) != value:
+                self._etcd.write(f'{self._prefix}/{key}', value)
+        object.__setattr__(self, key, value)

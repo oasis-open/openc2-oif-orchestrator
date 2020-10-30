@@ -44,7 +44,7 @@ chmod +x /docker-entrypoint.sh && \
 chmod +x /opt/orc_server/dev_start.sh && \
 dos2unix /docker-entrypoint.sh && \
 dos2unix /opt/orc_server/dev_start.sh && \
-chown -R django:django /opt/orc_server && \
+# chown -R django:django /opt/orc_server && \
 #
 # Cleanup
 apk del .build-deps && \
