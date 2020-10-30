@@ -1,5 +1,5 @@
 bleach==3.2.1
-cryptography==3.1.1
+cryptography==3.2.1
 django==3.1.2
 django-cors-headers==3.5.0
 django-fernet-fields==0.6
@@ -13,11 +13,11 @@ djangorestframework-files==1.1.0
 djangorestframework-jwt==1.11.0
 djangorestframework-queryfields==1.0.0
 djangorestframework-xml==2.0.0
-drf-writable-nested==0.6.1
-elasticsearch-dsl==7.2.1
+drf-writable-nested==0.6.2
+elasticsearch-dsl==7.3.0
 jsonfield==3.1.0
 python-etcd==0.4.5
-pyexcel-xls==0.5.9
+pyexcel-xls==0.6.1
 PyMySQL==0.10.1
 uwsgi==2.0.19.1
 whitenoise==5.2.0
