@@ -12,13 +12,15 @@ class MessageType(int, Enum):
     @classmethod
     def from_name(cls, fmt: str):
         name = fmt.capitalize()
-        if name in cls.__members__:
+        members = dict(cls.__members__)
+        if name in members:
             return cls.__getattr__(name)
         raise ValueError(f'{name} is not a valid format name')
 
     @classmethod
     def from_value(cls, fmt: int):
-        for k, v in cls.__members__.items():
+        members = dict(cls.__members__)
+        for k, v in members.items():
             if fmt == v:
                 return cls.__getattr__(k)
         raise ValueError(f'{fmt} is not a valid format value')
@@ -50,13 +52,15 @@ class SerialTypes(int, Enum):
     @classmethod
     def from_name(cls, fmt: str):
         name = fmt.upper()
-        if name in cls.__members__:
+        members = dict(cls.__members__)
+        if name in members:
             return cls.__getattr__(name)
         raise ValueError(f'{name} is not a valid format name')
 
     @classmethod
     def from_value(cls, fmt: int):
-        for k, v in cls.__members__.items():
+        members = dict(cls.__members__)
+        for k, v in members.items():
             if fmt == v:
                 return cls.__getattr__(k)
         raise ValueError(f'{fmt} is not a valid format value')

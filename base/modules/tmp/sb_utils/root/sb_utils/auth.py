@@ -4,10 +4,7 @@ import os
 
 from cryptography.fernet import Fernet
 from tempfile import TemporaryDirectory
-from typing import (
-    Dict,
-    Union
-)
+from typing import Dict, Union
 from .general import (
     camelCase,
     toBytes,
@@ -42,7 +39,7 @@ class Auth:
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.cleanup()
 
     def cleanup(self):

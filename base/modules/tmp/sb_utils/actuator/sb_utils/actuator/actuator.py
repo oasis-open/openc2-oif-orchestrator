@@ -19,12 +19,26 @@ from . import (
     general
 )
 
+# Constants
+ROOT_DIR = os.getcwd()
+ACT_ID = str(uuid.uuid4())
 
-class ActuatorBase(object):
-    _ROOT_DIR = os.getcwd()
-    _ACT_ID = str(uuid.uuid4())
 
-    def __init__(self, root: str = _ROOT_DIR, act_id: str = _ACT_ID) -> None:
+class ActuatorBase:
+    # default set vats
+    _prefix: str = '/actuator'
+
+    # Dynamically set vars
+    _config: FrozenDict
+    _dispatch: dispatch.Dispatch
+    _etcd: etcd.Client
+    _pairs: FrozenDict
+    _profile: str
+    _valid_actions: Tuple[str, ...]
+    _valid_targets: Tuple[str, ...]
+    _validator: general.ValidatorJSON
+
+    def __init__(self, root: str = ROOT_DIR, act_id: str = ACT_ID) -> None:
         """
         Initialize and start the Actuator Process
         :param root: rood directory of actuator - default CWD
@@ -39,7 +53,7 @@ class ActuatorBase(object):
             json.dump(config, open(config_file, "w"), indent=4)
 
         # Initialize etcd client
-        self.etcdClient = etcd.Client(
+        self._etcd = etcd.Client(
             host=os.environ.get('ETCD_HOST', 'etcd'),
             port=safe_cast(os.environ.get('ETCD_PORT', 4001), int, 4001)
         )
@@ -51,24 +65,21 @@ class ActuatorBase(object):
         )
         self._dispatch = dispatch.Dispatch(act=self, dispatch_transform=self._dispatch_transform)
         self._dispatch.register(exceptions.action_not_implemented, "default")
-        self._pairs = None
 
         # Get valid Actions & Targets from the schema
         self._profile = self._config.schema.get("title", "N/A").replace(" ", "_").lower()
         self._validator = general.ValidatorJSON(schema)
         schema_defs = self._config.schema.get("definitions", {})
 
-        self._prefix = '/actuator'
         profiles = self.nsid if len(self.nsid) > 0 else [self._profile]
-
         for profile in profiles:
-            self.etcdClient.write(f"{self._prefix}/{profile}", self._config.actuator_id)
+            self._etcd.write(f"{self._prefix}/{profile}", self._config.actuator_id)
 
         self._valid_actions = tuple(a["const"] for a in schema_defs.get("Action", {}).get("oneOf", []))
         self._valid_targets = tuple(schema_defs.get("Target", {}).get("properties", {}).keys())
 
     def __repr__(self) -> str:
-        return f"Actuator({self.profile})"
+        return f"Actuator({self._profile})"
 
     @property
     def nsid(self) -> List[str]:
@@ -84,7 +95,7 @@ class ActuatorBase(object):
         Valid Action/Target pairs registered to this actuator instance
         :return: Action/Target Pairs
         """
-        if self._pairs is None:
+        if not hasattr(self, "_pairs"):
             pairs = {}
             for p in self._dispatch.registered:
                 p = p.split(".")
@@ -128,11 +139,9 @@ class ActuatorBase(object):
             if len(targets) == 1:
                 rtn = self._dispatch.dispatch(key=f"{action}.{targets[0]}", cmd_id=msg_id, **msg)
                 return None if response_requested.lower() == "none" else rtn
-            else:
-                return exceptions.bad_request()
-        else:
-            print(f"Invalid Command - {msg} -> [{', '.join(getattr(e, 'message', e) for e in errors)}]")
             return exceptions.bad_request()
+        print(f"Invalid Command - {msg} -> [{', '.join(getattr(e, 'message', e) for e in errors)}]")
+        return exceptions.bad_request()
 
     def _dispatch_transform(self, *args: tuple, **kwargs: dict) -> Tuple[Union[None, tuple], dict]:
         # Helper Functions
@@ -155,4 +164,4 @@ class ActuatorBase(object):
     def shutdown(self) -> None:
         profiles = self.nsid if len(self.nsid) > 0 else [self._profile]
         for profile in profiles:
-            self.etcdClient.delete(f"{self._prefix}/{profile}")
+            self._etcd.delete(f"{self._prefix}/{profile}")
