@@ -36,8 +36,7 @@ export default merge(baseConfig, {
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].bundle.min.css',
-      chunkFilename: 'css/[name].bundle.min.css',
-      allChunks: true
+      chunkFilename: 'css/[name].bundle.min.css'
     }),
     new CopyWebpackPlugin({
       patterns: [

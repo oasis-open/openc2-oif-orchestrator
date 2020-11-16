@@ -16,8 +16,9 @@ from sb_utils import QueryDict
 
 
 class Dispatch:
+    _dispatch_transform: Callable[[tuple, dict], Tuple[Union[tuple, None], dict]]
+    _func_kwargs: Dict[str, Any]
     _namespace: str
-    _func_kwargs: Dict[str, Any] = dict
     _registered: QueryDict
 
     def __init__(self, namespace: str = "Dispatch", dispatch_transform: Callable[[tuple, dict], Tuple[Union[tuple, None], dict]] = None, **kwargs) -> None:
@@ -31,7 +32,7 @@ class Dispatch:
         self._dispatch_transform = dispatch_transform
         self._func_kwargs = kwargs
         self._registered = QueryDict(
-            default=lambda *args, **kwargs: AttributeError("Default function not set")
+            default=lambda *a, **k: AttributeError("Default function not set")
         )
 
     @property
@@ -51,6 +52,7 @@ class Dispatch:
         """
         return self._registered.compositeKeys()
 
+    # pylint: disable=keyword-arg-before-vararg
     def dispatch(self, key: str = None, *args, **kwargs) -> dict:
         """
         Dispatch function based on the given key with the args and kwargs
@@ -63,12 +65,13 @@ class Dispatch:
         fun_kwargs = self._func_kwargs.copy()
         fun_kwargs.update(kwargs)
 
-        if self._dispatch_transform:
-            args, fun_kwargs = self._dispatch_transform(*args, **fun_kwargs)
+        if fun_trans := self._dispatch_transform:
+            args, fun_kwargs = fun_trans(*args, **fun_kwargs)
 
         return fun(*args, **fun_kwargs) if isinstance(args, tuple) else kwargs
 
-    def register(self, fun: Callable = None, key: str = None) -> Union[None, Callable]:
+    # pylint: disable=keyword-arg-before-vararg
+    def register(self, fun: Callable = None, key: str = None) -> Callable:
         """
         Register a function
         usable as a wrapper or standard function call
@@ -78,8 +81,9 @@ class Dispatch:
         if fun is None and key:
             return partial(self.register, key=key)
 
-        key = key if key else fun.__name__
+        key = key or fun.__name__
         self._registered[key] = fun
+        return fun
 
     def register_dispatch(self, dispatch: 'Dispatch' = None) -> None:
         """
@@ -90,8 +94,7 @@ class Dispatch:
             if dispatch.namespace in self._registered:
                 raise NameError(f"Cannot register a namespace twice, { dispatch.namespace } already exists")
             self._registered[dispatch.namespace] = dispatch._registered
-        else:
-            raise AttributeError("Cannot register a dispatch without a namespace")
+        raise AttributeError("Cannot register a dispatch without a namespace")
 
     # Helper Functions
     def _dispatch(self, key: str = "", rem_key: tuple = (), init: bool = False) -> Callable[[tuple, dict], dict]:
@@ -107,11 +110,8 @@ class Dispatch:
             key = keys[0]
             rem_key = tuple(keys[1:])
 
-        val = self._registered.get(key, None)
-        if val:
+        if val := self._registered.get(key, None):
             if isfunction(val) and not init:
                 return val
-            else:
-                return self._dispatch(".".join([key, rem_key[0]]), rem_key=() if len(rem_key) == 0 else rem_key[1:])
-        else:
-            return self._registered.get(".".join([*key.split(".")[:-1], "default"]), self._registered["default"])
+            return self._dispatch(".".join([key, rem_key[0]]), rem_key=() if len(rem_key) == 0 else rem_key[1:])
+        return self._registered.get(".".join([*key.split(".")[:-1], "default"]), self._registered["default"])

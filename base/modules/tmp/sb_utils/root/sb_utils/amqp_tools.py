@@ -171,7 +171,7 @@ class Consumer(Process):
             if bind_queue:
                 if isinstance(bind_queue, list) and queue not in bind_queue:
                     continue
-                elif isinstance(bind_queue, str) and queue != bind_queue:
+                if isinstance(bind_queue, str) and queue != bind_queue:
                     continue
 
             for bind in manager.get_queue_bindings(vhost="/", qname=queue):
@@ -179,7 +179,7 @@ class Consumer(Process):
                 if bind_exchange:
                     if isinstance(bind_exchange, list) and exchange not in bind_exchange:
                         continue
-                    elif isinstance(bind_exchange, str) and exchange != bind_exchange:
+                    if isinstance(bind_exchange, str) and exchange != bind_exchange:
                         continue
                 binds.append({
                     "exchange": exchange,

@@ -106,7 +106,7 @@ class Message:
         msg = decode_msg(m, serial)
         headers = msg.get('headers', None)
         body = msg.get('body', None)
-        if headers is None or body is None:
+        if None in [headers, body]:
             raise KeyError('Message is not properly formatted with keys of `headers` and `body`')
 
         if created := headers.get('created', None):
@@ -115,25 +115,23 @@ class Message:
         if request_id := headers.get('request_id', None):
             request_id = uuid.UUID(request_id)
 
-        msgType = MessageType.from_name(list(body['openc2'].keys())[0])
+        msg_type = list(body['openc2'].keys())[0]
         return cls(
             recipients=headers.get('to', None),
             origin=headers.get('from', None),
             created=created,
-            msg_type=msgType,
+            msg_type=MessageType.from_name(msg_type),
             request_id=request_id,
             serialization=serial,
-            content=body['openc2'][msgType.name.lower()]
+            content=body['openc2'][msg_type]
         )
 
     # Struct like options
     def pack(self) -> bytes:
-        b_msg = toBytes(self.oc2_message(serialize=True))
-
         return bytes([
             self.msg_type,
             SerialTypes.from_name(self.content_type)
-        ]) + b_msg
+        ]) + toBytes(self.oc2_message(serialize=True))
 
     @classmethod
     def unpack(cls, m: bytes) -> 'Message':
@@ -141,7 +139,7 @@ class Message:
         msg = decode_msg(m[2:], serial, raw=True)
         headers = msg.get('headers', None)
         body = msg.get('body', None)
-        if headers is None or body is None:
+        if None in [headers, body]:
             raise KeyError('Message is not properly formatted with keys of `headers` and `body`')
 
         if created := headers.get('created', None):
@@ -150,15 +148,15 @@ class Message:
         if request_id := headers.get('request_id', None):
             request_id = uuid.UUID(request_id)
 
-        msgType = MessageType.from_name(list(body['openc2'].keys())[0])
+        msg_type = list(body['openc2'].keys())[0]
         return cls(
             recipients=headers.get('to', None),
             origin=headers.get('from', None),
             created=created,
-            msg_type=msgType,
+            msg_type=MessageType.from_name(msg_type),
             request_id=request_id,
             serialization=serial,
-            content=body['openc2'][msgType.name.lower()]
+            content=body['openc2'][msg_type]
         )
 
     # Dumper/Loader

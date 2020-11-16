@@ -8,8 +8,6 @@ from typing import (
     Tuple,
     Union
 )
-
-# Local imports
 from .general import isFunction
 from .ext_dicts import FrozenDict, QueryDict
 

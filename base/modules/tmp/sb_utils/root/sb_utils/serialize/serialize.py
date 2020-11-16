@@ -30,7 +30,7 @@ except ImportError:
 
 
 serializations = ext_dicts.FrozenDict(
-    encode=ext_dicts.FrozenDict(
+    encode=dict(
         binn=pybinn.dumps,
         bencode=helpers.bencode_encode,
         bson=bson.dumps,
@@ -45,7 +45,7 @@ serializations = ext_dicts.FrozenDict(
         vpack=helpers.vpack_encode,
         yaml=lambda m: yaml.dump(m, Dumper=Dumper)
     ),
-    decode=ext_dicts.FrozenDict(
+    decode=dict(
         binn=pybinn.loads,
         bencode=helpers.bencode_decode,
         bson=bson.loads,
