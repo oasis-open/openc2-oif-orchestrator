@@ -1,10 +1,12 @@
 import atexit
+import etcd
 import sys
 
 from django.apps import AppConfig
 from django.conf import settings
 
 from utils import MessageQueue
+from .config import Config
 
 
 class OrchestratorConfig(AppConfig):
@@ -25,6 +27,8 @@ class OrchestratorConfig(AppConfig):
 
         from command.processors import command_response  # pylint: disable=import-outside-toplevel
         settings.MESSAGE_QUEUE = MessageQueue(**settings.QUEUE, callbacks=[command_response])
+        settings.ETCD_CLIENT = etcd.Client(**settings.ETCD)
+        settings.CONFIG = Config(settings.ETCD_CLIENT)
 
 
 @atexit.register

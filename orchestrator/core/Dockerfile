@@ -63,4 +63,4 @@ WORKDIR /opt/orc_server
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Startup Command
-CMD ["uwsgi", "--ini", "/opt/orc_server/uwsgi.ini"]
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "orchestrator.wsgi:application"]

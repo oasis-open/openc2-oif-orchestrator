@@ -6,6 +6,7 @@ import datetime
 import base64
 
 from cryptography.fernet import Fernet
+from utils import MessageQueue
 from sb_utils import safe_cast
 from .config import Config
 
@@ -341,7 +342,7 @@ QUEUE = {
     'producer_exchange': 'transport'
 }
 
-MESSAGE_QUEUE = None
+MESSAGE_QUEUE: MessageQueue = None
 
 # Security
 CRYPTO = Fernet(os.environ['TRANSPORT_SECRET']) if 'TRANSPORT_SECRET' in os.environ else None
@@ -355,11 +356,15 @@ FERNET_KEYS = [k.decode('utf-8') if isinstance(k, bytes) else str(k) for k in [
 ] if k]
 
 # ETCD
-ETCD_CLIENT = etcd.Client(
-    host=os.environ.get('ETCD_HOST', 'localhost'),
-    port=safe_cast(os.environ.get('ETCD_PORT', 2379), int, 2379)
-)
-CONFIG = Config(ETCD_CLIENT)
+ETCD = {
+    "host": os.environ.get('ETCD_HOST', 'localhost'),
+    "port": safe_cast(os.environ.get('ETCD_PORT', 2379), int, 2379)
+}
+
+ETCD_CLIENT: etcd.Client
+
+# Config
+CONFIG: Config
 
 # App stats function
 STATS_FUN = 'app_stats'

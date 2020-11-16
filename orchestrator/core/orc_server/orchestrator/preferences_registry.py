@@ -79,7 +79,7 @@ class OrchestratorID(StringPreference):
     section = orchestrator
     name = "id"
     help_text = "The uuid of the orchestrator"
-    default = str(settings.CONFIG.OrchestratorID)
+    default = str(settings.CONFIG.OrchestratorID) if hasattr(settings, "CONFIG") else ""
 
     def validate(self, value):
         """
