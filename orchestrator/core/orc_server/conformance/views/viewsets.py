@@ -9,9 +9,10 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+
 # Local imports
 from actuator.models import Actuator, ActuatorSerializerReadOnly
-from utils import FrozenDict
+from utils import FrozenDict, ViewPermissions
 from ..models import ConformanceTest, ConformanceTestSerializer
 from ..tests import get_tests, load_test_suite, tests_in_suite, TestResults
 
@@ -36,7 +37,7 @@ def toFrozen(o) -> FrozenDict:
     return o
 
 
-class ConformanceViewSet(viewsets.ReadOnlyModelViewSet):
+class ConformanceViewSet(viewsets.ReadOnlyModelViewSet, ViewPermissions):
     permission_classes = (IsAuthenticated,)
     serializer_class = ConformanceTestSerializer
     lookup_field = 'test_id'
@@ -48,12 +49,6 @@ class ConformanceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ConformanceTest.objects.order_by('-test_time')
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('test_id', 'actuator_tested', 'test_time', 'tests_run', 'test_results')
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [permission() for permission in self.permissions.get(self.action, self.permission_classes)]
 
     def list(self, request, *args, **kwargs):
         """
@@ -88,7 +83,7 @@ class ConformanceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class UnitTests(viewsets.ViewSet):
+class UnitTests(ViewPermissions):
     permission_classes = (IsAuthenticated,)
     serializer_class = None  # ConformanceTestSerializer
     lookup_field = 'profile'
@@ -101,13 +96,6 @@ class UnitTests(viewsets.ViewSet):
     # Custom attributes
     unittest_Suite = load_test_suite()
     loaded_tests = tests_in_suite(unittest_Suite)
-
-    # Override methods
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [permission() for permission in self.permissions.get(self.action, self.permission_classes)]
 
     # View methods
     def create(self, request, *args, **kwargs):

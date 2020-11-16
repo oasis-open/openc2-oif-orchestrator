@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('username', 'password', 'email', 'first_name', 'last_name', 'token', 'is_active', 'is_staff',
                   'auth_groups', 'actuator_groups', 'device_groups')
         extra_kwargs = {
@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.setdefault('is_superuser', False)
-        user = super(UserSerializer, self).create(validated_data)
+        user = super().create(validated_data)
         if 'password' in validated_data:
             user.set_password(validated_data['password'])
             user.save()
@@ -50,9 +50,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         validated_data.setdefault('is_superuser', False)
+        userModel = get_user_model()
 
-        super_users = list(User.objects.filter(is_superuser=True))
-        staff_users = list(User.objects.filter(is_staff=True))
+        super_users = list(userModel.objects.filter(is_superuser=True))
+        staff_users = list(userModel.objects.filter(is_staff=True))
 
         if instance in super_users:
             if len(super_users) == 1:
@@ -65,7 +66,7 @@ class UserSerializer(serializers.ModelSerializer):
         if 'password' in validated_data:
             password = validated_data.pop('password')
             instance.set_password(password)
-        return super(UserSerializer, self).update(instance, validated_data)
+        return super().update(instance, validated_data)
 
 
 class PasswordSerializer(serializers.Serializer):

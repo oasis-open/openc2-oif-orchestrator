@@ -1,6 +1,6 @@
 import uuid
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import m2m_changed, post_delete
 from django.db.utils import IntegrityError
@@ -71,7 +71,7 @@ class DeviceGroup(models.Model):
         unique=True
     )
     users = models.ManyToManyField(
-        User,
+        get_user_model(),
         blank=True,
         help_text="Users in the group"
     )
@@ -141,7 +141,7 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('transport', None)
-        device = super(DeviceSerializer, self).create(validated_data)
+        device = super().create(validated_data)
 
         for trans in self.initial_data.get('transport', []):
             tr = TransportPolymorphicSerializer(data=trans)
@@ -154,7 +154,7 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
 
     def update(self, instance, validated_data):
         validated_data.pop('transport', None)
-        device = super(DeviceSerializer, self).update(instance, validated_data)
+        device = super().update(instance, validated_data)
 
         for trans in self.initial_data.get('transport', []):
             tr = TransportPolymorphicSerializer(data=trans)

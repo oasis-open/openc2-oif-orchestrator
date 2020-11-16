@@ -19,7 +19,7 @@ class TrackingConfig(AppConfig):
     SENSITIVE_FIELDS = []
 
     def __init__(self, app_name, app_module):
-        super(TrackingConfig, self).__init__(app_name, app_module)
+        super().__init__(app_name, app_module)
         self._prefix = TrackingConfig.Meta.prefix
 
         global_settings = {n: getattr(settings, n) for n in dir(settings) if n.startswith(self._prefix)}

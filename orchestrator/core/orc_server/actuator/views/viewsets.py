@@ -6,10 +6,11 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
+from utils import ViewPermissions
 from ..models import Actuator, ActuatorGroup, ActuatorSerializer
 
 
-class ActuatorViewSet(viewsets.ModelViewSet):
+class ActuatorViewSet(viewsets.ModelViewSet, ViewPermissions):
     """
     API endpoint that allows Actuators to be viewed or edited.
     """
@@ -28,12 +29,6 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         'retrieve': (IsAuthenticated,),
         'update':  (IsAdminUser,),
     }
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [permission() for permission in self.permissions.get(self.action, self.permission_classes)]
 
     def list(self, request, *args, **kwargs):
         """

@@ -5,7 +5,6 @@ import uuid
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 from dynamic_preferences.registries import global_preferences_registry
 from typing import (
     List
@@ -20,10 +19,11 @@ from utils import get_or_none, safe_cast, to_bytes, to_str
 from ..models import SentHistory, ResponseHistory
 
 global_preferences = global_preferences_registry.manager()
+User = get_user_model()
 
 
 class Validator:
-    _usr: get_user_model()
+    _usr: User
     _cmd: dict
     _actuator: str
     _channel: dict

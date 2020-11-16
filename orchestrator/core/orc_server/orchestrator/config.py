@@ -6,6 +6,9 @@ from functools import partial
 
 
 class Config:
+    # Base object members
+    __annotations__: dict
+
     _etcd: etcd.Client
     _prefix: str
     # Setting Vars
@@ -27,10 +30,10 @@ class Config:
                 try:
                     annot = self._slots.get(key, None)
                     setattr(self, key, annot(k.value))
-                except Exception:
+                except (TypeError, ValueError):
                     setattr(self, key, self.__annotations__[key]())
         except etcd.EtcdKeyNotFound:
-            for key in self._slots.keys():
+            for key in self._slots:
                 setattr(self, key, self.__annotations__[key]())
 
     def __setattr__(self, key, value):

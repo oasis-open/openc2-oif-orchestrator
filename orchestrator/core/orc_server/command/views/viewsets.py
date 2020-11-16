@@ -5,11 +5,12 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 # Local imports
+from utils import ViewPermissions
 from .actions import action_send
 from ..models import SentHistory, HistorySerializer
 
 
-class HistoryViewSet(viewsets.ModelViewSet):
+class HistoryViewSet(viewsets.ModelViewSet, ViewPermissions):
     """
     API endpoint that allows Command History to be viewed or edited.
     """
@@ -30,12 +31,6 @@ class HistoryViewSet(viewsets.ModelViewSet):
     queryset = SentHistory.objects.order_by('-received_on')
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('command_id', 'user', 'received_on', 'actuators', 'status', 'details')
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [permission() for permission in self.permissions.get(self.action, self.permission_classes)]
 
     def list(self, request, *args, **kwargs):
         """

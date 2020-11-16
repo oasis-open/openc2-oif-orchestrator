@@ -1,10 +1,5 @@
-# from django.db import models
-# from rest_framework import serializers
-
-from typing import Tuple
-
 # Local imports
-from .auth import  TransportAuth, TransportAuthSerializer
+from .auth import TransportAuth, TransportAuthSerializer
 from .http import BaseHTTP, TransportHTTPSerializer
 from utils import removeDuplicates
 

@@ -1,16 +1,16 @@
 from django.db.utils import IntegrityError
-from django.contrib.auth.models import User
-
+from django.contrib.auth import get_user_model
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
+from utils import ViewPermissions
 from ..models import Device, DeviceSerializer
 
 
-class DeviceViewSet(viewsets.ModelViewSet):
+class DeviceViewSet(viewsets.ModelViewSet, ViewPermissions):
     """
     API endpoint that allows Actuators to be viewed or edited.
     """
@@ -28,12 +28,6 @@ class DeviceViewSet(viewsets.ModelViewSet):
         'partial_update': (IsAdminUser,),
         'update':  (IsAdminUser,),
     }
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [permission() for permission in self.permissions.get(self.action, self.permission_classes)]
 
     def list(self, request, *args, **kwargs):
         """
@@ -133,7 +127,7 @@ class DeviceViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied(detail='User not authorised to access device', code=401)
 
         rtn = dict(
-            users=list(u.username for u in User.objects.filter(groups__name=f'Device: {device.name}'))
+            users=list(u.username for u in get_user_model().objects.filter(groups__name=f'Device: {device.name}'))
         )
 
         return Response(rtn)

@@ -5,6 +5,7 @@ from .general import isHex, prefixUUID, randBytes, removeDuplicates, to_bytes, t
 from .messageQueue import MessageQueue
 from .model import get_or_none, ReadOnlyModelAdmin
 from .permissions import IsAdminOrIsSelf
+from .viewsets import ViewPermissions
 
 __all__ = [
     "decode_msg",
@@ -20,5 +21,6 @@ __all__ = [
     "FrozenDict",
     "IsAdminOrIsSelf",
     "MessageQueue",
-    "ReadOnlyModelAdmin"
+    "ReadOnlyModelAdmin",
+    "ViewPermissions"
 ]

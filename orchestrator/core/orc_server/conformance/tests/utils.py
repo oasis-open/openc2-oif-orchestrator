@@ -154,7 +154,7 @@ class TestResults(unittest.TextTestResult):
         else:
             self.addFailure(subtest, err)
 
-        super(TestResults, self).addSubTest(test, subtest, err)
+        super().addSubTest(test, subtest, err)
         # add to total number of tests run
         self.testsRun += 1
 

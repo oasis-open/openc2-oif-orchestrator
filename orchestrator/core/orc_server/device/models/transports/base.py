@@ -28,6 +28,8 @@ class Transport(PolymorphicModel):
     """
     Transport instance object base
     """
+    _old_values: dict
+
     class Meta:
         verbose_name = 'Transport'
 
@@ -51,7 +53,7 @@ class Transport(PolymorphicModel):
             MaxValueValidator(65535)
         ]
     )
-    protocol = models.ForeignKey( 
+    protocol = models.ForeignKey(
         Protocol,
         help_text="Protocol supported by the device",
         on_delete=models.CASCADE
@@ -115,7 +117,7 @@ class Transport(PolymorphicModel):
             if len(trans) > 1:
                 raise DjangoValidationError("host, port, and protocol must make a unique pair unless a pub/sub protocol")
 
-        super(Transport, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def data_dict(self):
         data = {}
@@ -166,8 +168,8 @@ class TransportSerializer(serializers.ModelSerializer):
         if transport_id := bleach.clean(self.initial_data.get('transport_id', '')):
             inst = instance or Transport.objects.filter(transport_id=transport_id).first()
             if inst is not None:
-                return super(TransportSerializer, self).update(inst, validated_data)
-        return super(TransportSerializer, self).create(validated_data)
+                return super().update(inst, validated_data)
+        return super().create(validated_data)
 
     # Serializer Methods
     def get_pub_sub(self, obj):
@@ -198,8 +200,8 @@ def etcd_save(sender, instance=None, **kwargs):
             elif e_key and not db_val:
                 settings.ETCD_CLIENT.delete(f'{key_base}/{key}')
             elif instance.data_changed([key]):
-                    e_key.value = db_val
-                    settings.ETCD_CLIENT.update(e_key)
+                e_key.value = db_val
+                settings.ETCD_CLIENT.update(e_key)
     except etcd.EtcdKeyNotFound:
         for key, val in db_data.items():
             settings.ETCD_CLIENT.write(f'{key_base}/{key}', val)

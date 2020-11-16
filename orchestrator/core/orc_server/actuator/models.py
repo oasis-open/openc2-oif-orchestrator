@@ -1,13 +1,12 @@
 import uuid
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from drf_queryfields import QueryFieldsMixin
 from jsonfield import JSONField
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 # Local imports
 from device.models import Device, DeviceSerializer
@@ -95,7 +94,7 @@ class ActuatorGroup(AbstractGroup):
     Actuator Group instance base
     """
     users = models.ManyToManyField(
-        User,
+        get_user_model(),
         blank=True,
         help_text="Users in the group"
     )
@@ -224,7 +223,7 @@ class ActuatorGroupSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     """
     name = serializers.CharField(max_length=80)
     users = serializers.SlugRelatedField(
-        queryset=User.objects.all(),
+        queryset=get_user_model().objects.all(),
         slug_field='username'
     )
     actuators = serializers.SlugRelatedField(
