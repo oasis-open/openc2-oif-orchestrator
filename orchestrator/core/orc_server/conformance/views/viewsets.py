@@ -4,16 +4,14 @@ import uuid
 
 from io import StringIO
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import viewsets, filters
 from rest_framework.exceptions import NotFound
-from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from typing import Dict, Tuple
 
 # Local imports
 from actuator.models import Actuator, ActuatorSerializerReadOnly
 from utils import FrozenDict
+from utils.viewsets import SecureReadOnlyModelViewSet, SecureViewSet
 from ..models import ConformanceTest, ConformanceTestSerializer
 from ..tests import get_tests, load_test_suite, tests_in_suite, TestResults
 
@@ -38,11 +36,7 @@ def toFrozen(o) -> FrozenDict:
     return o
 
 
-class ViewBase:
-    permissions: Dict[str, Tuple[BasePermission, ...]]
-
-
-class ConformanceViewSet(viewsets.ReadOnlyModelViewSet):
+class ConformanceViewSet(SecureReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = ConformanceTestSerializer
     lookup_field = 'test_id'
@@ -52,54 +46,18 @@ class ConformanceViewSet(viewsets.ReadOnlyModelViewSet):
     }
 
     queryset = ConformanceTest.objects.order_by('-test_time')
-    filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('test_id', 'actuator_tested', 'test_time', 'tests_run', 'test_results')
 
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [perm() for perm in self.permissions.get(self.action, self.permission_classes)]
-
-    def list(self, request, *args, **kwargs):
-        """
-        Return a list of all conformance tests that the user has executed, all tests if admin
-        """
-        self.pagination_class.page_size_query_param = 'length'
-        self.pagination_class.max_page_size = 100
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # if not request.user.is_staff:  # Standard User
-        #     queryset = queryset.filter(user=request.user)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        Return a specific conformance test that the user has executed, any test if admin
-        """
-        command = self.get_object()
-
-        # if not request.user.is_staff:  # Standard User
-        #     if command.user is not request.user:
-        #         raise PermissionDenied(detail='User not authorised to access command', code=401)
-
-        serializer = self.get_serializer(command)
-        return Response(serializer.data)
+    # TODO: set list permissions
+    # TODO: set retrieve permissions
 
 
-class UnitTests(viewsets.ViewSet):
+class UnitTests(SecureViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = None  # ConformanceTestSerializer
     lookup_field = 'profile'
 
-    permissions = {
+    action_permissions = {
         'create': (IsAuthenticated,),
         'retrieve': (IsAuthenticated,),
     }
@@ -107,13 +65,6 @@ class UnitTests(viewsets.ViewSet):
     # Custom attributes
     unittest_Suite = load_test_suite()
     loaded_tests = tests_in_suite(unittest_Suite)
-
-    # Override methods
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [perm() for perm in self.permissions.get(self.action, self.permission_classes)]
 
     # View methods
     def create(self, request, *args, **kwargs):

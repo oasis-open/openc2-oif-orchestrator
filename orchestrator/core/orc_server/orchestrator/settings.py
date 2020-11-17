@@ -342,7 +342,7 @@ QUEUE = {
     'producer_exchange': 'transport'
 }
 
-MESSAGE_QUEUE: MessageQueue = None
+MESSAGE_QUEUE: MessageQueue
 
 # Security
 CRYPTO = Fernet(os.environ['TRANSPORT_SECRET']) if 'TRANSPORT_SECRET' in os.environ else None

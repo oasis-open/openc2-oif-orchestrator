@@ -1,5 +1,6 @@
 import bleach
 
+from rest_framework.exceptions import APIException
 from rest_polymorphic.serializers import PolymorphicSerializer
 from .base import Transport, TransportSerializer
 from .auth import TransportAuth, TransportAuthSerializer, TransportAuthFields
@@ -38,6 +39,15 @@ class TransportPolymorphicSerializer(PolymorphicSerializer):
             return super().create(validated_data)
         if inst := instance or Transport.objects.filter(transport_id=trans_id).first():
             return super().update(inst, validated_data)
+        raise type(
+            "PolymorphicTransportException",
+            (APIException, ),
+            dict(
+                status_code=406,
+                default_detail='Content given does not conform to an available transport.',
+                default_code='not_Acceptable',
+            )
+        )()
 
     # Polymorph functions
     def _safe_fields(self, orig, dst) -> dict:

@@ -14,7 +14,7 @@ class OrchestratorConfig(AppConfig):
     _FALSE_READY = (
         'runserver',
         'orchestrator.wsgi',
-        'uwsgi'
+        'orchestrator.wsgi:application'
     )
 
     def ready(self):
@@ -37,12 +37,5 @@ def shutdown(*args, **kwargs):
     App shutdown and cleanup
     :return: None
     """
-
     if isinstance(settings.MESSAGE_QUEUE, MessageQueue):
         settings.MESSAGE_QUEUE.shutdown()
-
-    try:
-        import uwsgi  # pylint: disable=import-error, import-outside-toplevel
-        print(f"worker {uwsgi.worker_id()} has passed")
-    except ModuleNotFoundError:
-        pass
