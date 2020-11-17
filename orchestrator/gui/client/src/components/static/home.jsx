@@ -72,7 +72,10 @@ const Home = props => {
                 <li>
                   <a href="https://github.com/oasis-tcs/openc2-transf-mqtt" rel="noopener noreferrer" target="_blank">MQTT - In Progress</a>
                 </li>
-                {/* <li>OpenDXL - In Progress</li> */}
+                <li>
+                  <a href="https://github.com/oasis-tcs/openc2-transf-odxl" rel="noopener noreferrer" target="_blank">OpenDXL - In Progress</a>
+                  <p className="mb-1">- Currently not implemented</p>
+                </li>
                 {/* <li>ZMQ - Nonstandard, no specification</li> */}
               </ul>
             </CardBody>
@@ -100,7 +103,7 @@ const Home = props => {
                 <li><a href="http://ubjson.org/" rel="noopener noreferrer" target="_blank">ubjson</a></li>
                 <li>
                   <a href="https://github.com/arangodb/velocypack" rel="noopener noreferrer" target="_blank">VelocityPack (VPack)</a>
-                  <p>- Requires velocity pack to be installed, only C++ module available</p>
+                  <p className="mb-1">- Requires velocity pack to be installed, only C++ module available</p>
                 </li>
                 <li><a href="https://yaml.org/spec/1.2/spec.html" rel="noopener noreferrer" target="_blank">YAML</a></li>
               </ul>
