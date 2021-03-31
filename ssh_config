@@ -1,0 +1,7 @@
+Host ccoe-gitlab.hii-tsd.com
+  IdentitiesOnly=yes
+  UserKnownHostsFile=/dev/null
+  StrictHostKeyChecking=no
+  PasswordAuthentication=yes
+  IdentityFile ~/.ssh/ccoe_rsa
+  StrictHostKeyChecking no
