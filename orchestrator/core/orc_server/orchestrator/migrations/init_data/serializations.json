@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Bencode"
+  },
+  {
+    "name": "BINN"
+  },
+  {
+    "name": "BSON"
+  },
+  {
+    "name": "CBOR"
+  },
+  {
+    "name": "JSON"
+  },
+  {
+    "name": "MsgPack"
+  },
+  {
+    "name": "S_Expression"
+  },
+  {
+    "name": "Smile"
+  },
+  {
+    "name": "Toml"
+  },
+  {
+    "name": "XML"
+  },
+  {
+    "name": "UBJSON"
+  },
+  {
+    "name": "YAML"
+  },
+  {
+    "name": "VPack"
+  }
+]

@@ -1,0 +1,2 @@
+# SB-Utils@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
+requests==2.25.1

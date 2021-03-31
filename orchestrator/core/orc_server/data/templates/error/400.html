@@ -1,0 +1,18 @@
+{% extends "error/base.html" %}
+
+{% block title %}Bad request{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="card mx-auto border-danger mb-3">
+                <div class="card-header">
+                    <h3>Bad Request (400)</h3>
+                </div>
+                <div class="card-body">
+					<p>Error Message Here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
