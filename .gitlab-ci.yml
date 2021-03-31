@@ -22,7 +22,7 @@ before_script:
   - chmod 600 ~/.ssh/id_rsa
   - chmod +x ./.git_ssh
   - touch ~/.ssh/known_hosts
-  - ssh-keygen -f "${HOME}/.ssh/known_hosts" -R \[${REPO_BASE}\]
+  - ssh-keyscan -t rsa ${REPO_BASE} >> ~/.ssh/known_hosts
   - pip config set global.cert /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
   - git config user.name "${TRIGGER_USER_NAME:-${GITLAB_USER_NAME:-"GitLab CI"}}"
   - git config user.email "${TRIGGER_USER_EMAIL:-$GITLAB_USER_EMAIL}"
