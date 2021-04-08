@@ -1,5 +1,5 @@
 bleach==3.1.4
-django==2.2.13
+django==2.2.20
 django-cors-headers==3.2.1
 django-dynamic-preferences==1.8.1
 django-rest-swagger==2.2.0
