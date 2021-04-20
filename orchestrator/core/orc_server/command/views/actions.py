@@ -56,9 +56,9 @@ class Validator:
         acts = self._val_actuator()
         if isinstance(acts[0], dict) and isinstance(acts[1], int):
             return acts
-        elif isinstance(acts[0], tuple) and isinstance(acts[1], str):
+        if isinstance(acts[0], tuple) and isinstance(acts[1], str):
             return acts[0]
-        elif isinstance(acts[0], list) and isinstance(acts[1], str):
+        if isinstance(acts[0], list) and isinstance(acts[1], str):
             actuators = acts
 
         protocol, serialization = self._val_channel(actuators)

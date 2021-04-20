@@ -35,7 +35,7 @@ ALLOWED_HOSTS = ['*']
 
 IP = '0.0.0.0'
 
-PORT = "8080"
+PORT = '8080'
 
 SOCKET = f'{IP}:{PORT}'
 
@@ -119,7 +119,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'orchestrator.wsgi.application'
 
-# ASGI_APPLICATION = 'orchestrator.asgi.application'
+ASGI_APPLICATION = 'orchestrator.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -138,7 +138,7 @@ DATABASES = {
 
 # Fake PyMySQL's version and install as MySQLdb
 # https://adamj.eu/tech/2020/02/04/how-to-use-pymysql-with-django/
-pymysql.version_info = (1, 4, 2, "final", 0)
+pymysql.version_info = (1, 4, 2, 'final', 0)
 pymysql.install_as_MySQLdb()
 
 # Password validation
@@ -168,7 +168,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Central location for all static files
-STATIC_ROOT = os.path.join(DATA_DIR, "static")
+STATIC_ROOT = os.path.join(DATA_DIR, 'static')
 
 STATICFILES_DIRS = []
 
@@ -249,7 +249,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
-    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S.%fZ"
+    'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S.%fZ'
 }
 
 
@@ -265,7 +265,8 @@ LOGGING = {
     'filters': {
         'ignore_logs': {
             '()': 'django.utils.log.CallbackFilter',
-            'callback': lambda r: not any([re.match(reg, r.name) for reg in IGNORE_LOGS])
+            # 'callback': lambda r: not any([re.match(reg, r.name) for reg in IGNORE_LOGS])
+            'callback': lambda r: len([reg for reg in IGNORE_LOGS if re.match(reg, r.name)]) == 0
         }
     },
     'formatters': {
@@ -361,8 +362,8 @@ FERNET_KEYS = [k.decode('utf-8') if isinstance(k, bytes) else str(k) for k in [
 
 # ETCD
 ETCD = {
-    "host": os.environ.get('ETCD_HOST', 'localhost'),
-    "port": safe_cast(os.environ.get('ETCD_PORT', 2379), int, 2379)
+    'host': os.environ.get('ETCD_HOST', 'localhost'),
+    'port': safe_cast(os.environ.get('ETCD_PORT', 2379), int, 2379)
 }
 
 ETCD_CLIENT: etcd.Client

@@ -1,8 +1,9 @@
 # SB-Utils@git+https://github.com/ScreamBun/SB_utils.git@develop#subdirectory=root
 bleach==3.3.0
 # channels==3.0.3
+# channelsmultiplexer==0.0.3
 cryptography  # Use version from SB-Utils
-# daphne==3.0.1
+# daphne==3.0.2
 django==3.2
 django-cors-headers==3.7.0
 django-fernet-fields==0.6
