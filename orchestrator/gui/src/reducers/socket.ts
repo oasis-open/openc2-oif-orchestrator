@@ -1,4 +1,5 @@
 import { WebSocketBridge } from 'django-channels';
+import { BasicAction } from '../actions/interfaces';
 import * as socket from '../actions/socket';
 
 export interface SocketState {
@@ -11,7 +12,7 @@ export interface SocketState {
 const initialState: SocketState = {
   connected: false,
   connection: undefined,
-  endpoint: `ws://${window.location.host}:8080`,
+  endpoint: `ws://${window.location.host}/ws`,
   error: undefined
 };
 
@@ -30,6 +31,13 @@ export default (state=initialState, action: socket.SocketActions) => {
         connected: action.payload.connected || true
       };
 
+    case socket.SOCKET_RECONNECT:
+      state.connection?.socket.reconnect();
+      return {
+        ...state,
+        connected: action.payload.connected || false
+      };
+
     case socket.SOCKET_DISCONNECTED:
       console.warn('WebSocket Disconnected');
       return {
@@ -37,14 +45,9 @@ export default (state=initialState, action: socket.SocketActions) => {
         connected: action.payload.connected || false
       };
 
-    case socket.RECEIVED_SOCKET_DATA:
-      try {
-        const act = JSON.parse(action.payload.data);
-        action.asyncDispatch(act);
-      } catch (err) {
-        console.error(err);
-        action.asyncDispatch(socket.createSocketError(state.endpoint, err));
-      }
+    case socket.SOCKET_MESSAGE:
+      console.log('WebSocket Message', action.payload);
+      action.asyncDispatch(action.payload as BasicAction);
       return state;
 
     case socket.SOCKET_ERROR:

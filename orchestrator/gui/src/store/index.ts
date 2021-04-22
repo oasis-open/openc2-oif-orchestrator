@@ -11,7 +11,7 @@ import { routerMiddleware } from 'connected-react-router';
 
 import { DispatchAction } from '../actions';
 import createRootReducer, { RootState } from '../reducers';
-import { asyncDispatchMiddleware, refreshMiddleware /* socketMiddleware */ } from './middleware';
+import { asyncDispatchMiddleware /* , socketMiddleware */ } from './middleware';
 
 type OrchestratorStore = Store<RootState, DispatchAction>;
 export const history = createBrowserHistory();
@@ -33,7 +33,6 @@ export default (his: History = history): OrchestratorStore => {
   );
 
   const middleware = [
-    refreshMiddleware,
     // socketMiddleware,
     apiMiddleware,
     thunk,

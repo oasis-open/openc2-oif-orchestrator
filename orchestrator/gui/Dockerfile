@@ -3,11 +3,11 @@ FROM node:10-alpine as builder
 
 ADD . /tmp/gui
 
-RUN apk add --no-cache git && \
+RUN apk add --no-cache git yarn && \
 cd /tmp/gui && \
-npm config set unsafe-perm true && \
-npm install && \
-npm run build && \
+yarn cache clean && \
+yarn --network-timeout 100000 || yarn --network-timeout 100000  && \
+yarn build && \
 mkdir -p /opt/orchestrator/gui && \
 cp -r build/* /opt/orchestrator/gui
 

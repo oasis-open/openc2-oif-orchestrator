@@ -44,7 +44,10 @@ const CommandTable: FunctionComponent<CommandTableConnectedProps> = props => {
     {
       text: 'Command',
       dataField: 'command',
-      formatter: (cell: Record<string, any> )=> <span>{ `${cell.action} - ${Object.keys(cell.target || {})[0] || ''}` }</span>
+      formatter: (cell: Record<string, any> ) => {
+        const { action, target } = cell;
+        return <span>{ `${action} - ${Object.keys(target || {})[0] || ''}` }</span>;
+      }
     }
   ];
 

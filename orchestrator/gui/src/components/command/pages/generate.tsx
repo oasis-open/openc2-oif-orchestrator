@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { ConnectedProps, connect } from 'react-redux';
 import classNames from 'classnames';
 import Promise from 'promise-polyfill';
-import Ajv, { ErrorObject } from 'ajv';
+import { ErrorObject } from 'ajv';
 import { toast } from 'react-toastify';
 import MessageGenerator, { GeneratorChanges, Schema } from 'react-json-generator';
 import JSONPretty from 'react-json-pretty';
@@ -73,7 +73,6 @@ type GenerateCommandsConnectedProps = GenerateCommandsProps & ConnectorProps;
 
 // Component
 class GenerateCommands extends Component<GenerateCommandsConnectedProps, GenerateCommandsState> {
-  json_validator: Ajv;
 
   constructor(props: GenerateCommandsConnectedProps) {
     super(props);
@@ -82,10 +81,6 @@ class GenerateCommands extends Component<GenerateCommandsConnectedProps, Generat
     this.clearCommand = this.clearCommand.bind(this);
     this.sendCommand = this.sendCommand.bind(this);
     this.updateChannel = this.updateChannel.bind(this);
-
-    this.json_validator = new Ajv({
-      // unknownFormats: 'ignore'
-    });
 
     this.state = {
       active_tab: 'creator',
@@ -208,7 +203,9 @@ class GenerateCommands extends Component<GenerateCommandsConnectedProps, Generat
       }
     }
 
+    let actuator = `${schema.type}/`;
     if (schema.type === 'actuator') {
+      actuator += `${schema.selected}`;
       if (channel.protocol === '') {
         toast(
           <div>
@@ -229,9 +226,10 @@ class GenerateCommands extends Component<GenerateCommandsConnectedProps, Generat
         );
         return;
       }
+    } else {
+      actuator += `${schema.profile}`;
     }
 
-    const actuator = `${schema.type}/${schema.selected}`;
     toast(
       <div>
         <p>Request sent</p>

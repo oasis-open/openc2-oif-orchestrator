@@ -1,5 +1,7 @@
 import jwtDecode from 'jwt-decode';
-import * as auth from '../actions/auth';
+import Cookies from 'js-cookie';
+import { differenceInMinutes, fromUnixTime } from 'date-fns';
+import { Auth, Socket } from '../actions';
 
 interface DecodedJWT {
   admin: boolean;
@@ -17,50 +19,66 @@ export interface AuthState {
   errors: Record<string, any>;
 }
 
+export const tokenCookie = 'JWT';
 const initialState: AuthState = {
   access: undefined,
   refresh: false,
   errors: {}
 };
 
-export default (state=initialState, action: auth.AuthActions): AuthState => {
+export default (state=initialState, action: Auth.AuthActions): AuthState => {
+  let access: DecodedJWT;
   switch (action.type) {
-    case auth.LOGIN_SUCCESS:
+    case Auth.LOGIN_SUCCESS:
+      access = jwtDecode<DecodedJWT>(action.payload.token);
+      Cookies.set(tokenCookie, action.payload.token, {
+        expires: fromUnixTime(access.exp),
+        sameSite: 'strict'
+      });
+      action.asyncDispatch(Socket.createSocketReconnect());
       return {
         ...state,
         access: {
           token: action.payload.token,
-          ...jwtDecode<DecodedJWT>(action.payload.token)
+          ...access
         },
         errors: {}
       };
 
-    case auth.LOGOUT:
+    case Auth.LOGOUT:
+      Cookies.remove(tokenCookie);
+      action.asyncDispatch(Socket.createSocketReconnect());
       return {
         ...state,
         access: undefined,
         errors: {}
       };
 
-    case auth.TOKEN_REFRESH:
+    case Auth.TOKEN_REFRESH:
       return {
         ...state,
         refresh: true
       };
 
-    case auth.TOKEN_REFRESHED:
+    case Auth.TOKEN_REFRESHED:
+      access = jwtDecode<DecodedJWT>(action.payload.token);
+      Cookies.set(tokenCookie, action.payload.token, {
+        expires: fromUnixTime(access.exp),
+        sameSite: 'strict'
+      });
       return {
         ...state,
         access: {
           token: action.payload.token,
-          ...jwtDecode<DecodedJWT>(action.payload.token)
+          ...access
         },
         errors: {},
         refresh: false
       };
 
-    case auth.LOGIN_FAILURE:
-    case auth.TOKEN_FAILURE:
+    case Auth.LOGIN_FAILURE:
+    case Auth.TOKEN_FAILURE:
+      Cookies.remove(tokenCookie);
       return {
         ...state,
         access: undefined,
@@ -68,6 +86,15 @@ export default (state=initialState, action: auth.AuthActions): AuthState => {
       };
 
     default:
+      if (state.access) {
+        const origIat = fromUnixTime(state.access.orig_iat);
+        const diff = differenceInMinutes(fromUnixTime(state.access.exp), origIat);
+
+        if (differenceInMinutes(new Date(), origIat) > (diff-5) && !state.refresh) {
+        // eslint-disable-next-line promise/no-callback-in-promise
+          action.asyncDispatch(Auth.refreshAccessToken(state.access.token));
+        }
+      }
       return state;
   }
 };

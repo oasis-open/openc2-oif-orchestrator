@@ -1,15 +1,16 @@
 // Actions for WebSockets
 import { Dispatch } from 'redux';
 import { WebSocketBridge } from 'django-channels';
-import { ErrorEvent, Options } from 'reconnecting-websocket';
+import { CloseEvent, ErrorEvent, Options } from 'reconnecting-websocket';
 import { ActionSuccessResult, BasicAction } from './interfaces';
 
 // Socket Actions
 export const SOCKET_SETUP = '@@socket/SOCKET_SETUP';
 export const SOCKET_CONNECTED = '@@socket/SOCKET_CONNECTED';
+export const SOCKET_RECONNECT = '@@socket/SOCKET_RECONNECT';
 export const SOCKET_DISCONNECTED = '@@socket/SOCKET_DISCONNECTED';
 export const SOCKET_ERROR = '@@socket/SOCKET_ERROR';
-export const RECEIVED_SOCKET_DATA = '@@socket/RECEIVED_SOCKET_DATA';
+export const SOCKET_MESSAGE = '@@socket/SOCKET_MESSAGE';
 
 // TODO: replace with true actions
 type Action = Record<string, any>;
@@ -22,7 +23,7 @@ export const isSocketAction = (action: Action) => {
     SOCKET_CONNECTED,
     SOCKET_DISCONNECTED,
     SOCKET_ERROR,
-    RECEIVED_SOCKET_DATA
+    SOCKET_MESSAGE
   ].includes(action.type);
 };
 
@@ -36,13 +37,10 @@ export const undefinedEndpointErrorMessage = (action: Action) => {
 
 // Socket Calls
 // Socket Connected - WebSocket is connected and open
-const createSocketConnection = (endpoint: string) => ({
+const createSocketConnection = () => ({
   type: SOCKET_CONNECTED,
   payload: {
     connected: true
-  },
-  meta: {
-    endpoint
   },
   asyncDispatch
 });
@@ -52,19 +50,30 @@ export interface CreateSocketConnectionAction extends ActionSuccessResult {
   payload: {
     connected: true;
   };
-  meta: {
-    endpoint: string;
+}
+
+// Socket Disconnected - WebSocket disconnected
+export const createSocketReconnect = () => ({
+  type: SOCKET_RECONNECT,
+  payload: {
+    connected: false
+  },
+  asyncDispatch
+});
+
+export interface CreateSocketReconnectAction extends ActionSuccessResult {
+  type: typeof SOCKET_RECONNECT;
+  payload: {
+    connected: false;
   };
 }
 
 // Socket Disconnected - WebSocket disconnected
-const createSocketDisconnection = (endpoint: string) => ({
+const createSocketDisconnection = (event: CloseEvent) => ({
   type: SOCKET_DISCONNECTED,
   payload: {
-    connected: false
-  },
-  meta: {
-    endpoint
+    connected: false,
+    code: event.code
   },
   asyncDispatch
 });
@@ -73,20 +82,17 @@ export interface CreateSocketDisconnectionAction extends ActionSuccessResult {
   type: typeof SOCKET_DISCONNECTED;
   payload: {
     connected: false;
-  };
-  meta: {
-    endpoint: string;
+    code: number;
   };
 }
 
 // Socket Error - WebSocket error has occurred
-export const createSocketError = (endpoint: string, error: ErrorEvent) => ({
+export const createSocketError = (event: ErrorEvent) => ({
   type: SOCKET_ERROR,
   payload: {
-    message: error.message
+    message: event.message
   },
   meta: {
-    endpoint,
     error: true
   },
   asyncDispatch
@@ -102,31 +108,29 @@ export interface CreateSocketErrorAction extends BasicAction {
 }
 
 // Socket Message - WebSocket has received data, triggers appropriate store call
-const onSocketMessage = (endpoint: string, data: MessageEvent) => {
+const onSocketMessage = (data: MessageEvent) => {
+  const { stream, payload } = JSON.parse(data.data);
   return {
-    type: RECEIVED_SOCKET_DATA,
-    payload: data,
+    type: SOCKET_MESSAGE,
+    payload,
     meta: {
-      endpoint
+      stream
     },
     asyncDispatch
   };
 };
 
 export interface OnSocketMessageAction extends ActionSuccessResult {
-  type: typeof RECEIVED_SOCKET_DATA;
+  type: typeof SOCKET_MESSAGE;
   payload: Record<string, any>;
-  meta: {
-    endpoint: string;
-  };
 }
 
 // Setup Socket - opens connection and sets function calls for WebSocket events
 const NULLS = [undefined, null, '', ' '];
 export const setupSocket = (dispatch: Dispatch, endpoint?: string, protocols?: string|Array<string>, options?: Options) => {
-  let endpointUpdate = `ws://${window.location.host}:8080`;
+  let endpointUpdate = `ws://${window.location.host}/ws`;
   if (endpoint) {
-    endpointUpdate = !NULLS.includes(endpoint) ? `ws://${window.location.host}:8080` : endpoint;
+    endpointUpdate = !NULLS.includes(endpoint) ? `ws://${window.location.host}/ws` : endpoint;
   }
   const socket = new WebSocketBridge();
   const optionsUpdate = {
@@ -139,10 +143,10 @@ export const setupSocket = (dispatch: Dispatch, endpoint?: string, protocols?: s
     ...options
   };
   socket.connect(endpointUpdate, protocols, optionsUpdate);
-  socket.socket.onopen = () => dispatch(createSocketConnection(endpointUpdate));
-  socket.socket.onclose = () => dispatch(createSocketDisconnection(endpointUpdate));
-  socket.socket.onerror = (error: ErrorEvent) => dispatch(createSocketError(endpointUpdate, error));
-  socket.socket.onmessage = (data: MessageEvent) => dispatch(onSocketMessage(endpointUpdate, data));
+  socket.socket.onopen = () => dispatch(createSocketConnection());
+  socket.socket.onclose = (event: CloseEvent) => dispatch(createSocketDisconnection(event));
+  socket.socket.onerror = (event: ErrorEvent) => dispatch(createSocketError(event));
+  socket.socket.onmessage = (data: MessageEvent) => dispatch(onSocketMessage(data));
 
   return {
     type: SOCKET_SETUP,
@@ -165,6 +169,6 @@ export interface SetupSocketAction extends ActionSuccessResult {
 }
 
 export type SocketActions = (
-  CreateSocketConnectionAction | CreateSocketDisconnectionAction | CreateSocketErrorAction |
-  OnSocketMessageAction | SetupSocketAction
+  CreateSocketConnectionAction | CreateSocketReconnectAction | CreateSocketDisconnectionAction |
+  CreateSocketErrorAction | OnSocketMessageAction | SetupSocketAction
 );

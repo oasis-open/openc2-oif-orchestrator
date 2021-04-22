@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import { merge } from 'webpack-merge';
 
 import DeadCodePlugin from 'webpack-deadcode-plugin';
-// import CircularDependencyPlugin from 'circular-dependency-plugin';
+import CircularDependencyPlugin from 'circular-dependency-plugin';
 
 import baseConfig from './webpack.config.base';
 
@@ -32,14 +32,12 @@ export default merge(baseConfig, {
         path.join(COMPONENTS_DIR, 'utils', 'theme-switcher', 'assets')
       ]
     }),
-    /*
     new CircularDependencyPlugin({
       exclude: /node_modules/,
       failOnError: false,
       allowAsyncCycles: false,
       cwd: ROOT_DIR
     }),
-    */
     new webpack.NoEmitOnErrorsPlugin()
   ],
   devServer: {
@@ -50,8 +48,13 @@ export default merge(baseConfig, {
     open: false,
     historyApiFallback: true,
     proxy: {
+      '/ws': {
+        target: 'ws://localhost:8080',
+        secure: false,
+        ws: true
+      },
       '/api': {
-        target: 'http://localhost:8081',
+        target: 'http://localhost:8080',
         secure: false
       }
     }

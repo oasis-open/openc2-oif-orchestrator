@@ -3,7 +3,7 @@ import json
 from django.http import JsonResponse
 from sb_utils import FrozenDict
 
-from utils.channel_consumer import BaseConsumer
+from utils.dj_channels import BaseConsumer
 
 
 class OrchestratorConsumer(BaseConsumer):
@@ -19,7 +19,7 @@ class OrchestratorConsumer(BaseConsumer):
         except Exception as e:
             print(f'DV Error: {e}')
             try:
-                request = self.create_drf_request(request)
+                request = self.create_drf_request(content)
                 view_rtn = view_func(request)
             except Exception as e:
                 print(f'DRF Error: {e}')

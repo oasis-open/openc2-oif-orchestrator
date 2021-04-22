@@ -76,7 +76,7 @@ INSTALLED_APPS = [
     # CORS (Cross-Origin Resource Sharing)
     'corsheaders',
     # Channels - WebSockets
-    # 'channels',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +135,9 @@ DATABASES = {
         'CON_MAX_AGE': 5
     }
 }
+
+# Default Primary Key
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Fake PyMySQL's version and install as MySQLdb
 # https://adamj.eu/tech/2020/02/04/how-to-use-pymysql-with-django/
@@ -218,7 +221,7 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'rest_framework_jwt.utils.jwt_response_payload_handler',  # Original
     # 'JWT_RESPONSE_PAYLOAD_HANDLER': 'orchestrator.jwt_handlers.jwt_response_payload_handler',  # Custom
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
-    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_COOKIE': 'JWT',
     # Not listed in docs, but in example.....
     'JWT_ENCODE_HANDLER': 'rest_framework_jwt.utils.jwt_encode_handler',
     'JWT_DECODE_HANDLER': 'rest_framework_jwt.utils.jwt_decode_handler',

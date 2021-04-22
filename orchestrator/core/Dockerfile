@@ -64,5 +64,5 @@ WORKDIR /opt/orc_server
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Startup Command
-CMD ["gunicorn", "-c", "gunicorn.conf.py", "orchestrator.wsgi:application"]
-# CMD ["daphne", "-b", "0.0.0.0", "-p", "8080", "orchestrator.asgi:application"]
+# CMD ["gunicorn", "-c", "gunicorn.conf.py", "orchestrator.wsgi:application"]
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8080", "orchestrator.asgi:application"]

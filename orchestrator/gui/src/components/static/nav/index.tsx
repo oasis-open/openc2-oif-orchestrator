@@ -148,7 +148,8 @@ class DoubleNav extends Component<DoubleNavConnectedProps, DoubleNavState> {
                 <DropdownToggle nav caret>{ `Hello, ${username}` }</DropdownToggle>
                 <DropdownMenu right>
                   { admin ? <NavItem dropdown external href="/admin" text="Admin" target="_blank" active={ active } /> : '' }
-                  <NavItem dropdown href="/account/change_password/" text="Change Password" active={ active } click={ this.navigate } />
+                  { /* <NavItem dropdown href="/account/settings" text="User Settings" active={ active } click={ this.navigate } /> */ }
+                  <NavItem dropdown href="/account/change_password" text="Change Password" active={ active } click={ this.navigate } />
                   <DropdownItem divider />
                   <NavItem dropdown href="/logout" text="Logout" active={ active } click={ this.navigate } />
                 </DropdownMenu>

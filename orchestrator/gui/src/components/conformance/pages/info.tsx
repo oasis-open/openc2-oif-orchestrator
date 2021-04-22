@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { Dispatch } from 'redux';
 import { ConnectedProps, connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router';
 import { Badge, ListGroup, ListGroupItem } from 'reactstrap';
 import { iso2local, safeGet, titleCase } from '../../utils';
 import { Conformance } from '../../../actions';

@@ -7,9 +7,15 @@ import ChangePassword from './change_password';
 import { RootState } from '../../reducers';
 
 // Interfaces
+type Page = 'all' | 'change_password';
 interface AccountProps {
   history: History;
-  match: Record<string, any>;
+  match: {
+    params: {
+      option?: string;
+      page?: Page;
+    }
+  };
 }
 
 interface AccountState {
