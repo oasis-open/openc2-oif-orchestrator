@@ -51,7 +51,7 @@ def process_message(body: Union[dict, str], message: kombu.Message) -> None:
                     rslt = requests.post(
                         url=f"http://{device_socket}{path}",
                         headers={
-                            "Content-Type": f"application/openc2",
+                            "Content-Type": f"application/openc2-cmd+{encoding};version=1.0",
                             # Numeric status code supplied by Actuator's OpenC2-Response
                             # "Status": ...,
                             "X-Request-ID": request.request_id,
