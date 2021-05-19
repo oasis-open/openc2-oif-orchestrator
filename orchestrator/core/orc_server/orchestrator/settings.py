@@ -75,8 +75,6 @@ INSTALLED_APPS = [
     # 'dynamic_preferences.users.apps.UserPreferencesConfig',
     # CORS (Cross-Origin Resource Sharing)
     'corsheaders',
-    # Channels - WebSockets
-    'channels',
 ]
 
 MIDDLEWARE = [
@@ -118,8 +116,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'orchestrator.wsgi.application'
-
-ASGI_APPLICATION = 'orchestrator.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
