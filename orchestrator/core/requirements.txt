@@ -1,10 +1,7 @@
 # SB-Utils@git+https://github.com/ScreamBun/SB_utils.git@develop#subdirectory=root
 bleach==3.3.0
-channels==3.0.3
-channelsmultiplexer==0.0.3
 cryptography  # Use version from SB-Utils
-daphne==3.0.2
-django==3.2
+django==3.2.3
 django-cors-headers==3.7.0
 django-dynamic-preferences==1.10.1
 django-fernet-fields==0.6
@@ -19,6 +16,7 @@ djangorestframework-queryfields==1.0.0
 djangorestframework-xml==2.0.0
 drf-writable-nested==0.6.2
 elasticsearch-dsl==7.3.0
+gunicorn==20.1.0
 jsonfield==3.1.0
 python-etcd  # Use version from SB-Utils
 pyexcel-xls==0.6.2
