@@ -92,6 +92,7 @@ declare module 'react-json-editor-ajrm/locale' {
   type Locale = LanguageLocale;
   export { Locale };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export function format(str: string, args: Record<string, any>): string;
 }
 

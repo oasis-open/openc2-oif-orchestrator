@@ -3,10 +3,8 @@ import BootstrapTable, {
   ColumnDescription, SortOrder, TableChangeHandler, TableChangeState, TableChangeType
 } from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-
 
 // Interfaces
 type Sort = { dataField: string; order: SortOrder; }
@@ -14,11 +12,13 @@ type Sort = { dataField: string; order: SortOrder; }
 interface RemotePaginationProps {
   keyField: string;
   columns: Array<ColumnDescription>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Array<any>;
   page: number;
   pageSize: number;
   totalSize: number;
   defaultSort?: [Sort] | Array<Sort>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onTableChange?: TableChangeHandler<any>;
 }
 
@@ -29,6 +29,7 @@ const DefaultProps = {
   pageSize: 10,
   totalSize: 0,
   defaultSort: [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onTableChange: (_type: TableChangeType, _newState: TableChangeState<any>) => {}
 };
 

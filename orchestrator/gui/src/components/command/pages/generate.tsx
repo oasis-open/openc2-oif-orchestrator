@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Dispatch } from 'redux';
 import { ConnectedProps, connect } from 'react-redux';
 import classNames from 'classnames';
-import Promise from 'promise-polyfill';
 import { ErrorObject } from 'ajv';
 import { toast } from 'react-toastify';
 import MessageGenerator, { GeneratorChanges, Schema } from 'react-json-generator';
@@ -10,13 +9,11 @@ import JSONPretty from 'react-json-pretty';
 import {
   Button, ButtonGroup, Form, FormGroup, FormText, Input, Nav, NavItem, NavLink, TabContent, TabPane
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons';
+import { validate as uuidValidate, version as uuidVersion, v4 as uuid4 } from 'uuid';
+import { FaLongArrowAltRight } from 'react-icons/fa';
 import { Command, Generate } from '../../../actions';
 import { RootState } from '../../../reducers';
-import {
-  generateUUID4, objectValues, safeGet, validateUUID4
-} from '../../utils';
+import { objectValues, safeGet } from '../../utils';
 
 // Const Vars
 const editorTheme = { // Theming for JSONPretty
@@ -47,6 +44,7 @@ interface GenerateCommandsState {
     type: string;
     exports: Array<string>;
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   message: Record<string, any>;
   message_warnings: Array<ErrorObject>;
 }
@@ -165,7 +163,7 @@ class GenerateCommands extends Component<GenerateCommandsConnectedProps, Generat
     this.setState(prevState => ({
       message: {
         ...prevState.message,
-        command_id: generateUUID4()
+        command_id: uuid4()
       }
     }));
   }
@@ -191,7 +189,7 @@ class GenerateCommands extends Component<GenerateCommandsConnectedProps, Generat
     const { channel, message, schema } = this.state;
 
     if ('command_id' in message) {
-      if (!validateUUID4(message.command_id)) {
+      if (!(uuidValidate(message.command_id) && uuidVersion(message.command_id) === 4)) {
         toast(
           <div>
             <p>Error:</p>
@@ -239,7 +237,7 @@ class GenerateCommands extends Component<GenerateCommandsConnectedProps, Generat
     // sendCommand(message, actuator, channel);
 
     // eslint-disable-next-line promise/always-return, promise/catch-or-return
-    Promise.resolve(sendCommand(message as Command.Command, actuator, channel)).then(() => {
+    sendCommand(message as Command.Command, actuator, channel).then(() => {
       const errs = safeGet(errors, Command.SEND_COMMAND_FAILURE, {});
 
       if (Object.keys(errs).length !== 0) {
@@ -439,7 +437,7 @@ class GenerateCommands extends Component<GenerateCommandsConnectedProps, Generat
         <div key={ i } className="border border-warning mb-2 px-2 pt-2">
           <p>
             { `Warning from message ${err.dataPath || '.'}` }
-            <FontAwesomeIcon icon={ faLongArrowAltRight } className="mx-2" />
+            <FaLongArrowAltRight className="mx-2" />
             { `"${ err.keyword }"` }
           </p>
           <p className="text-warning">{ err.message }</p>

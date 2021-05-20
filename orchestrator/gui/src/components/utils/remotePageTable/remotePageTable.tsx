@@ -6,15 +6,15 @@ import {
 } from 'react-bootstrap-table-next';
 import { confirmAlert } from 'react-confirm-alert';
 import { Button, Modal } from 'reactstrap';
-
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-
 import RemotePagination from './remotePagination';
 import { getMultiKey } from '../multiKey';
+import { Actuator, Device } from '../../../actions';
 
 // Interfaces
 export interface RowEditOptions {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   modal?: ConnectedComponent<typeof Modal, Record<string, any>>;
   navigate?: (url: string) => void;
   info?: (id: string) => void;
@@ -32,7 +32,7 @@ export interface ColumnDescriptionKeyed extends ColumnDescription {
 }
 
 interface Data {
-  [key: string]: number|string
+  [key: string]: number|string|Data
 }
 
 interface RemotePageTableProps {
@@ -62,7 +62,7 @@ interface RootState {  // TODO: convert state to TypeScript
     sort: string;
     count: number;
     errors: Record<string, any>;
-  } & ( { actuators: Array<any>; } | { decices: Array<any>; } )
+  } & ( { actuators: Array<Actuator.Actuator>; } | { devices: Array<Device.Device>; } )
 }
 
 const mapStateToProps = (state: RootState, props: RemotePageTableProps) => ({
@@ -80,7 +80,7 @@ class RemotePageTable extends Component<RemotePageTableConnectedProps, RemotePag
   editable: boolean;
   keyField: string;
   // filler typing, not actually used; from columns
-  // eslint-disable-next-line react/sort-comp, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line react/sort-comp, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   deleteConfirm = (_f: (key: any) => void, _k: string) => {};
   options?: {
     modal?: ({key, data}: {key: number, data: Data}) => JSX.Element;
@@ -129,15 +129,15 @@ class RemotePageTable extends Component<RemotePageTableConnectedProps, RemotePag
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  dynamicSort(property: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, class-methods-use-this
+  dynamicSort<Obj extends Record<string, any>>(property: string) {
     let sortOrder = 1;
     if (property[0] === '-') {
       sortOrder = -1;
       // eslint-disable-next-line no-param-reassign
       property = property.substr(1);
     }
-    return (a: Record<string, any>, b: Record<string, any>) => {
+    return (a: Obj, b: Obj) => {
       let v = 0;
       if (a[property] < b[property]) {
         v = -1;
@@ -238,12 +238,12 @@ class RemotePageTable extends Component<RemotePageTableConnectedProps, RemotePag
 
         if (info) {
           i+=1;
-          rtn.push(<Button key={ i } color='info' size='sm' onClick={ () => info(row[this.keyField]) }>Info</Button>);
+          rtn.push(<Button key={ i } color='info' size='sm' onClick={ () => info(row[this.keyField] as Data) }>Info</Button>);
         }
 
         if (optDelete) {
           i+=1;
-          rtn.push(<Button key={ i } color='danger' size='sm' onClick={ () => this.deleteConfirm(optDelete, row[this.keyField]) }>Delete</Button>);
+          rtn.push(<Button key={ i } color='danger' size='sm' onClick={ () => this.deleteConfirm(optDelete, row[this.keyField] as string) }>Delete</Button>);
         }
       }
     }

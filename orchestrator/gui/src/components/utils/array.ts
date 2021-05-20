@@ -1,7 +1,14 @@
 // Array utility functions
 
-// eslint-disable-next-line import/prefer-default-export
-export const mergeByProperty = <Val=Record<string, any>>(arr1: Array<Val>, arr2: Array<Val>, prop: string): Array<Val> => {
+/**
+ * Merge two Object by a specified property
+ * @param {Array<V>} arr1 Base array of object to merge
+ * @param {Array<V>} arr2 Secondary array of object to merge
+ * @param {string} prop Property to merge based on
+ * @returns {Array<V>} Array of merged objects
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, import/prefer-default-export
+export const mergeByProperty = <V extends Record<string, any>>(arr1: Array<V>, arr2: Array<V>, prop: string): Array<V> => {
   const rtn = [...(arr1 || [])];
 
   arr2.forEach(arr2obj => {

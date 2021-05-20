@@ -1,5 +1,6 @@
 // Actions for client side generate page
 import { createAction } from 'redux-api-middleware';
+import { JSONSchema7 } from 'json-schema';
 import {
   ActionFailureResult, ActionRequestResult, ActionSuccessResult, MinimalAction
 } from './interfaces';
@@ -8,7 +9,7 @@ import { withGUIAuth } from './util';
 // Helper Functions
 // N/A - N/A - set schema locally
 export const SCHEMA_DEFINE = '@@generate/SCHEMA_DEFINE';
-export const setSchema = (schema: Record<string, any>): MinimalAction => ({
+export const setSchema = (schema: JSONSchema7): MinimalAction => ({
   type: {
     type: SCHEMA_DEFINE,
     meta: {
@@ -21,7 +22,7 @@ export const setSchema = (schema: Record<string, any>): MinimalAction => ({
 export interface SetSchemaAction extends ActionSuccessResult {
   type: typeof SCHEMA_DEFINE;
   meta: {
-    schema: Record<string, any>;
+    schema: JSONSchema7;
   };
 }
 

@@ -16,6 +16,7 @@ interface InputFieldProps {
 const DefaultProps: InputFieldProps = {
   name: 'input',
   type: 'text',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onChange: (_e: React.ChangeEvent<HTMLInputElement>) => {}
 };
 

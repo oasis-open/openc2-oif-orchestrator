@@ -4,12 +4,21 @@ import { ActionFailureResult, ActionRequestResult, ActionSuccessResult } from '.
 import { Actuator } from './actuator';
 import { withGUIAuth } from './util';
 
+export interface OpenC2Command {
+  action: string;
+  target: Record<string, any>;
+  args?: Record<string, any>;
+  actuator?: Record<string, any>;
+  command_id?: string;
+}
+export type OpenC2Response = Record<string, any>
+
 export interface Command {
   actuators: Array<Actuator>;
-  command: Record<string, any>;
+  command: OpenC2Command;
   command_id: string;
   received_on: string;
-  responses: Array<any>;
+  responses: Array<OpenC2Response>;
 }
 
 // API Base URL

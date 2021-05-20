@@ -1,7 +1,6 @@
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { Redirect, Route, RouteProps } from 'react-router';
-
 import * as AuthActions from '../../actions/auth';
 import { RootState } from '../../reducers';
 

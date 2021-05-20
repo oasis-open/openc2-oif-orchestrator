@@ -30,16 +30,10 @@ import RemotePageTable, {
   RowEditOptions
 } from './remotePageTable';
 
-import {
-  generateUUID4,
-  validateUUID4
-} from './uuid';
-
 export {
   // General Utils
   checkSchema,
   delMultiKey,
-  generateUUID4,
   getMultiKey,
   isFunction,
   iso2local,
@@ -50,7 +44,6 @@ export {
   safeGet,
   setMultiKey,
   titleCase,
-  validateUUID4,
   // Components
   FileBase64,
   InputField,

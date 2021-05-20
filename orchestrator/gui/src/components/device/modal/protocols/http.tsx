@@ -1,6 +1,5 @@
 import React from 'react';
 import { Input, Label } from 'reactstrap';
-
 import BaseOptions, { BaseOptionsProps, BaseOptionsState }  from './base';
 import { pick, removeEmpty } from '../../../utils';
 

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { CSSProperties, FunctionComponent } from 'react';
 import { Input } from 'reactstrap';
 
 export interface FileInfo {
@@ -16,7 +16,7 @@ interface FileBase64Props {
   className?: string;
   onDone: (f: FileInfo|Array<FileInfo>) => void;
   multiple?: boolean;
-  style?: Record<string, any>;
+  style?: CSSProperties;
 }
 
 const DefaultProps = {

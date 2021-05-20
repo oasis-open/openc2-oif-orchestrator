@@ -1,7 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { differenceInMinutes, fromUnixTime } from 'date-fns';
-import { Auth, Socket } from '../actions';
+import { Auth } from '../actions';
 
 interface DecodedJWT {
   admin: boolean;
@@ -35,7 +35,6 @@ export default (state=initialState, action: Auth.AuthActions): AuthState => {
         expires: fromUnixTime(access.exp),
         sameSite: 'strict'
       });
-      action.asyncDispatch(Socket.createSocketReconnect());
       return {
         ...state,
         access: {
@@ -47,7 +46,6 @@ export default (state=initialState, action: Auth.AuthActions): AuthState => {
 
     case Auth.LOGOUT:
       Cookies.remove(tokenCookie);
-      action.asyncDispatch(Socket.createSocketReconnect());
       return {
         ...state,
         access: undefined,
@@ -93,6 +91,10 @@ export default (state=initialState, action: Auth.AuthActions): AuthState => {
         if (differenceInMinutes(new Date(), origIat) > (diff-5) && !state.refresh) {
         // eslint-disable-next-line promise/no-callback-in-promise
           action.asyncDispatch(Auth.refreshAccessToken(state.access.token));
+          return {
+            ...state,
+            refresh: true
+          };
         }
       }
       return state;

@@ -1,8 +1,11 @@
 declare module 'react-json-editor-ajrm' {
     import { Component, CSSProperties, SyntheticEvent } from 'react';
-
     import { Locale } from 'react-json-editor-ajrm/locale';
     import { ThemeColors } from 'react-json-editor-ajrm/themes';
+
+    // Basic Types
+    type ObjectJSON = Record<string, any>
+    type ObjectPlaceholder = Record<string, any>
 
     // Token Interfaces
     interface SimpleToken {
@@ -30,7 +33,7 @@ declare module 'react-json-editor-ajrm' {
         noSpaces: string,
         indented: string,
         json: string,
-        jsObject: Record<string, any>,
+        jsObject: ObjectJSON,
         markup: string
         lines: number,
         error?: ErrorMsg
@@ -62,7 +65,7 @@ declare module 'react-json-editor-ajrm' {
         plainText: string;
         markupText: string;
         json: string;
-        jsObject: Record<string, any>,
+        jsObject: ObjectJSON,
         lines: number;
         error?: ErrorMsg;
     }
@@ -70,7 +73,7 @@ declare module 'react-json-editor-ajrm' {
     interface JSONInputProps {
         locale: Locale,
         id?: string;
-        placeholder?: Record<string, any>;
+        placeholder?: ObjectPlaceholder;
         reset?: boolean;
         viewOnly?: boolean;
         onBlur?: (tokens: ChangeProps) => void;
@@ -88,11 +91,11 @@ declare module 'react-json-editor-ajrm' {
     }
 
     interface JSONInputState {
-        prevPlaceholder: undefined|Record<string, any>;
+        prevPlaceholder: undefined|ObjectPlaceholder;
         markupText: string;
         plainText: string;
         json: string;
-        jsObject: Record<string, any>;
+        jsObject: ObjectJSON;
         lines: number;
         error?: ErrorMsg;
     }
@@ -109,9 +112,9 @@ declare module 'react-json-editor-ajrm' {
         onKeyPress: (event: KeyboardEvent) => void;
         onPaste: (event: ClipboardEvent) => void;
         onScroll: (event: MouseEvent) => void;
-        setCursorPosition: (nextPosition: any) => void;
+        setCursorPosition: (nextPosition: unknown) => void;
         setUpdateTime: () => void;
-        getCursorPosition: (countBR: any) => number;
+        getCursorPosition: (countBR: unknown) => number;
         updateInternalProps: () => void;
         update: (cursorOffset: number, updateCursorPosition: boolean) => void;
         createMarkup: (markupText: string) => { __html: string };
@@ -119,7 +122,7 @@ declare module 'react-json-editor-ajrm' {
         scheduledUpdate: () => void;
         showPlaceholder: () => void;
         stopEvent: (event: SyntheticEvent) => void;
-        tokenize: (something: Record<string, any>|HTMLDivElement) => null|DomNodeTokenize|PlaceholderTokenize;
+        tokenize: (something: ObjectJSON|HTMLDivElement) => null|DomNodeTokenize|PlaceholderTokenize;
         renderErrorMessage: () => null | HTMLParagraphElement;
         renderLabels: () => Array<HTMLDivElement>;
         render: () => HTMLDivElement;

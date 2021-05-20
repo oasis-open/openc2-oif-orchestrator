@@ -1,7 +1,6 @@
-import socketMiddleware from './socketMiddleware';
+/* eslint-disable import/prefer-default-export */
 import asyncDispatchMiddleware from './asyncDispatchMiddleware';
 
 export {
-    socketMiddleware,
     asyncDispatchMiddleware
 };

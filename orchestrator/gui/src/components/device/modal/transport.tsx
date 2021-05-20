@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { Button, Input, Label } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FaTimes } from 'react-icons/fa';
 import ProtocolOptions from './protocols';
 import { Device } from '../../../actions';
 import { RootState } from '../../../reducers';
@@ -21,6 +20,7 @@ interface TransportState {
   port: number;
   protocol: string;
   serialization: Array<string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -183,7 +183,7 @@ class Transport extends Component<TransportConnectedProps, TransportState> {
     return (
       <div className="position-relative border border-primary mb-2 p-2">
         <Button color="danger" size="sm" className="position-absolute" style={{ right: '1em', zIndex: 100}} onClick={ this.transportRemove } >
-          <FontAwesomeIcon icon={ faTimes } />
+          <FaTimes />
         </Button>
 
         <fieldset className="border border-info p-2">

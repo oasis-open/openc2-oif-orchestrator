@@ -5,12 +5,10 @@ import { toast } from 'react-toastify';
 import {
   Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { validate as uuidValidate, version as uuidVersion, v4 as uuid4 } from 'uuid';
+import { FaPlus } from 'react-icons/fa';
 import Transport, { DefaultTransport } from './transport';
-import {
-  generateUUID4, objectValues, removeEmpty, validateUUID4
-} from '../../utils';
+import { objectValues, removeEmpty } from '../../utils';
 import { Device } from '../../../actions';
 import { RootState } from '../../../reducers';
 
@@ -93,7 +91,7 @@ class DeviceModal extends Component<DeviceModalConnectedProps, DeviceModalState>
     this.setState(prevState => ({
       device: {
         ...prevState.device,
-        device_id: generateUUID4()
+        device_id: uuid4()
       }
     }));
   }
@@ -155,7 +153,7 @@ class DeviceModal extends Component<DeviceModalConnectedProps, DeviceModalState>
 
   registerDevice() {
     const { device } = this.state;
-    if (!validateUUID4(device.device_id)) {
+    if (!(uuidValidate(device.device_id) && uuidVersion(device.device_id) === 4)) {
       toast(
         <div>
           <p>Error Device ID:</p>
@@ -298,7 +296,7 @@ class DeviceModal extends Component<DeviceModalConnectedProps, DeviceModalState>
                 <legend>
                   Transports
                   <Button color="info" size="sm" className="float-right" onClick={ this.transportAdd } >
-                    <FontAwesomeIcon icon={ faPlus } />
+                    <FaPlus />
                   </Button>
                 </legend>
                 <div style={{maxHeight: '325px', overflowY: 'scroll'}}>

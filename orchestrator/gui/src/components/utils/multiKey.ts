@@ -1,6 +1,12 @@
 // Nested associated array manipulation
 
-// Set value on a nested key
+/**
+ * Set a nested key within an object
+ * @param {Record<string, any>} obj Object to set the key of
+ * @param {string} key Property to set, seperated by '.'
+ * @param {any} val Value to set
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const setMultiKey = (obj: Record<string, any>, key: string, val: any): void => {
   const k = key.replace(/\[\]$/, '');
   const keys = k.split('.');
@@ -17,8 +23,14 @@ export const setMultiKey = (obj: Record<string, any>, key: string, val: any): vo
   }
 };
 
-// Get value of a nested key
-export function getMultiKey<T>(obj: Record<string, any>, key: string): T | undefined {
+/**
+ * Get the nested value within an object
+ * @param {Record<string, any>} obj Object to get the key of
+ * @param {string} key Property to get, seperated by '.'
+ * @returns {V|undefined} Value of the property
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getMultiKey<V>(obj: Record<string, any>, key: string): V | undefined {
   const k = key.replace(/\[\]$/, '');
   const keys = k.split('.');
 
@@ -28,7 +40,12 @@ export function getMultiKey<T>(obj: Record<string, any>, key: string): T | undef
   return k in obj ? obj[k] : undefined;
 }
 
-// Delete a nested key
+/**
+ * Delete the nested value within an object
+ * @param {Record<string, any>} obj Object to delete the key of
+ * @param {string} key Property to delete, seperated by '.'
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const delMultiKey = (obj: Record<string, any>, key: string): void => {
   const k = key.replace(/\[\]$/, '');
   const keys = k.split('.');

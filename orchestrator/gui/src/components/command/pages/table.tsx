@@ -44,7 +44,7 @@ const CommandTable: FunctionComponent<CommandTableConnectedProps> = props => {
     {
       text: 'Command',
       dataField: 'command',
-      formatter: (cell: Record<string, any> ) => {
+      formatter: (cell: Command.OpenC2Command ) => {
         const { action, target } = cell;
         return <span>{ `${action} - ${Object.keys(target || {})[0] || ''}` }</span>;
       }

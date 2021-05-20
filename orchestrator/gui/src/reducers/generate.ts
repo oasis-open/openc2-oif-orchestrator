@@ -41,7 +41,6 @@ export default (state=initialState, action: Generate.GenerateActions) => {
 
   switch (action.type) {
     case Generate.SCHEMA_DEFINE:
-      console.log(action);
       return {
         ...state,
         selected: {

@@ -4,7 +4,7 @@ import { History } from 'history';
 import {
   UncontrolledDropdown, DropdownItem, DropdownToggle, DropdownMenu
 } from 'reactstrap';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { FaHome } from 'react-icons/fa';
 import { ThemeChooser } from 'react-bootswatch-theme-switcher';
 import NavItem from './navItem';
 import { safeGet } from '../../utils';
@@ -118,7 +118,7 @@ class DoubleNav extends Component<DoubleNavConnectedProps, DoubleNavState> {
           </button>
           <div className="collapse navbar-collapse" id="navMain">
             <ul className="nav navbar-nav mr-auto">
-              <NavItem href="/" text="Home" icon={ faHome } active={ active } click={ this.navigate } />
+              <NavItem href="/" text="Home" icon={ FaHome } active={ active } click={ this.navigate } />
               <NavItem href="/device" text="Devices" active={ active } click={ this.navigate } />
               <NavItem href="/actuator" text="Actuators" active={ active } click={ this.navigate } />
 

@@ -5,13 +5,13 @@ import {
 import { apiMiddleware } from 'redux-api-middleware';
 import { createFilter } from 'redux-persist-transform-filter';
 import { History, createBrowserHistory } from 'history';
-import thunk from 'redux-thunk';
+import reduxThunk from 'redux-thunk';
 import { persistReducer, persistStore } from 'redux-persist';
 import { routerMiddleware } from 'connected-react-router';
 
 import { DispatchAction } from '../actions';
 import createRootReducer, { RootState } from '../reducers';
-import { asyncDispatchMiddleware /* , socketMiddleware */ } from './middleware';
+import { asyncDispatchMiddleware } from './middleware';
 
 type OrchestratorStore = Store<RootState, DispatchAction>;
 export const history = createBrowserHistory();
@@ -33,9 +33,8 @@ export default (his: History = history): OrchestratorStore => {
   );
 
   const middleware = [
-    // socketMiddleware,
     apiMiddleware,
-    thunk,
+    reduxThunk,
     asyncDispatchMiddleware,
     routerMiddleware(his)
   ];
@@ -60,11 +59,11 @@ export default (his: History = history): OrchestratorStore => {
     ...extraEnhancers
   );
 
-  const store: OrchestratorStore = createStore(
+  const store = createStore(
     reducer,
     {},
     enhancers
-  );
+  ) as OrchestratorStore;
   persistStore(store);
   return store;
 };

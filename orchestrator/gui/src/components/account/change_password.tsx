@@ -3,14 +3,12 @@ import { Dispatch } from 'redux';
 import { ConnectedProps, connect } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
 import { Button, Input, Label } from 'reactstrap';
-
 import { objectValues, safeGet } from '../utils';
 import * as AccountActions from '../../actions/account';
 import { RootState } from '../../reducers';
 
 // Interfaces
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ChangePasswordProps {}
+type ChangePasswordProps = Record<string, any>
 
 interface ChangePasswordState {
   password: {

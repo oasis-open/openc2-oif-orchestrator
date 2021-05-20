@@ -7,7 +7,6 @@ import * as Conformance from './conformance';
 import * as Device from './device';
 import * as Generate from './generate';
 import * as Interface from './interfaces';
-import * as Socket from './socket';
 import * as Util from './util';
 
 
@@ -16,10 +15,7 @@ export type DispatchAction = (
     Interface.MinimalAction |
     // Post API Call
     Account.AccountActions | Actuator.ActuatorActions | Auth.AuthActions | Command.CommandActions |
-    Conformance.ConformanceActions | Device.DeviceActions | Generate.GenerateActions | Socket.SocketActions |
-    Util.UtilActions |
-    // Socket Specific
-    ReturnType<typeof Socket.setupSocket> |
+    Conformance.ConformanceActions | Device.DeviceActions | Generate.GenerateActions | Util.UtilActions |
     // Router Specific
     LocationChangeAction
 );
@@ -35,6 +31,5 @@ export {
     Conformance,
     Device,
     Generate,
-    Socket,
     Util
 };

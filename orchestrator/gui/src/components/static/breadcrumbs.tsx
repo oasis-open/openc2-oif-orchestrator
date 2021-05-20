@@ -2,10 +2,9 @@ import React, { FunctionComponent } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { History } from 'history';
 import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
-
+import { safeGet } from '../utils';
 import * as AuthActions from '../../actions/auth';
 import { RootState } from '../../reducers';
-import { safeGet } from '../utils';
 
 // Interfaces
 interface BreadcrumbsProp {

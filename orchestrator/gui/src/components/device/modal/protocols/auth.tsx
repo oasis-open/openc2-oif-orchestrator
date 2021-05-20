@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormText, Input, Label } from 'reactstrap';
-
 import BaseOptions, { BaseOptionsProps, BaseOptionsState } from './base';
 import { FileBase64, FileInfo, pick } from '../../../utils';
 

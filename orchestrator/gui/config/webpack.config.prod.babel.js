@@ -86,12 +86,8 @@ export default merge(baseConfig, {
   optimization: {
     minimizer: [
       new TerserPlugin({
-        parallel: true,
-        terserOptions: {
-          output: {
-            comments: false
-          }
-        }
+        extractComments: false,
+        parallel: true
       }),
       new OptimizeCSSAssetsPlugin({
         cssProcessorPluginOptions: {

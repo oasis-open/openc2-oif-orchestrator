@@ -2,6 +2,7 @@
 import { createAction } from 'redux-api-middleware';
 import { ActionFailureResult, ActionRequestResult, ActionSuccessResult } from './interfaces';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type RootState = Record<string, any>
 
 // Helper Functions

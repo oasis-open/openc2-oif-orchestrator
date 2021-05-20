@@ -19,7 +19,7 @@ const initialState: ConformanceState = {
 
 export default (state=initialState, action: conformance.ConformanceActions) => {
   let newTests: Array<any>;
-  let tests: Array<any>;
+  let tests: Array<conformance.Test>;
 
   switch (action.type) {
     case conformance.GET_UNITTESTS_SUCCESS:

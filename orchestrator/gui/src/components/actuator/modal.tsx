@@ -7,10 +7,8 @@ import {
 } from 'reactstrap';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
-
-import {
-  generateUUID4, objectValues, safeGet, validateUUID4
-} from '../utils';
+import { validate as uuidValidate, version as uuidVersion, v4 as uuid4 } from 'uuid';
+import { objectValues, safeGet } from '../utils';
 import { Actuator, Device } from '../../actions';
 import { RootState } from '../../reducers';
 
@@ -118,7 +116,8 @@ class ActuatorModal extends Component<ActuatorModalConnectedProps, ActuatorModal
     const propsUpdate = this.props !== nextProps;
     const stateUpdate = this.state !== nextState;
 
-    if (nextProps.devices.length >= 1 && !validateUUID4(nextState.actuator.device)) {
+    // eslint-disable-next-line max-len
+    if (nextProps.devices.length >= 1 && !(uuidValidate(nextState.actuator.device) && uuidVersion(nextState.actuator.device) === 4)) {
       const { devices } = this.props;
       const { actuator } = this.state;
       const tmpParent = devices.filter(d => d.name === actuator.device);
@@ -134,7 +133,7 @@ class ActuatorModal extends Component<ActuatorModalConnectedProps, ActuatorModal
     this.setState(prevState => ({
       actuator: {
         ...prevState.actuator,
-        actuator_id: generateUUID4()
+        actuator_id: uuid4()
       }
     }));
   }
@@ -166,7 +165,7 @@ class ActuatorModal extends Component<ActuatorModalConnectedProps, ActuatorModal
   registerActuator() {
     const { actuator } = this.state;
 
-    if (validateUUID4(actuator.actuator_id)) {
+    if (uuidValidate(actuator.actuator_id) && uuidVersion(actuator.actuator_id) === 4) {
       const { createActuator } = this.props;
       createActuator(actuator);
       setTimeout(() => this.checkErrors(Actuator.CREATE_ACTUATOR_FAILURE), 1000);
