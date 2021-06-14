@@ -5,7 +5,9 @@ import os
 import ssl
 import uuid
 
-from typing import Dict, List
+from typing import Dict, List, Union
+
+import kombu
 from paho.mqtt import MQTTException, client as mqtt
 from paho.mqtt.packettypes import PacketTypes
 from paho.mqtt.properties import Properties
@@ -13,7 +15,7 @@ from paho.mqtt.subscribeoptions import SubscribeOptions as SubOpts
 from sb_utils import Auth, FrozenDict, Message, MessageType, Producer, SerialFormats, destructure, safe_cast
 
 # Constants
-ResponseTopic = '{prefix}ocs/rsp'
+ResponseTopic = "{prefix}ocs/rsp"
 SubscribeOptions = SubOpts(
     qos=1,
     noLocal=True,
@@ -21,11 +23,11 @@ SubscribeOptions = SubOpts(
     retainHandling=SubOpts.RETAIN_SEND_ON_SUBSCRIBE
 )
 TopicTypes = {
-    'broadcast': '{prefix}oc2/cmd/all',
-    'device': '{prefix}oc2/cmd/device/{device_id}',
-    'profile': '{prefix}oc2/cmd/ap/{profile}'
+    "broadcast": "{prefix}oc2/cmd/all",
+    "device": "{prefix}oc2/cmd/device/{device_id}",
+    "profile": "{prefix}oc2/cmd/ap/{profile}"
 }
-RequiredDeviceKeys = {'encoding', 'profile', 'socket'}
+RequiredDeviceKeys = {"encoding", "profile", "socket"}
 
 
 # Helper functions
@@ -33,7 +35,7 @@ def get_topic(fmt: str, **kwargs):
     """
     MQTT Topic publish type
     """
-    return TopicTypes.get(fmt, TopicTypes['profile']).format(**kwargs)
+    return TopicTypes.get(fmt, TopicTypes["profile"]).format(**kwargs)
 
 
 def send_error_response(e, header):
@@ -44,17 +46,17 @@ def send_error_response(e, header):
     :param header: Include headers which would have been sent for Orchestrator to read.
     """
     producer = Producer(
-        os.environ.get('QUEUE_HOST', 'localhost'),
-        os.environ.get('QUEUE_PORT', '5672')
+        os.environ.get("QUEUE_HOST", "localhost"),
+        os.environ.get("QUEUE_PORT", "5672")
     )
     err = json.dumps(str(e))
-    print(f'Send error response: {err}')
+    print(f"Send error response: {err}")
 
     producer.publish(
         headers=header,
         message=err,
-        exchange='orchestrator',
-        routing_key='response'
+        exchange="orchestrator",
+        routing_key="response"
     )
 
 
@@ -67,7 +69,7 @@ def _do_publish(client: mqtt.Client, userdata: List[dict]):
         elif isinstance(message, (tuple, list)):
             client.publish(*message)
         else:
-            raise TypeError('message must be a dict, tuple, or list')
+            raise TypeError("message must be a dict, tuple, or list")
 
 
 def _on_connect(client: mqtt.Client, userdata: List[dict], flags: dict, rc: int, props: Properties = None):
@@ -88,7 +90,7 @@ def _on_publish(client: mqtt.Client, userdata: List[dict], mid: int):
 
 
 def publish_single(config: FrozenDict, topic, payload, client_id="", properties: Properties = None):
-    msg = {'topic': topic, 'payload': payload, 'qos': 1, 'retain': False, 'properties': properties}
+    msg = {"topic": topic, "payload": payload, "qos": 1, "retain": False, "properties": properties}
 
     client = mqtt.Client(
         client_id=client_id,
@@ -126,17 +128,17 @@ def publish_single(config: FrozenDict, topic, payload, client_id="", properties:
     client.loop_forever()
 
 
-def send_mqtt(body, message) -> None:
+def send_mqtt(body: Union[bytes, str], message: kombu.Message) -> None:
     """
     AMQP Callback when we receive a message from internal buffer to be published to broker
     :param body: Contains the message to be sent.
     :param message: Contains data about the message as well as headers
     """
     headers = message.headers
-    source = headers.get('source', {})
+    source = headers.get("source", {})
 
     # iterate through all devices within the list of destinations
-    for device in headers.get('destination', []):
+    for device in headers.get("destination", []):
         # check that all necessary parameters exist for device
         if key_diff := RequiredDeviceKeys.difference({*device.keys()}):
             err_msg = f"Missing required header data to successfully transport message - {', '.join(key_diff)}"
@@ -145,28 +147,28 @@ def send_mqtt(body, message) -> None:
             return
 
         # pylint: disable=unbalanced-tuple-unpacking
-        (orc_id, corr_id) = destructure(source, 'orchestratorID', 'correlationID')
+        (orc_id, corr_id) = destructure(source, "orchestratorID", "correlationID")
         # pylint: disable=unbalanced-tuple-unpacking
-        (prefix, deviceID, fmt, encoding, broker_socket) = destructure(device, 'prefix', ('deviceID', ''), 'format', ('encoding', 'json'), ('socket', 'localhost:1883'))
+        (prefix, deviceID, fmt, encoding, broker_socket) = destructure(device, "prefix", ("deviceID", ""), "format", ("encoding", "json"), ("socket", "localhost:1883"))
         (host, port) = broker_socket.split(":", 1)
 
         with Auth(device.get("auth", {})) as auth:
             # iterate through actuator profiles to send message to
-            for actuator in device.get('profile', []):
-                topic = get_topic(fmt=fmt, prefix=f'{prefix}/' if prefix else '', device_id=deviceID, profile=actuator)
+            for actuator in device.get("profile", []):
+                topic = get_topic(fmt=fmt, prefix=f"{prefix}/" if prefix else "", device_id=deviceID, profile=actuator)
 
                 payload = Message(
-                    recipients=[f'{actuator}@{broker_socket}'],
-                    origin=f'{orc_id}@{broker_socket}',
+                    recipients=[f"{actuator}@{broker_socket}"],
+                    origin=f"{orc_id}@{broker_socket}",
                     msg_type=MessageType.Request,
                     request_id=uuid.UUID(corr_id),
                     serialization=SerialFormats(encoding) if encoding in SerialFormats else SerialFormats.JSON,
                     content=json.loads(body)
                 )
-                print(f'Sending {broker_socket} topic: {topic} -> {payload}')
+                print(f"Sending {broker_socket} topic: {topic} -> {payload}")
                 publish_props = Properties(PacketTypes.PUBLISH)
-                publish_props.PayloadFormatIndicator = 1
-                publish_props.ContentType = 'application/openc2'  # Content-Type
+                publish_props.PayloadFormatIndicator = int(SerialFormats.is_binary(payload.content_type) is False)
+                publish_props.ContentType = "application/openc2"  # Content-Type
                 publish_props.UserProperty = ("msgType", payload.msg_type)  # User Property
                 publish_props.UserProperty = ("encoding", payload.content_type)  # User Property
 
@@ -177,7 +179,7 @@ def send_mqtt(body, message) -> None:
                             MQTT_PORT=safe_cast(port, int, 1883),
                             USERNAME=auth.username,
                             PASSWORD=auth.username,
-                            TLS_SELF_SIGNED=safe_cast(os.environ.get('MQTT_TLS_SELF_SIGNED', 0), int, 0),
+                            TLS_SELF_SIGNED=safe_cast(os.environ.get("MQTT_TLS_SELF_SIGNED", 0), int, 0),
                             CAFILE=auth.caCert,
                             CLIENT_CERT=auth.clientCert,
                             CLIENT_KEY=auth.clientKey
@@ -186,9 +188,9 @@ def send_mqtt(body, message) -> None:
                         payload=payload.serialize(),
                         properties=publish_props
                     )
-                    # print(f'Placed payload onto topic {topic} Payload Sent: {payload}')
+                    # print(f"Placed payload onto topic {topic} Payload Sent: {payload}")
                 except Exception as e:
-                    print(f'There was an error sending command to {broker_socket} topic: {actuator} -> {e}')
+                    print(f"There was an error sending command to {broker_socket} topic: {actuator} -> {e}")
                     send_error_response(e, headers)
 
 
@@ -221,14 +223,14 @@ def mqtt_on_message(client: mqtt.Client, userdata: List[str], msg: mqtt.MQTTMess
     :param msg: Contains payload, topic, qos, retain
     """
     props = {}
-    if msg_props := getattr(msg, 'properties', None):
+    if msg_props := getattr(msg, "properties", None):
         props = msg_props.json()
-        props['UserProperty'] = dict(props.get('UserProperty', {}))
+        props["UserProperty"] = dict(props.get("UserProperty", {}))
 
-    fmt = SerialFormats.from_value(props['UserProperty'].get('encoding', 'json'))
+    fmt = SerialFormats.from_value(props["UserProperty"].get("encoding", "json"))
     try:
         payload = Message.oc2_loads(msg.payload, fmt)
-        print(f'Received: {payload}')
+        print(f"Received: {payload}")
 
         # TODO: validate origin format
         profile, broker_socket = payload.origin.rsplit("@", 1)
@@ -271,7 +273,7 @@ def mqtt_on_log(client: mqtt.Client, userdata: List[str], level: int, buf: str) 
     :param buf: the message itself
     """
     lvl = logging.getLevelName(mqtt.LOGGING_LEVEL.get(level, level))
-    print(f'{lvl} - {buf}')
+    print(f"{lvl} - {buf}")
 
 
 # TODO: MQTT subscribe to responses
@@ -283,7 +285,7 @@ class ClientsMQTT:
     client_id: str
     topics: List[str]
     debug: bool
-    # Dict['socket', mqtt.Client]
+    # Dict["socket", mqtt.Client]
     _clients: Dict[str, mqtt.Client]
 
     def __init__(self, client_id: str = "oif-orchestrator-sub", topics: List[str] = None, debug: bool = False):
@@ -296,7 +298,7 @@ class ClientsMQTT:
     def shutdown(self, conns: List[str] = None) -> None:
         closable = {s: c for s, c in self._clients.items() if s in conns} if conns else self._clients
         for socket, client in dict(closable).items():
-            print(f'Closing connection: {socket}')
+            print(f"Closing connection: {socket}")
             client.disconnect()  # disconnect
             client.loop_stop()  # stop loop
             self._clients.pop(socket)  # remove stopped connection
@@ -305,7 +307,7 @@ class ClientsMQTT:
     def _subscribe(self, data: FrozenDict) -> None:
         close = set()
         for args in data.values():
-            close.add('{host}:{port}'.format(**args))
+            close.add("{host}:{port}".format(**args))
             self._check_subscribe(args)
         if diff := {*self._clients.keys()} - close:
             self.shutdown(list(diff))
@@ -316,25 +318,25 @@ class ClientsMQTT:
     update = _subscribe
 
     def _check_subscribe(self, data: FrozenDict) -> None:
-        socket = '{host}:{port}'.format(**data)
+        socket = "{host}:{port}".format(**data)
         client = self._clients.setdefault(socket, mqtt.Client(
             client_id=self.client_id,
             userdata=self.topics,
             protocol=mqtt.MQTTv5,
-            transport='tcp'
+            transport="tcp"
         ))
 
         if client.is_connected():
-            print(f'Update connection: {socket}')
+            print(f"Update connection: {socket}")
             # TODO: Update connection??
 
             # Set topics
             # TODO: Set topics based on prefix
-            # topics = ['+/+/oc2/rsp', '+/oc2/rsp', 'oc2/rsp']
+            # topics = ["+/+/oc2/rsp", "+/oc2/rsp", "oc2/rsp"]
             # client.user_data_set(topics)
 
         else:
-            print(f'Create connection: {socket}')
+            print(f"Create connection: {socket}")
             # Auth
             with Auth(data) as auth:
                 if username := auth.username:
@@ -360,13 +362,13 @@ class ClientsMQTT:
 
                 try:
                     client.connect(
-                        host=data['host'],
-                        port=safe_cast(data['port'], int, 1883),
+                        host=data["host"],
+                        port=safe_cast(data["port"], int, 1883),
                         keepalive=300,
                         clean_start=mqtt.MQTT_CLEAN_START_FIRST_ONLY
                     )
                 except Exception as e:
-                    print(f'MQTT Error: {e}')
+                    print(f"MQTT Error: {e}")
 
-                print(f'Connect to MQTT broker: {socket}')
+                print(f"Connect to MQTT broker: {socket}")
                 client.loop_start()

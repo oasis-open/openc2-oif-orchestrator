@@ -9,6 +9,7 @@ if __name__ == '__main__':
     mqtt_conns = ClientsMQTT(
         # TODO: add orc_id to client_id ??
         # client_id=
+        # Add subscription - oc2/rsp/PRODUCER_ID
         topics=['+/+/oc2/rsp', '+/oc2/rsp', 'oc2/rsp'],
         debug=True
     )
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     transport_cache = EtcdCache(
         host=os.environ.get("ETCD_HOST", "localhost"),
         port=safe_cast(os.environ.get("ETCD_PORT", 2379), int, 2379),
+        # Add base of 'orchestrator' ??
         base='transport/MQTT',
         callbacks=[mqtt_conns.update]
     )
