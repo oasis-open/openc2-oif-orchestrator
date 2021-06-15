@@ -162,7 +162,7 @@ def send_mqtt(body: Union[bytes, str], message: kombu.Message) -> None:
                     origin=f"{orc_id}@{broker_socket}",
                     msg_type=MessageType.Request,
                     request_id=uuid.UUID(corr_id),
-                    serialization=SerialFormats(encoding) if encoding in SerialFormats else SerialFormats.JSON,
+                    content_type=SerialFormats(encoding) if encoding in SerialFormats else SerialFormats.JSON,
                     content=json.loads(body)
                 )
                 print(f"Sending {broker_socket} topic: {topic} -> {payload}")

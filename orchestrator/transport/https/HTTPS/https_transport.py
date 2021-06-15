@@ -44,7 +44,7 @@ def process_message(body: Union[dict, str], message: kombu.Message) -> None:
                         # created=... auto generated
                         msg_type=MessageType.Request,
                         request_id=corr_id,
-                        serialization=SerialFormats.from_value(encoding),
+                        content_type=SerialFormats.from_value(encoding),
                         content=body
                     )
 
