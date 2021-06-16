@@ -9,8 +9,9 @@ import JSONPretty from 'react-json-pretty';
 import {
   Button, ButtonGroup, Form, FormGroup, FormText, Input, Nav, NavItem, NavLink, TabContent, TabPane
 } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons';
 import { validate as uuidValidate, version as uuidVersion, v4 as uuid4 } from 'uuid';
-import { FaLongArrowAltRight } from 'react-icons/fa';
 import { Command, Generate } from '../../../actions';
 import { RootState } from '../../../reducers';
 import { objectValues, safeGet } from '../../utils';
@@ -71,7 +72,6 @@ type GenerateCommandsConnectedProps = GenerateCommandsProps & ConnectorProps;
 
 // Component
 class GenerateCommands extends Component<GenerateCommandsConnectedProps, GenerateCommandsState> {
-
   constructor(props: GenerateCommandsConnectedProps) {
     super(props);
     this.optChange = this.optChange.bind(this);
@@ -437,7 +437,7 @@ class GenerateCommands extends Component<GenerateCommandsConnectedProps, Generat
         <div key={ i } className="border border-warning mb-2 px-2 pt-2">
           <p>
             { `Warning from message ${err.dataPath || '.'}` }
-            <FaLongArrowAltRight className="mx-2" />
+            <FontAwesomeIcon icon={ faLongArrowAltRight } className="mx-2" />
             { `"${ err.keyword }"` }
           </p>
           <p className="text-warning">{ err.message }</p>

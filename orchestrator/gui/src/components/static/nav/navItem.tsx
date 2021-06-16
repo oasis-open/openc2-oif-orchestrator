@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import classNames from 'classnames';
-import { IconType } from 'react-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { DropdownItem, NavItem, NavLink } from 'reactstrap';
 
 // Interfaces
@@ -10,7 +11,7 @@ interface NavElmProps {
   click?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   dropdown?: boolean;
   external?: boolean;
-  icon?: IconType;
+  icon?: IconProp;
   itemClasses?: string;
   linkClasses?: string;
   target?: '_blank' | '_self' | '_parent' | '_top';
@@ -29,13 +30,6 @@ const DefaultProps = {
   target: '_self',
   text: ''
 };
-const iconOptions = {
-  size: '1.3333333333em',
-  style: {
-    lineHeight: '0.75em',
-    verticalAlign: '-0.225em'
-  }
-};
 
 // Component
 const NavElm: FunctionComponent<NavElmProps> = (props) => {
@@ -43,7 +37,6 @@ const NavElm: FunctionComponent<NavElmProps> = (props) => {
     active, click, dropdown, external, href, icon, itemClasses, linkClasses, target, text
   } = { ...DefaultProps, ...props };
   const classSet = new Set<string>(itemClasses.split(' '));
-  const Icon = icon;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const itemClick: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void = external ? _e => {} : click;
@@ -57,8 +50,8 @@ const NavElm: FunctionComponent<NavElmProps> = (props) => {
   if (dropdown) {
     return (
       <DropdownItem className={ linkClasses } href={ linkHref } target={ target } onClick={ itemClick } >
-        { Icon ? <Icon { ...iconOptions } /> : '' }
-        { Icon ? ' ' : '' }
+        { icon ? <FontAwesomeIcon icon={ icon } size='lg' /> : '' }
+        { icon ? ' ' : '' }
         { text }
       </DropdownItem>
     );
@@ -67,8 +60,8 @@ const NavElm: FunctionComponent<NavElmProps> = (props) => {
   return (
     <NavItem className={ classNames( ...classSet ) } onClick={ itemClick } >
       <NavLink className={ linkClasses } href={ linkHref } target={ target } onClick={ linkClick } >
-        { Icon ? <Icon { ...iconOptions } /> : '' }
-        { Icon ? ' ' : '' }
+        { icon ? <FontAwesomeIcon icon={ icon } size='lg' /> : '' }
+        { icon ? ' ' : '' }
         { text }
       </NavLink>
     </NavItem>
