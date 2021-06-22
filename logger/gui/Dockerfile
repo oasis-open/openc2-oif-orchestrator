@@ -13,7 +13,7 @@ cp -r build/* /opt/syslog/gui
 
 
 # GUI Image
-FROM ccoe-alpine
+FROM oif/alpine
 RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
 
 LABEL name="Logger GUI" \

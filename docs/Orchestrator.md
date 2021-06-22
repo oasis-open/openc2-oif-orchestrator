@@ -6,7 +6,6 @@
 - [GUI](../orchestrator/gui/client/ReadMe.md)
 
 ### Transport
-- [CoAP](orchestrator/transport/coap/ReadMe.md)
 - [HTTP](orchestrator/transport/http/ReadMe.md)
 - [HTTPS](orchestrator/transport/https/ReadMe.md)
 - [MQTT](orchestrator/transport/mqtt/ReadMe.md)
