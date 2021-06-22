@@ -73,9 +73,10 @@ const Home: FunctionComponent<HomeConnectedProps> = (props) => {
             <CardHeader>Transports</CardHeader>
             <CardBody>
               <ul>
-                <li>CoAP - Nonstandard, no specification</li>
+                { /* <li>CoAP - Nonstandard, no specification</li> */ }
+                <li>HTTP - Nonstandard, no specification</li>
                 <li>
-                  <a href="https://docs.oasis-open.org/openc2/open-impl-https/v1.0/open-impl-https-v1.0.html" rel="noopener noreferrer" target="_blank">HTTPS</a>
+                  <a href="https://docs.oasis-open.org/openc2/open-impl-https" rel="noopener noreferrer" target="_blank">HTTPS</a>
                   <sup>* Official</sup>
                 </li>
                 <li>
