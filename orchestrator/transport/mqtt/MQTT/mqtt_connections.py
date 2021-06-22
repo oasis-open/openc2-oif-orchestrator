@@ -178,7 +178,7 @@ def send_mqtt(body: Union[bytes, str], message: kombu.Message) -> None:
                             MQTT_HOST=host,
                             MQTT_PORT=safe_cast(port, int, 1883),
                             USERNAME=auth.username,
-                            PASSWORD=auth.username,
+                            PASSWORD=auth.password,
                             TLS_SELF_SIGNED=safe_cast(os.environ.get("MQTT_TLS_SELF_SIGNED", 0), int, 0),
                             CAFILE=auth.caCert,
                             CLIENT_CERT=auth.clientCert,
