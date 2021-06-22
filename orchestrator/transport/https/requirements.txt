@@ -1,2 +1,3 @@
-pyOpenssl==19.1.0
-requests==2.23.0
+# SB-Utils@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
+pyOpenssl==20.0.1
+requests[security]==2.25.1

@@ -58,7 +58,7 @@ CONFIG = FrozenDict(
         ("colorama", "colorama"),
         ("yaml", "pyyaml")
     ),
-    ImagePrefix="g2inc",
+    ImagePrefix="oif",
     Logging=FrozenDict(
         Default=(
             ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
@@ -109,7 +109,7 @@ if __name__ == "__main__":
         name="base alpine",
         path="./base",
         dockerfile="./Dockerfile_alpine",
-        tag=f"{CONFIG.ImagePrefix}/oif-alpine",
+        tag=f"{CONFIG.ImagePrefix}/alpine",
         rm=True
     )
 
@@ -119,9 +119,9 @@ if __name__ == "__main__":
         name="base alpine python3",
         path="./base",
         dockerfile="./Dockerfile_alpine-python3",
-        tag=f"{CONFIG.ImagePrefix}/oif-python",
+        tag=f"{CONFIG.ImagePrefix}/python3",
         buildargs=dict(
-            BASE_IMAGE=f"{CONFIG.ImagePrefix}/oif-alpine"
+            BASE_IMAGE=f"{CONFIG.ImagePrefix}/alpine"
         ),
         rm=True
     )

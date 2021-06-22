@@ -28,7 +28,7 @@ _Updated 21 April 2020_
         * The ONLY IP required is that of the host (system running Docker) and the ports associated with the OIF Orchestrator/Device
     * Example: A Docker host with core services would utilize a different configuration as compared to a development host.
 * What transfer protocols are supported Orchestrator-to-Device?
-    * Currently the OASIS-standard protocol is [HTTPS](https://docs.oasis-open.org/openc2/open-impl-https/v1.0/open-impl-https-v1.0.html), however CoAP and MQTT have a beta implementations within OIF
+    * Currently the OASIS-standard protocol is [HTTPS](https://docs.oasis-open.org/openc2/open-impl-https/v1.0/open-impl-https-v1.0.html), however MQTT have a beta implementations within OIF
 * What would be required to add a new transfer protocol?
     * See [transport docs](https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/docs/Transport.md)
 * What message encodings are supported Orchestrator-to-Device?
