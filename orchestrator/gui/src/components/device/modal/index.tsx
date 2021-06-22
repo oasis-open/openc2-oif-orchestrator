@@ -6,7 +6,8 @@ import {
   Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader
 } from 'reactstrap';
 import { validate as uuidValidate, version as uuidVersion, v4 as uuid4 } from 'uuid';
-import { FaPlus } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import Transport, { DefaultTransport } from './transport';
 import { objectValues, removeEmpty } from '../../utils';
 import { Device } from '../../../actions';
@@ -296,7 +297,7 @@ class DeviceModal extends Component<DeviceModalConnectedProps, DeviceModalState>
                 <legend>
                   Transports
                   <Button color="info" size="sm" className="float-right" onClick={ this.transportAdd } >
-                    <FaPlus />
+                    <FontAwesomeIcon icon={ faPlus } />
                   </Button>
                 </legend>
                 <div style={{maxHeight: '325px', overflowY: 'scroll'}}>

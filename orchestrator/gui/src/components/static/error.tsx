@@ -4,7 +4,9 @@ import { History } from 'history';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
 import { Button } from 'reactstrap';
-import { FaCog } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
+
 
 // Styles
 import '../dependencies/css/icon-animations.scss';
@@ -93,7 +95,7 @@ const Error: FunctionComponent<ErrorConnectedProps> = props =>  {
 
   const gearIcons = gears.map((styles, idx) => {
     // eslint-disable-next-line react/no-array-index-key
-    return <FaCog key={ idx } className="spinner" style={ styles } />;
+    return <FontAwesomeIcon icon={ faCog } key={ idx } className="spinner" style={ styles } />;
   });
 
   return (
