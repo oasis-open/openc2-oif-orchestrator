@@ -1,16 +1,16 @@
 from django.db.utils import IntegrityError
-from django.contrib.auth.models import User
-
-from rest_framework import filters, status, viewsets
+from django.contrib.auth import get_user_model
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
+from utils.viewsets import SecureModelViewSet
 from ..models import Device, DeviceSerializer
 
 
-class DeviceViewSet(viewsets.ModelViewSet):
+class DeviceViewSet(SecureModelViewSet):
     """
     API endpoint that allows Actuators to be viewed or edited.
     """
@@ -19,63 +19,14 @@ class DeviceViewSet(viewsets.ModelViewSet):
     lookup_field = 'device_id'
 
     queryset = Device.objects.order_by('name')
-    filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('name', 'host', 'port', 'protocol', 'serialization', 'type')
 
-    permissions = {
+    action_permissions = {
         'create':  (IsAdminUser,),
         'destroy': (IsAdminUser,),
         'partial_update': (IsAdminUser,),
         'update':  (IsAdminUser,),
     }
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [permission() for permission in self.permissions.get(self.action, self.permission_classes)]
-
-    def list(self, request, *args, **kwargs):
-        """
-        Return a list of all actuators that the user has permissions for
-        """
-        self.pagination_class.page_size_query_param = 'length'
-        self.pagination_class.max_page_size = 100
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # TODO: set permissions
-        '''
-        if not request.user.is_staff:  # Standard User
-            user_devices = DeviceGroup.objects.filter(users__in=[request.user])
-            user_devices = list(g.devices.values_list('name', flat=True) for g in user_devices)
-            queryset = queryset.filter(name__in=user_devices)  # | queryset.exclude(name__in=user_devices)
-        '''  # pylint: disable=pointless-string-statement
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        Return a specific actuators that the user has permissions for
-        """
-        device = self.get_object()
-
-        # TODO: set permissions
-        '''
-        if not request.user.is_staff:  # Standard User
-            user_devices = DeviceGroup.objects.filter(users__in=[request.user])
-            user_devices = list(g.devices.values_list('name', flat=True) for g in user_devices)
-            if device is not None and device.name not in user_devices:
-                raise PermissionDenied(detail='User not authorised to access device', code=401)
-        '''  # pylint: disable=pointless-string-statement
-
-        serializer = self.get_serializer(device)
-        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         """
@@ -133,7 +84,10 @@ class DeviceViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied(detail='User not authorised to access device', code=401)
 
         rtn = dict(
-            users=list(u.username for u in User.objects.filter(groups__name=f'Device: {device.name}'))
+            users=list(u.username for u in get_user_model().objects.filter(groups__name=f'Device: {device.name}'))
         )
 
         return Response(rtn)
+
+    # TODO: set list permissions
+    # TODO: set retrieve permissions

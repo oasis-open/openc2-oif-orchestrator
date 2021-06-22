@@ -1,6 +1,6 @@
 import uuid
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.dispatch import receiver
 from django.db import models
 from django.db.models.signals import pre_save
@@ -35,7 +35,7 @@ class SentHistory(models.Model):
         unique=True
     )
     user = models.ForeignKey(
-        User,
+        get_user_model(),
         on_delete=models.CASCADE,
         help_text="User that sent the command"
     )
@@ -168,7 +168,7 @@ class HistorySerializer(serializers.ModelSerializer):
     Command Sent API Serializer
     """
     def __init__(self, *args, **kwargs):
-        super(HistorySerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.request = kwargs.get("context", None).get("request", None)
 
     command_id = serializers.UUIDField(format="hex_verbose")

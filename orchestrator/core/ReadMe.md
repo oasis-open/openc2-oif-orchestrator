@@ -3,12 +3,13 @@
 
 ### About this image
 - Django based
-    - Django REST Framework
+    - Django REST Framework & Channels (WebSockets)
     - User/Pass via JWT Token
 - Default info:
     - Login - admin/password
     - Ports
-        - HTTPS/API - 8080
+        - HTTP/API - 8080
+        - WebSocket - 8080/ws
 - Serializations
     - JSON is currently the only approved OpenC2 serialization
     - All others are included for development/testing purposes
@@ -56,6 +57,9 @@ Environment Variables
 | QUEUE_PORT | Integer | Port the queue has available for connections | 5672 |
 | QUEUE_USER | String | User to connect to the queue | guest |
 | QUEUE_PASSWORD | String | Password of the connection user | guest |
+| ETCD_HOST | String | Hostname/IP address of the system running ETCd | etcd |
+| ETCD_PORT | String | Port ETCd has available for connections | 2379
+| TRANSPORT_SECRET | String | Password secure storage of transport info in ETCd | N1OIzxNETDM_s3X_eMM-kbaQPgvujDjHGWEKU2yLsGo= |
 
  - Adding Certs
 	- Certificates are not necessary for the `Core` container as it does not directly connect to by the user
@@ -67,24 +71,25 @@ Environment Variables
     - [HTTP Status Codes](https://www.restapitutorial.com/httpstatuscodes.html)
 
 - Core
-    - [Django](https://www.djangoproject.com/) - Core Framework
-        - [Cors Headers](https://pypi.org/project/django-cors-headers/) - Cross Origin Headers
-        - [Django REST Framework](http://www.django-rest-framework.org/) - Core Framework REST
-        - [DRF DataTables](https://django-rest-framework-datatables.readthedocs.io/en/latest/) - Server Side processing
-        - [DRF Files](https://pypi.org/project/djangorestframework-files/) - File download/upload
-        - [DRF JWT](https://getblimp.github.io/django-rest-framework-jwt/) - JSON WebTokens
-        - [DRF MessagePack](https://pypi.org/project/djangorestframework-msgpack/) - MessagePack serialization support
-        - [DRF QueryFields](https://djangorestframework-queryfields.readthedocs.io/en/latest/) - Dynamic fields in API
-        - [DRF Swagger](https://django-rest-swagger.readthedocs.io/en/latest/) - Dynamic Rest API
-        - [DRF Tracking](https://drf-tracking.readthedocs.io/en/latest/) - Tracking app based from
-        - [DRF Writable Nested](https://pypi.org/project/drf-writable-nested/) - Writable Nested Serializer
-        - [DRF XML](https://pypi.org/project/djangorestframework-XML/) - XML serialization support
-        - [Dynamic Preferences](https://django-dynamic-preferences.readthedocs.io/en/latest/) - Dynamic config
-    - [Json Field](https://pypi.org/project/jsonfield/) - JSON field for database
-    - [Bleach](https://bleach.readthedocs.io/en/latest/index.html) - String Sanitation
-    - [PyExcel XLS](https://pypi.org/project/pyexcel-xls/) - XLS file parsing for python
-    - [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/) - Production Server
-    - [Whitenoise](http://whitenoise.evans.io/en/stable/index.html#) - Static file serving
+	- [Daphne](https://pypi.org/project/daphne) - Production HTTP/HTTP2 & WebSocket server for ASGI/ASGI-HTTP
+	- [Django](https://www.djangoproject.com) - Core Framework
+	- [Django Channels](https://channels.readthedocs.io/en/latest) - WebSocket Support
+		- [Channels Multiplexer](https://pypi.org/project/channelsmultiplexer) - WebSocket Demultiplexer
+	- [Cors Headers](https://pypi.org/project/django-cors-headers) - Cross Origin Headers
+	- [Django REST Framework](http://www.django-rest-framework.org) - Core Framework REST
+	- [DRF DataTables](https://django-rest-framework-datatables.readthedocs.io/en/latest) - Server Side processing
+		- [DRF Files](https://pypi.org/project/djangorestframework-files) - File download/upload
+		- [DRF MessagePack](https://pypi.org/project/djangorestframework-msgpack) - MessagePack serialization support
+		- [DRF QueryFields](https://djangorestframework-queryfields.readthedocs.io/en/latest) - Dynamic fields in API
+		- [DRF Swagger](https://django-rest-swagger.readthedocs.io/en/latest) - Dynamic Rest API
+		- [DRF Tracking](https://drf-tracking.readthedocs.io/en/latest) - Tracking app based from
+		- [DRF Writable Nested](https://pypi.org/project/drf-writable-nested) - Writable Nested Serializer
+		- [DRF XML](https://pypi.org/project/djangorestframework-XML) - XML serialization support
+		- [Dynamic Preferences](https://django-dynamic-preferences.readthedocs.io/en/latest) - Dynamic config
+    - [Json Field](https://pypi.org/project/jsonfield) - JSON field for database
+    - [Bleach](https://bleach.readthedocs.io/en/latest) - String Sanitation
+    - [PyExcel XLS](https://pypi.org/project/pyexcel-xls) - XLS file parsing for python
+    - [Whitenoise](http://whitenoise.evans.io/en/stable) - Static file serving
     
 #### Interesting Modules
 - [REST MultiToken Auth](https://pypi.org/project/django-rest-multitokenauth/)

@@ -79,7 +79,7 @@ class TransportAuthSerializer(TransportSerializer):
 
     def create_or_update(self, instance, validated_data):
         validated_data = self.verify_pass(validated_data)
-        return super(TransportAuthSerializer, self).create_or_update(instance, validated_data)
+        return super().create_or_update(instance, validated_data)
 
     # Serializer Methods
     def verify_pass(self, data):

@@ -1,7 +1,7 @@
 import base64
 import bleach
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from rest_framework import filters, permissions, status, viewsets
@@ -22,7 +22,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     lookup_field = 'username'
 
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = get_user_model().objects.all().order_by('-date_joined')
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('last_name', 'first_name', 'username', 'email_address', 'active')
 
@@ -67,7 +67,7 @@ class UserHistoryViewSet(viewsets.ReadOnlyModelViewSet):
         username = bleach.clean(username)
 
         if request.user.is_staff:  # Admin User
-            user = get_or_none(User, username=username)
+            user = get_or_none(get_user_model(), username=username)
             if user is None:
                 raise Http404
             queryset = queryset.filter(user=user)

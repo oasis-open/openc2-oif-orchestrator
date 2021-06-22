@@ -64,14 +64,6 @@ class MessageQueue:
             routing_key=routing_key
         )
 
-    def register_callback(self, fun):
-        """
-        Register a function for when a message is received from the message queue
-        :param fun: function to register
-        :return: None
-        """
-        self.consumer.add_callback(fun)
-
     def shutdown(self):
         """
         Shutdown the connection to the queue

@@ -24,7 +24,7 @@ def inherits_from(child, parents: Union[Tuple[type, ...], type]):
     parents = tuple(p.__name__ for p in ((parents, ) if isinstance(parents, type) else parents))    # pylint: disable=superfluous-parens
     if inspect.isclass(child):
         bases = [c.__name__ for c in inspect.getmro(child)[1:]]
-        if any([p in bases for p in parents]):
+        if [p for p in parents if p in bases]:
             return True
     return False
 
@@ -154,7 +154,7 @@ class TestResults(unittest.TextTestResult):
         else:
             self.addFailure(subtest, err)
 
-        super(TestResults, self).addSubTest(test, subtest, err)
+        super().addSubTest(test, subtest, err)
         # add to total number of tests run
         self.testsRun += 1
 

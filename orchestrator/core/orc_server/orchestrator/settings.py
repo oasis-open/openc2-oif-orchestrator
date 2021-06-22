@@ -1,9 +1,12 @@
+import etcd
 import re
 import pymysql
 import os
 import datetime
 import base64
+
 from cryptography.fernet import Fernet
+from utils import MessageQueue
 from sb_utils import safe_cast
 from .config import Config
 
@@ -19,9 +22,6 @@ FIXTURE_DIRS = [
 if not os.path.isdir(DATA_DIR):
     os.mkdir(DATA_DIR)
 
-CONF_FILE = os.path.join(DATA_DIR, 'settings.json')
-CONFIG = Config(CONF_FILE)
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -35,7 +35,7 @@ ALLOWED_HOSTS = ['*']
 
 IP = '0.0.0.0'
 
-PORT = "8080"
+PORT = '8080'
 
 SOCKET = f'{IP}:{PORT}'
 
@@ -132,9 +132,12 @@ DATABASES = {
     }
 }
 
+# Default Primary Key
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Fake PyMySQL's version and install as MySQLdb
 # https://adamj.eu/tech/2020/02/04/how-to-use-pymysql-with-django/
-pymysql.version_info = (1, 4, 2, "final", 0)
+pymysql.version_info = (1, 4, 2, 'final', 0)
 pymysql.install_as_MySQLdb()
 
 # Password validation
@@ -164,7 +167,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Central location for all static files
-STATIC_ROOT = os.path.join(DATA_DIR, "static")
+STATIC_ROOT = os.path.join(DATA_DIR, 'static')
 
 STATICFILES_DIRS = []
 
@@ -214,7 +217,7 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'rest_framework_jwt.utils.jwt_response_payload_handler',  # Original
     # 'JWT_RESPONSE_PAYLOAD_HANDLER': 'orchestrator.jwt_handlers.jwt_response_payload_handler',  # Custom
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
-    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_COOKIE': 'JWT',
     # Not listed in docs, but in example.....
     'JWT_ENCODE_HANDLER': 'rest_framework_jwt.utils.jwt_encode_handler',
     'JWT_DECODE_HANDLER': 'rest_framework_jwt.utils.jwt_decode_handler',
@@ -245,7 +248,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
-    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S.%fZ"
+    'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S.%fZ'
 }
 
 
@@ -261,7 +264,8 @@ LOGGING = {
     'filters': {
         'ignore_logs': {
             '()': 'django.utils.log.CallbackFilter',
-            'callback': lambda r: not any([re.match(reg, r.name) for reg in IGNORE_LOGS])
+            # 'callback': lambda r: not any([re.match(reg, r.name) for reg in IGNORE_LOGS])
+            'callback': lambda r: len([reg for reg in IGNORE_LOGS if re.match(reg, r.name)]) == 0
         }
     },
     'formatters': {
@@ -342,7 +346,7 @@ QUEUE = {
     'producer_exchange': 'transport'
 }
 
-MESSAGE_QUEUE = None
+MESSAGE_QUEUE: MessageQueue
 
 # Security
 CRYPTO = Fernet(os.environ['TRANSPORT_SECRET']) if 'TRANSPORT_SECRET' in os.environ else None
@@ -358,10 +362,13 @@ FERNET_KEYS = [k.decode('utf-8') if isinstance(k, bytes) else str(k) for k in [
 # ETCD
 ETCD = {
     'host': os.environ.get('ETCD_HOST', 'localhost'),
-    'port': safe_cast(os.environ.get('ETCD_PORT', 4001), int, 4001)
+    'port': safe_cast(os.environ.get('ETCD_PORT', 2379), int, 2379)
 }
 
-ETCD_CLIENT = None
+ETCD_CLIENT: etcd.Client
+
+# Config
+CONFIG: Config
 
 # App stats function
 STATS_FUN = 'app_stats'

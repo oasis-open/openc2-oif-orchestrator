@@ -1,5 +1,6 @@
 import bleach
 
+from rest_framework.exceptions import APIException
 from rest_polymorphic.serializers import PolymorphicSerializer
 from .base import Transport, TransportSerializer
 from .auth import TransportAuth, TransportAuthSerializer, TransportAuthFields
@@ -24,7 +25,7 @@ class TransportPolymorphicSerializer(PolymorphicSerializer):
         many = kwargs.get('many', False)
         if data := kwargs.pop('data', None):
             data = [self._set_resource_type(d) for d in data] if many else self._set_resource_type(data)
-        super(TransportPolymorphicSerializer, self).__init__(data=data, *args, **kwargs)
+        super().__init__(data=data, *args, **kwargs)
 
     def create(self, validated_data):
         return self.create_or_update(None, validated_data)
@@ -35,9 +36,18 @@ class TransportPolymorphicSerializer(PolymorphicSerializer):
     def create_or_update(self, instance, validated_data):
         trans_id = bleach.clean(self.initial_data.get('transport_id', ''))
         if trans_id == '':
-            return super(TransportPolymorphicSerializer, self).create(validated_data)
+            return super().create(validated_data)
         if inst := instance or Transport.objects.filter(transport_id=trans_id).first():
-            return super(TransportPolymorphicSerializer, self).update(inst, validated_data)
+            return super().update(inst, validated_data)
+        raise type(
+            "PolymorphicTransportException",
+            (APIException, ),
+            dict(
+                status_code=406,
+                default_detail='Content given does not conform to an available transport.',
+                default_code='not_Acceptable',
+            )
+        )()
 
     # Polymorph functions
     def _safe_fields(self, orig, dst) -> dict:
@@ -67,7 +77,7 @@ class TransportPolymorphicSerializer(PolymorphicSerializer):
             trans_id = bleach.clean(data.get('transport_id', ''))
             if trans_id != '':
                 if inst := Transport.objects.filter(transport_id=trans_id).first():
-                    modelCls = [k for k in self.model_serializer_mapping.keys() if k.__name__ == resource_type][0]
+                    modelCls = [k for k in self.model_serializer_mapping if k.__name__ == resource_type][0]
                     baseData = self._safe_fields(inst, modelCls)
                     relDevs = list(inst.device_set.all())
                     inst.delete()

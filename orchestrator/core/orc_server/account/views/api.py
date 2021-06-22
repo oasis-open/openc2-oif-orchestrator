@@ -1,6 +1,7 @@
 import bleach
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ParseError
@@ -13,7 +14,7 @@ def actuatorDelete(request, username, actuator_id, *args, **kwargs):  # pylint: 
     """
     API endpoint that removes an actuator from a users access.
     """
-    user = User.objects.get(username=username)
+    user = get_user_model().objects.get(username=username)
     if user is None:
         return ParseError(detail='User cannot be found', code=404)
 

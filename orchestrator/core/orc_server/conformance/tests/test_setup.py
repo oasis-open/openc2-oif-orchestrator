@@ -14,7 +14,7 @@ class SetupTestSuite(unittest.TestSuite):
     _testKwargs: dict
 
     def __init__(self, tests: tuple = (), **kwargs):
-        super(SetupTestSuite, self).__init__(tests=tests)
+        super().__init__(tests=tests)
         self._testKwargs = kwargs
 
     def run(self, result, debug=False):
@@ -84,7 +84,7 @@ class SetupTestCase(unittest.TestCase):
     profile: str = None
 
     def __init__(self, methodName: str = 'runTest', **kwargs):
-        super(SetupTestCase, self).__init__(methodName=methodName)
+        super().__init__(methodName=methodName)
         self._setupKwargs(**kwargs)
 
     def _setupKwargs(self, **kwargs):
@@ -92,7 +92,7 @@ class SetupTestCase(unittest.TestCase):
 
     def debug(self, **kwargs):  # pylint: disable=arguments-differ
         self._setupKwargs(**kwargs)
-        super(SetupTestCase, self).debug()
+        super().debug()
 
     def __call__(self, *args, **kwargs):
         self._setupKwargs(**kwargs)

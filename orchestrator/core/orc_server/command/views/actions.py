@@ -5,11 +5,8 @@ import uuid
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 from dynamic_preferences.registries import global_preferences_registry
-from typing import (
-    List
-)
+from typing import List, Tuple, Union
 
 # Local imports
 from actuator.models import Actuator, ActuatorProfile
@@ -20,10 +17,11 @@ from utils import get_or_none, safe_cast, to_bytes, to_str
 from ..models import SentHistory, ResponseHistory
 
 global_preferences = global_preferences_registry.manager()
+User = get_user_model()
 
 
 class Validator:
-    _usr: get_user_model()
+    _usr: User
     _cmd: dict
     _actuator: str
     _channel: dict
@@ -41,7 +39,7 @@ class Validator:
         self._actuator = actuator
         self._channel = channel or {}
 
-    def validate(self):
+    def validate(self) -> Union[Tuple[dict, int], Tuple[List[Actuator], Protocol, Serialization]]:
         """
         Validate given the class vars
         :return: response tuple or data tuple
@@ -54,18 +52,19 @@ class Validator:
         if err:
             return err
 
-        actuators = None
+        actuators: List[Actuator] = []
         acts = self._val_actuator()
-        if acts:
-            if isinstance(acts[0], (Actuator, list)):
-                actuators = acts
-            else:
-                return acts
+        if isinstance(acts[0], dict) and isinstance(acts[1], int):
+            return acts
+        if isinstance(acts[0], tuple) and isinstance(acts[1], str):
+            return acts[0]
+        if isinstance(acts[0], list) and isinstance(acts[1], str):
+            actuators = acts
 
         protocol, serialization = self._val_channel(actuators)
         return actuators, protocol, serialization
 
-    def _val_user(self):
+    def _val_user(self) -> Union[Tuple[dict, int], None]:
         if self._usr is None:
             log.error(msg="invalid user attempted to send a command")
             return dict(
@@ -74,7 +73,7 @@ class Validator:
             ), 401
         return None
 
-    def _val_cmd(self):
+    def _val_cmd(self) -> Union[Tuple[dict, int], None]:
         if len(self._cmd.keys()) == 0:
             log.error(usr=self._usr, msg="User attempted to send an empty command")
             return dict(
@@ -85,7 +84,7 @@ class Validator:
         # TODO: Validate command
         return None
 
-    def _val_actuator(self):
+    def _val_actuator(self) -> Union[Tuple[dict, int], Tuple[Tuple[dict, int], str], Tuple[List[Actuator], str]]:
         if self._actuator is None:
             # TODO: Actuator broadcast??
             log.error(usr=self._usr, msg="User attempted to send to a null actuator")
@@ -117,6 +116,7 @@ class Validator:
             return rtn, 'device'
 
         if act_type == "profile":  # Profile Actuators
+            print(f'Profile: {act}')
             actuators = get_or_none(ActuatorProfile, name__iexact=act)
             if actuators is None:
                 return dict(
@@ -130,7 +130,7 @@ class Validator:
             response="Actuator Invalid: application error"
         ), 400
 
-    def _val_channel(self, act: Actuator):
+    def _val_channel(self, act: Actuator) -> Tuple[Protocol, Serialization]:
         if isinstance(act, list) and len(act) == 1:
             act = act[0]
             if isinstance(act, Actuator):
@@ -190,9 +190,14 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts: List[Actuator], s
                     **({'format': fmt} if fmt else {})
                 )
 
+            if trans.protocol.name.startswith('HTTP'):
+                dst.update(
+                    path=trans.path
+                )
+
             # Get Auth
-            auth = {}
-            for key in ["username", "password", "ca_cert", "client_cert", "client_key"]:
+            auth = {"username": trans.username} if hasattr(trans, "username") else {}
+            for key in ["password", "ca_cert", "client_cert", "client_key"]:
                 val = getattr(trans, key, '')
                 if val != '':
                     auth[key] = to_str(settings.CRYPTO.encrypt(to_bytes(val)))
@@ -210,8 +215,13 @@ def action_send(usr: User, cmd: dict, actuator: str, channel: dict):
     :param channel: serialization & protocol to send the command
     :return: response Tuple(dict, int)
     """
+    print(f'Validator({usr}, {cmd}, {actuator}, {channel})')
     val = Validator(usr, cmd, actuator, channel)
-    acts, protocol, serialization = val.validate()
+    rslt = val.validate()
+    print(f'Validator: {rslt}')
+    if len(rslt) == 2:
+        return rslt
+    acts, protocol, serialization = rslt
     (actuators, fmt) = acts
 
     # Store command in db

@@ -1,6 +1,6 @@
 import sys
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 
@@ -16,10 +16,11 @@ class Command(BaseCommand):
         :param kwargs:
         :return: None
         """
-        if User.objects.filter(username='admin', is_superuser=True).exists():
+        userModel = get_user_model()
+        if userModel.objects.filter(username='admin', is_superuser=True).exists():
             print('Superuser Exists')
         else:
             print('Creating SuperUser')
-            User.objects.create_superuser('admin', 'admin@example.com', 'password')
+            userModel.objects.create_superuser('admin', 'admin@example.com', 'password')
 
         sys.exit(0)

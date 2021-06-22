@@ -1,15 +1,15 @@
 import bleach
 
-from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
+from utils.viewsets import SecureModelViewSet
 from ..models import Actuator, ActuatorGroup, ActuatorSerializer
 
 
-class ActuatorViewSet(viewsets.ModelViewSet):
+class ActuatorViewSet(SecureModelViewSet):
     """
     API endpoint that allows Actuators to be viewed or edited.
     """
@@ -18,66 +18,15 @@ class ActuatorViewSet(viewsets.ModelViewSet):
     lookup_field = 'actuator_id'
 
     queryset = Actuator.objects.order_by('name')
-    filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('actuator_id', 'name', 'profile', 'type')
 
-    permissions = {
+    action_permissions = {
         'create':  (IsAdminUser,),
         'destroy': (IsAdminUser,),
         'partial_update': (IsAdminUser,),
         'retrieve': (IsAuthenticated,),
         'update':  (IsAdminUser,),
     }
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [permission() for permission in self.permissions.get(self.action, self.permission_classes)]
-
-    def list(self, request, *args, **kwargs):
-        """
-        Return a list of all actuators that the user has permissions for
-        """
-        self.pagination_class.page_size_query_param = 'length'
-        self.pagination_class.max_page_size = 100
-
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # TODO: set permissions
-        '''
-        if not request.user.is_staff:  # Standard User
-            user_actuators = ActuatorGroup.objects.filter(users__in=[request.user])
-            user_actuators = list(g.actuators.values_list('name', flat=True) for g in user_actuators)
-            queryset = queryset.filter(name__in=user_actuators)
-        '''  # pylint: disable=pointless-string-statement
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        Return a specific actuators that the user has permissions for
-        """
-        actuator = self.get_object()
-
-        # TODO: set permissions
-        '''
-        if not request.user.is_staff:  # Standard User
-            user_actuators = ActuatorGroup.objects.filter(users__in=[request.user])
-            user_actuators = list(g.actuators.values_list('name', flat=True) for g in user_actuators)
-
-            if actuator is not None and actuator.name not in user_actuators:
-                raise PermissionDenied(detail='User not authorised to access actuator', code=401)
-        '''  # pylint: disable=pointless-string-statement
-
-        serializer = self.get_serializer(actuator)
-        return Response(serializer.data)
 
     @action(methods=['PATCH'], detail=False)
     def refresh(self, request, *args, **kwargs):
@@ -139,3 +88,6 @@ class ActuatorViewSet(viewsets.ModelViewSet):
         }
 
         return Response(rtn)
+
+    # TODO: set list permissions
+    # TODO: set retrieve permissions
