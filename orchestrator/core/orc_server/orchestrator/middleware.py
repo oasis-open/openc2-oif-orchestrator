@@ -9,6 +9,7 @@ class RESTMiddleware(MiddlewareMixin):
     """
     REST API Middleware for proper handling of REST HTTP methods
     """
+
     def process_request(self, request):
         """
         Process REST request

@@ -3,14 +3,14 @@ OpenC2 Generic Conformance
 """
 import random
 
-from test_setup import SetupTestCase
+from test_setup import SetupTestCase  # pylint: disable=import-error
 
 
 class General_UnitTests(SetupTestCase):
     """
     General OpenC2 Conformance Tests
     """
-    profile = "General"
+    profile = "General_Spec_1.0"
 
     def test_headers(self):
         """
@@ -48,13 +48,6 @@ class General_UnitTests(SetupTestCase):
             print("Test `to` header...")
             if random.randint(0, 1) == 1:
                 self.fail("No `to` header")
-
-        '''
-        with self.subTest(header='content'):
-           print("Test `content` header...")
-           if random.randint(0, 1) == 1:
-               self.fail("No `content` header")
-        '''
 
     def test_query_features(self):
         """

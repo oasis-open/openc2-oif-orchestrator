@@ -12,7 +12,7 @@ from typing import (
     Union
 )
 
-from .test_setup import SetupTestSuite, SetupTestCase
+from .test_setup import SetupTestSuite, SetupTestCase  # pylint: disable=import-error
 
 test_dirs = [
     os.path.dirname(os.path.realpath(__file__)),  # Local Dir
@@ -21,10 +21,10 @@ test_dirs = [
 
 
 def inherits_from(child, parents: Union[Tuple[type, ...], type]):
-    parents = tuple(p.__name__ for p in ((parents, ) if isinstance(parents, type) else parents))
+    parents = tuple(p.__name__ for p in ((parents, ) if isinstance(parents, type) else parents))    # pylint: disable=superfluous-parens
     if inspect.isclass(child):
         bases = [c.__name__ for c in inspect.getmro(child)[1:]]
-        if any([p in bases for p in parents]):
+        if [p for p in parents if p in bases]:
             return True
     return False
 
@@ -32,7 +32,7 @@ def inherits_from(child, parents: Union[Tuple[type, ...], type]):
 def load_test_suite() -> SetupTestSuite:
     suite = SetupTestSuite()
     for d in test_dirs:
-        suite.addTests(unittest.defaultTestLoader.discover(start_dir=d, pattern=f"*_tests.py"))
+        suite.addTests(unittest.defaultTestLoader.discover(start_dir=d, pattern="*_tests.py"))
     return get_tests(suite)
 
 
@@ -76,7 +76,7 @@ def _load_tests(s: unittest.TestSuite, t: Union[Dict[str, List[str]], List[str]]
                         f[1]: getattr(test.__class__, f[1])
                     }
                 )
-            for t in test_list:
+            for t in test_list:  # pylint: disable=redefined-argument-from-local
                 t = t.split(".")
                 if (t[0] == f[0] and len(t) == 1) or (t[0] == f[0] and t[1] == f[1]):
                     rtn.append(cls(f[1], **kwargs))
@@ -154,7 +154,7 @@ class TestResults(unittest.TextTestResult):
         else:
             self.addFailure(subtest, err)
 
-        super(TestResults, self).addSubTest(test, subtest, err)
+        super().addSubTest(test, subtest, err)
         # add to total number of tests run
         self.testsRun += 1
 

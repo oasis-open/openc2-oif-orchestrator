@@ -41,7 +41,7 @@ init_now = datetime.now()
 
 if options.log_file:
     name, ext = os.path.splitext(options.log_file)
-    ext = '.log' if ext is '' else ext
+    ext = '.log' if ext == '' else ext
     fn = f'{name}-{init_now:%Y.%m.%d_%H.%M.%S}{ext}'
     log_file = open(options.log_file, 'w+')
     log_file.write(f'Configure run at {init_now:%Y.%m.%d_%H:%M:%S}\n\n')
@@ -65,12 +65,13 @@ CONFIG = FrozenDict(
     ),
     BaseRepo=f"{Base_URL}ScreamingBunny",
     ImageReplace=(
-        ("base", r"gitlab.*?docker:alpine( as.*)?", r"alpine\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
-        ("python3", r"gitlab.*plus:alpine-python3( as.*)?", fr"g2inc/oif-python\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
+        ("base", r"ccoe-gitlab.*?docker:alpine( as.*)?", r"oif/alpine\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
+        ("python3_actuator", r"ccoe-gitlab.*plus:alpine-python3_actuator( as.*)?", fr"oif/python3_actuator\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
+        ("python3", r"ccoe-gitlab.*plus:alpine-python3( as.*)?", fr"oif/python3\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
     ),
     Repos=FrozenDict(
         Orchestrator=('Core', 'GUI'),
-        Transport=('HTTPS', 'MQTT', 'CoAP'),
+        Transport=('HTTP', 'HTTPS', 'MQTT'),
     )
 )
 
@@ -123,9 +124,9 @@ if __name__ == '__main__':
     Stylize.underline('Starting Update')
 
     # -------------------- Modules -------------------- #
-    with Stage('Modules', 'base/modules'):
+    with Stage('Modules', 'base/modules/tmp'):
         Stylize.h2("Updating Utilities")
-        update_repo(f"{CONFIG.BaseRepo}/Utils.git", 'utils', options.repo_branch)
+        update_repo(f"{CONFIG.BaseRepo}/Utils.git", 'sb_utils', options.repo_branch)
 
     # -------------------- Orchestrator -------------------- #
     with Stage('Orchestrator', 'orchestrator'):

@@ -26,13 +26,13 @@ services:
         syslog-format: rfc5424
         tag: "core-gui"
 
-  transport-mqtt:
+  transport-http:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "transport-mqtt"
+        tag: "transport-http"
 
   transport-https:
     logging:
@@ -42,13 +42,13 @@ services:
         syslog-format: rfc5424
         tag: "transport-https"
 
-  transport-coap:
+  transport-mqtt:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "transport-coap"
+        tag: "transport-mqtt"
 
   queue:
     logging:
@@ -66,9 +66,17 @@ services:
         syslog-format: rfc5424
         tag: "database"
 
+  etcd:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "etcd"
+
   logger_server:
     hostname: logger_server
-    image: g2inc/oif-logger:server
+    image: oif/logger:server
     build:
       context: ./logger/server
       dockerfile: Dockerfile
@@ -87,7 +95,7 @@ services:
 
   logger_gui:
     hostname: logger_gui
-    image: g2inc/oif-logger:gui
+    image: oif/logger:gui
     build:
       context: ./logger/gui
       dockerfile: Dockerfile

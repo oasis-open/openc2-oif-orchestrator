@@ -1,6 +1,14 @@
-import datetime
-import os
+import etcd
 import re
+import pymysql
+import os
+import datetime
+import base64
+
+from cryptography.fernet import Fernet
+from utils import MessageQueue
+from sb_utils import safe_cast
+from .config import Config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -13,7 +21,6 @@ FIXTURE_DIRS = [
 
 if not os.path.isdir(DATA_DIR):
     os.mkdir(DATA_DIR)
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -28,7 +35,7 @@ ALLOWED_HOSTS = ['*']
 
 IP = '0.0.0.0'
 
-PORT = "8080"
+PORT = '8080'
 
 SOCKET = f'{IP}:{PORT}'
 
@@ -43,9 +50,11 @@ INSTALLED_APPS = [
     'actuator',
     'account',
     'command',
-    'conformance',
+    # 'conformance',
     'backup',
     'tracking',
+    # Polymorphic Models
+    'polymorphic',
     # Default Modules
     'django.contrib.admin',
     'django.contrib.auth',
@@ -113,7 +122,7 @@ WSGI_APPLICATION = 'orchestrator.wsgi.application'
 # MySQL/MariaDB
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql.connector.django',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DATABASE_NAME', 'orchestrator'),
         'USER': os.environ.get('DATABASE_USER', 'orc_root'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', '0Rch35Tr@t0r'),
@@ -122,6 +131,14 @@ DATABASES = {
         'CON_MAX_AGE': 5
     }
 }
+
+# Default Primary Key
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# Fake PyMySQL's version and install as MySQLdb
+# https://adamj.eu/tech/2020/02/04/how-to-use-pymysql-with-django/
+pymysql.version_info = (1, 4, 2, 'final', 0)
+pymysql.install_as_MySQLdb()
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -136,6 +153,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -149,7 +167,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Central location for all static files
-STATIC_ROOT = os.path.join(DATA_DIR, "static")
+STATIC_ROOT = os.path.join(DATA_DIR, 'static')
 
 STATICFILES_DIRS = []
 
@@ -199,7 +217,7 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'rest_framework_jwt.utils.jwt_response_payload_handler',  # Original
     # 'JWT_RESPONSE_PAYLOAD_HANDLER': 'orchestrator.jwt_handlers.jwt_response_payload_handler',  # Custom
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
-    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_COOKIE': 'JWT',
     # Not listed in docs, but in example.....
     'JWT_ENCODE_HANDLER': 'rest_framework_jwt.utils.jwt_encode_handler',
     'JWT_DECODE_HANDLER': 'rest_framework_jwt.utils.jwt_decode_handler',
@@ -230,7 +248,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
-    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S.%fZ"
+    'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S.%fZ'
 }
 
 
@@ -246,7 +264,8 @@ LOGGING = {
     'filters': {
         'ignore_logs': {
             '()': 'django.utils.log.CallbackFilter',
-            'callback': lambda r: not any([re.match(reg, r.name) for reg in IGNORE_LOGS])
+            # 'callback': lambda r: not any([re.match(reg, r.name) for reg in IGNORE_LOGS])
+            'callback': lambda r: len([reg for reg in IGNORE_LOGS if re.match(reg, r.name)]) == 0
         }
     },
     'formatters': {
@@ -300,13 +319,18 @@ TRACKING = {
         REQUEST_LEVELS.Redirect,
         REQUEST_LEVELS.Client_Error,
         REQUEST_LEVELS.Server_Error
+    ],
+    'SENSITIVE_FIELDS': [
+        'ca_cert',
+        'client_cert',
+        'client_key'
     ]
 }
 
 # Elasticsearch Model Mirroring
 ES_MIRROR = {
     'host': os.environ.get('ES_HOST', None),
-    'prefix': os.environ.get('ES_PREFIX', ''),
+    'prefix': os.environ.get('ES_PREFIX', '')
 }
 
 # Message Queue
@@ -322,13 +346,29 @@ QUEUE = {
     'producer_exchange': 'transport'
 }
 
-MESSAGE_QUEUE = None
+MESSAGE_QUEUE: MessageQueue
 
-# Valid Schema Formats
-SCHEMA_FORMATS = (
-    'jadn',
-    'json'
-)
+# Security
+CRYPTO = Fernet(os.environ['TRANSPORT_SECRET']) if 'TRANSPORT_SECRET' in os.environ else None
+
+# First key will be used to encrypt all new data
+# Decryption of existing values will be attempted with all given keys in order
+FERNET_KEYS = [k.decode('utf-8') if isinstance(k, bytes) else str(k) for k in [
+    # Key Generation - URLSAFE_BASE64_ENCRYPT(RANDOM_32_BITS)
+    '4k1wW0AwvNpOYLUazdXtpwLBc6MOaflTKV4UkkzVhS8=',
+    base64.urlsafe_b64encode(SECRET_KEY[:32].encode('utf-8'))
+] if k]
+
+# ETCD
+ETCD = {
+    'host': os.environ.get('ETCD_HOST', 'localhost'),
+    'port': safe_cast(os.environ.get('ETCD_PORT', 2379), int, 2379)
+}
+
+ETCD_CLIENT: etcd.Client
+
+# Config
+CONFIG: Config
 
 # App stats function
 STATS_FUN = 'app_stats'

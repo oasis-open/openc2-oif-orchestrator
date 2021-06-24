@@ -1,17 +1,18 @@
-import re
-import urllib3
+import json
+import requests
+import uuid
+import kombu
 
-from datetime import datetime
-from sb_utils import Producer, Consumer, default_encode, decode_msg, encode_msg, safe_json
+from typing import Union
+from sb_utils import Auth, Consumer, Message, MessageType, Producer, SerialFormats, safe_json
 
 
-def process_message(body, message):
+def process_message(body: Union[dict, str], message: kombu.Message) -> None:
     """
     Callback when we receive a message from internal buffer to publish to waiting flask.
     :param body: Contains the message to be sent.
     :param message: Contains data about the message as well as headers
     """
-    http = urllib3.PoolManager(cert_reqs="CERT_NONE")
     producer = Producer()
 
     body = body if isinstance(body, dict) else safe_json(body)
@@ -19,64 +20,84 @@ def process_message(body, message):
 
     orc_socket = rcv_headers["source"]["transport"]["socket"]  # orch IP:port
     orc_id = rcv_headers["source"]["orchestratorID"]  # orchestrator ID
-    corr_id = rcv_headers["source"]["correlationID"]  # correlation ID
+    corr_id = uuid.UUID(rcv_headers["source"]["correlationID"])  # correlation ID
 
     for device in rcv_headers["destination"]:
         device_socket = device["socket"]  # device IP:port
         encoding = device["encoding"]  # message encoding
+        path = f"/{device['path']}" if "path" in device else ""
 
         if device_socket and encoding and orc_socket:
-            for profile in device["profile"]:
-                print(f"Sending command to {profile}@{device_socket}")
-
-                try:
-                    rsp = http.request(
-                        method="POST",
-                        url=f"https://{device_socket}",
-                        body=encode_msg(body, encoding),  # command being encoded
-                        headers={
-                            "Content-type": f"application/openc2-cmd+{encoding};version=1.0",
-                            # "Status": ...,  # Numeric status code supplied by Actuator's OpenC2-Response
-                            "X-Request-ID": corr_id,
-                            "Date": f"{datetime.utcnow():%a, %d %b %Y %H:%M:%S GMT}",  # RFC7231-7.1.1.1 -> Sun, 06 Nov 1994 08:49:37 GMT
-                            "From": f"{orc_id}@{orc_socket}",
-                            "Host": f"{profile}@{device_socket}",
-                        }
-                    )
-
-                    rsp_headers = dict(rsp.headers)
-                    if "Content-type" in rsp_headers:
-                        rsp_enc = re.sub(r"^application/openc2-(cmd|rsp)\+", "", rsp_headers["Content-type"])
-                        rsp_enc = re.sub(r"(;version=\d+\.\d+)?$", "", rsp_enc)
-                    else:
-                        rsp_enc = "json"
-
-                    rsp_headers = {
+            with Auth(device.get("auth", {})) as auth:
+                for profile in device["profile"]:
+                    print(f"Sending command to {profile}@{device_socket}")
+                    rtn_headers = {
                         "socket": device_socket,
                         "correlationID": corr_id,
                         "profile": profile,
-                        "encoding": rsp_enc,
+                        "encoding": encoding,
                         "transport": "https"
                     }
+                    request = Message(
+                        recipients=[f"{profile}@{device_socket}"],
+                        origin=f"{orc_id}@{orc_socket}",
+                        # created=... auto generated
+                        msg_type=MessageType.Request,
+                        request_id=corr_id,
+                        content_type=SerialFormats.from_value(encoding),
+                        content=body
+                    )
 
-                    data = {
-                        "headers": rsp_headers,
-                        "content": decode_msg(rsp.data.decode("utf-8"), rsp_enc)
-                    }
+                    try:
+                        rslt = requests.post(
+                            url=f"https://{device_socket}{path}",
+                            headers={
+                                "Content-Type": f"application/openc2-cmd+{encoding};version=1.0",
+                                # Numeric status code supplied by Actuator's OpenC2-Response
+                                # "Status": ...,
+                                "X-Request-ID": request.request_id,
+                                # RFC7231-7.1.1.1 -> Sun, 06 Nov 1994 08:49:37 GMT
+                                "Date": f"{request.created:%a, %d %b %Y %H:%M:%S GMT}",
+                                "From": request.origin,
+                                # "Host": f"{profile}@{device_socket}"
+                            },
+                            data=request.serialize(),  # command being encoded
+                            cert=(auth.clientCert, auth.clientKey) if auth.clientCert and auth.clientKey else None,
+                            verify=auth.caCert if auth.caCert else False
+                        )
 
-                    print(f"Response from request: {rsp.status} - {safe_json(data)}")
-                    producer.publish(message=data["content"], headers=rsp_headers, exchange="orchestrator", routing_key="response")
-                except Exception as err:
-                    err = str(getattr(err, "message", err))
-                    rcv_headers["error"] = True
-                    producer.publish(message=err, headers=rcv_headers, exchange="orchestrator", routing_key="response")
-                    print(f"HTTPS error: {err}")
+                        response = Message.oc2_loads(rslt.content, encoding)
+                        print(f"Response from request: {rslt.status_code} - H:{dict(rslt.headers)} - C:{response}")
+                        # TODO: UPDATE HEADERS WITH RESPONSE INFO
+                    except requests.exceptions.ConnectionError as err:
+                        response = str(getattr(err, "message", err))
+                        rtn_headers["error"] = True
+                        print(f"Connection error: {err}")
+                    except json.decoder.JSONDecodeError as err:
+                        response = str(getattr(err, "message", err))
+                        rtn_headers["error"] = True
+                        print(f"Message error: {err}")
+                    except Exception as err:
+                        response = str(getattr(err, "message", err))
+                        rtn_headers["error"] = True
+                        print(f"HTTPS error: {err}")
 
+                    producer.publish(
+                        message=response,
+                        headers=rtn_headers,
+                        exchange="orchestrator",
+                        routing_key="response"
+                    )
         else:
             response = "Destination/Encoding/Orchestrator Socket of command not specified"
             rcv_headers["error"] = True
-            producer.publish(message=str(response), headers=rcv_headers, exchange="orchestrator", routing_key="response")
             print(response)
+            producer.publish(
+                message=str(response),
+                headers=rcv_headers,
+                exchange="orchestrator",
+                routing_key="response"
+            )
 
 
 if __name__ == "__main__":

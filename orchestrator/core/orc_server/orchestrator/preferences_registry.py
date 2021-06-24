@@ -3,6 +3,7 @@ import os
 import re
 import uuid
 
+from django.conf import settings
 from django.forms import ValidationError
 from dynamic_preferences.admin import GlobalPreferenceAdmin, PerInstancePreferenceAdmin
 from dynamic_preferences.types import StringPreference
@@ -78,17 +79,7 @@ class OrchestratorID(StringPreference):
     section = orchestrator
     name = "id"
     help_text = "The uuid of the orchestrator"
-    default = ""
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ID of the orchestrator
-        :param args: positional args
-        :param kwargs: key/value args
-        """
-        super(StringPreference, self).__init__(*args, **kwargs)
-        if self.default in ("", " ", None):
-            self.default = str(uuid.uuid4())
+    default = str(settings.CONFIG.OrchestratorID) if hasattr(settings, "CONFIG") else ""
 
     def validate(self, value):
         """

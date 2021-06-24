@@ -1,14 +1,12 @@
 import uuid
 
-from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from drf_queryfields import QueryFieldsMixin
 from jsonfield import JSONField
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 # Local imports
 from device.models import Device, DeviceSerializer
@@ -50,12 +48,6 @@ class Actuator(models.Model):
         blank=True,
         help_text="Schema of the actuator",
         null=True
-    )
-    schema_format = models.CharField(
-        choices=((f.lower(), f.upper()) for f in settings.SCHEMA_FORMATS),
-        default='jadn',
-        help_text=f"Format of the schema ({'|'.join(f.upper() for f in settings.SCHEMA_FORMATS)}), set from the schema",
-        max_length=4
     )
     profile = models.CharField(
         default='N/A',
@@ -102,7 +94,7 @@ class ActuatorGroup(AbstractGroup):
     Actuator Group instance base
     """
     users = models.ManyToManyField(
-        User,
+        get_user_model(),
         blank=True,
         help_text="Users in the group"
     )
@@ -153,17 +145,10 @@ def actuator_pre_save(sender, instance=None, **kwargs):
     :return: None
     """
     profile = 'None'
-    schema_keys = set(instance.schema.keys())
 
     if isinstance(instance.schema, dict):
-        if len(schema_keys - {"meta", "types"}) == 0:  # JADN
-            instance.schema_format = 'jadn'
-            profile = instance.schema.get('meta', {}).get('title', '').replace(' ', '_')
-            profile = 'None' if profile in ('', ' ', None) else profile
-        else:  # JSON
-            instance.schema_format = 'json'
-            profile = instance.schema.get('title', '').replace(' ', '_')
-            profile = 'None' if profile in ('', ' ', None) else profile
+        profile = instance.schema.get('title', '').replace(' ', '_')
+        profile = 'None' if profile in ('', ' ', None) else profile
 
     instance.profile = profile
 
@@ -209,14 +194,6 @@ class ActuatorSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     )
     schema = serializers.JSONField()
 
-    def create(self, validated_data):
-        dev = validated_data.get('device')
-        if dev:
-            if dev.actuator_set.count() == 1 and not dev.multi_actuator:
-                raise ValidationError("Cannot add actuators to a combination device/actuator")
-
-        return super().create(validated_data)
-
     class Meta:
         model = Actuator
         fields = ('actuator_id', 'name', 'device', 'profile', 'schema')
@@ -246,7 +223,7 @@ class ActuatorGroupSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     """
     name = serializers.CharField(max_length=80)
     users = serializers.SlugRelatedField(
-        queryset=User.objects.all(),
+        queryset=get_user_model().objects.all(),
         slug_field='username'
     )
     actuators = serializers.SlugRelatedField(

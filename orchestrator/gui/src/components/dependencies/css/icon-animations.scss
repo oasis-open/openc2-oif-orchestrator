@@ -1,0 +1,37 @@
+// keyframes mixin
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content; 
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  } 
+}
+
+.spinner {
+  -webkit-animation: spinner 5s infinite linear;
+  -moz-animation: spinner 5s infinite linear;
+  -o-animation: spinner 5s infinite linear;
+  animation: spinner 5s infinite linear;
+}
+
+@include keyframes('spinner') {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-animation: rotate(0deg);
+    -o-animation: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    -moz-animation: rotate(359deg);
+    -o-animation: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}

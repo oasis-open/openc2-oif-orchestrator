@@ -1,6 +1,3 @@
-kombu
-cbor2
-requests
-flask
-dicttoxml
-xmltodict
+# SB-Utils@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
+pyOpenssl==20.0.1
+requests[security]==2.25.1

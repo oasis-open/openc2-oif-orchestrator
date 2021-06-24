@@ -1,4 +1,4 @@
-FROM g2inc/oif-python
+FROM oif/python3
 RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
 
 MAINTAINER Screaming_Bunny
@@ -21,13 +21,19 @@ ENV DJANGO_SETTINGS_MODULE=orchestrator.settings \
 
 # Requirements install
 # System packages
-RUN apk add --no-cache --virtual .build-deps \
-    gcc \
-    libc-dev \
-    python3-dev \
-    linux-headers && \
+RUN addgroup -S django && \
+adduser -S django -G django && \
+apk add --no-cache --virtual .build-deps \
+  git \
+  gcc \
+  libc-dev \
+  libffi-dev \
+  openssl-dev \
+  python3-dev \
+  linux-headers && \
+apk add --no-cache mailcap && \
 # python/pip packages
-pip3 install -r /tmp/requirements.txt && \
+pip3 install --no-cache-dir -r /tmp/requirements.txt && \
 #
 # Collect Static Filesz
 cd /opt/orc_server && \
@@ -38,11 +44,15 @@ cd && \
 chmod +x /docker-entrypoint.sh && \
 chmod +x /opt/orc_server/dev_start.sh && \
 dos2unix /docker-entrypoint.sh && \
-dos2unix /opt/orc_server/dev_start.sh&& \
+dos2unix /opt/orc_server/dev_start.sh && \
+chown -R django:django /opt/orc_server && \
 #
 # Cleanup
 apk del .build-deps && \
 rm -rf /var/cache/apk/* *.tar.gz* /usr/src /root/.gnupg /tmp/*
+
+# Set the user for future commands
+USER django
 
 # Ports
 EXPOSE 8080/tcp
@@ -54,4 +64,4 @@ WORKDIR /opt/orc_server
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Startup Command
-CMD ["uwsgi", "--ini", "/opt/orc_server/uwsgi.ini"]
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "orchestrator.wsgi:application"]

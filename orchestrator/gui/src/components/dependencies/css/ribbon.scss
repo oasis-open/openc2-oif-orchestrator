@@ -1,0 +1,125 @@
+/* Font Imports  */
+/* latin-ext */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Noto Sans Bold'), local('NotoSans-Bold'), url('/assets/fonts/NotoSans/Latin-Ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Noto Sans Bold'), local('NotoSans-Bold'), url('/assets/fonts/NotoSans/Latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Vars */
+$X-OFFSET: 40px;
+$Y-OFFSET: 28px;
+
+.corner-ribbon, .corner-ribbon * {
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans', sans-serif;
+}
+
+/* The ribbons */
+.corner-ribbon {
+  width: 175px;
+  background: #8b0000;
+  position: absolute;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 1em;
+  top: $Y-OFFSET;
+  left: -$X-OFFSET;
+  text-align: center;
+  line-height: 35px;
+  letter-spacing: 1px;
+  color: #f0f0f0;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  z-index: 5000;
+  /* Custom styles */
+  &.sticky{
+    position: fixed;
+  }
+  &.shadow{
+    box-shadow: 0 0 3px rgba(0,0,0,.3);
+  }
+  &.opacity {
+    opacity: 0.75;
+    @for $val from 1 through 9 {
+      &-#{$val} {
+        opacity: $val/10;
+      }
+    }
+  }
+  /* Different positions */
+  &.top {
+    top: $Y-OFFSET;
+    &-left{
+      left: -$X-OFFSET;
+      transform: rotate(-45deg);
+      -webkit-transform: rotate(-45deg);
+    }
+    &-right{
+      right: -$X-OFFSET;
+      left: auto;
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+    }
+  }
+  &.bottom {
+    top: auto;
+    bottom: $Y-OFFSET;
+    &-left {
+      left: -$X-OFFSET;
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+    }
+    &-right {
+      right: -$X-OFFSET;
+      left: auto;
+      transform: rotate(-45deg);
+      -webkit-transform: rotate(-45deg);
+    }
+  }
+  /* Colors */
+  &.white {
+    background: #f0f0f0;
+    color: #555;
+  }
+  &.black {
+    background: #000;
+    color: #eee;
+  }
+  &.grey {
+    background: #708090;
+    color: #f0f0f0;
+  }
+  &.blue {
+    background: #00008b;
+  }
+  &.green {
+    background: #008000;
+  }
+  &.turquoise {
+    background: #40e0d0;
+  }
+  &.purple {
+    background: #800080;
+  }
+  &.red {
+    background: #8b0000;
+  }
+  &.orange {
+    background: #ff4500;
+  }
+  &.yellow {
+    background: #ff0;
+    color: #555;
+  }
+}

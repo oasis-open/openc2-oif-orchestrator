@@ -56,7 +56,7 @@ class XLSParser(BaseParser):
         except ValueError:
             if isinstance(val, str):
                 if re.match(r"^[\[{].*[\]}]", val):
-                    raise ParseError(f"XLS parse error - data appears to be JSON, cannot load")
+                    raise ParseError("XLS parse error - data appears to be JSON, cannot load")
             return val
 
 

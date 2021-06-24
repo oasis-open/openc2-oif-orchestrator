@@ -6,7 +6,8 @@
 - [GUI](../orchestrator/gui/client/ReadMe.md)
 
 ### Transport
-- [HTTPS](orchestrator/transport/https/README.md)
+- [HTTP](orchestrator/transport/http/ReadMe.md)
+- [HTTPS](orchestrator/transport/https/ReadMe.md)
 - [MQTT](orchestrator/transport/mqtt/ReadMe.md)
 
 ### Logger
@@ -30,16 +31,19 @@
 - Python 3.6+
 - pip 18+
 
+## Getting Started
+- Clone/Fork/Download the repo
+- Create a local copy on you system, if not downloaded
+- Be sure Docker is running
+
 ## Configuration
 - Run `configure.py` with the desired options prior to starting the Orchestrator for the first time
 	- Options
-		- `-b` or `--build-image` -- Build base containers
-		- `-d` or `--dev` -- Build using the development python image
     	- `-f FILE` or `--log_file FILE` -- Enables logging to the designated file
     	- `-h` or `--help` -- Shows the help and exits
     	- `-v` or `--verbose` -- Enables verbose output    	
     ```bash
-    python configure.py [OPTIONS]
+    python3 configure.py [OPTIONS]
     ```
 
 ## Running the Compose
@@ -47,29 +51,33 @@
 - Options
 	- * `-f FILE` or `--file FILE` -- Specify an alternate compose file (default: docker-compose.yml)
 	- `-p NAME` or `--project-name NAME` -- Specify an alternate project name (default: directory name)
-	- `d` or `--detach` -- Detached mode: Run containers in the background, print new container names. Incompatible with --abort-on-container-exit.
+	- `-d` or `--detach` -- Detached mode: Run containers in the background, print new container names. Incompatible with --abort-on-container-exit.
 - Starting
 	- Run the `docker-compose` command for the Orchestrator as shown below
+		
+		```bash
+		docker-compose ... up [-d]
+		```
 
--  Stoping
-	-  If running attatched (showing log output, no -d option)
+-  Stopping
+	-  If running attached (showing log output, no -d option)
 		-  Use 'Ctrl + C' 
-	-  If running detatched (not showing log output, -d option)
+	-  If running detached (not showing log output, -d option)
 		-  Run the `docker-compose` that was used to start the Orchestrator **except** replace `up ...` with `down`
 			
 			```bash
-			docker-compose ...... down
+			docker-compose ... down
 			```
 - Building Images
 	- Run the `docker-compose` that was used to start the Orchestrator **except** replace `up ...` with `build`
 	- Options
-		- SERVICE_NAME - The name of the service to rebuild the image, if not specified all will build
+		- SERVICE_NAME - The name of the service (as named in the specified compose file) to rebuild the image, if not specified all services will build if their context is specified
 	- Notes
 		- Does not need to be run prior to starting, the containers will autobuild if not available
 		- Should be run after adding a new Protocol or Serialization
 	
 	```bash
-	docker-compose ...... build [SERVICE_NAME]
+	docker-compose ... build [SERVICE_NAME]
 	```
 
 ### Docker Compose Files
@@ -94,8 +102,10 @@
 #### Registering a device with the OIF
 - Give Device a name and generate a UUID for it.
 - Select a transport
+    - HTTP: Enter host and port (Default Port 5001)
     - HTTPS: Enter host and port (Default Port 5001)
     - MQTT: Enter host and port of the broker (Default Port 1883)
+	    - See MQTT section in [Transports](./Transport.md) for more info
 - Select which serializations in which the device utilizes.
     - Default included device supports JSON, CBOR, and XML.
 - Note: include a note about what type of device you are adding.
@@ -104,6 +114,6 @@
 - Give actuator a name and generate a UUID for it.
 - Select a parent device.
     -  Note: device should be registered before the actuator.
-- Upload/Copy-Paste schema. Schema for the default included ISR actuator can be found at [device/actuator/isr/act_server/schema.json](../device/actuator/isr/act_server/schema.json).
-- This information can also be found under the [ISR Actuator](../device/actuator/isr/ReadMe.md) page.
+- Upload/Copy-Paste schema. Schema for the default included SLPF actuator can be found at [SLPF Schema](https://github.com/oasis-open/openc2-oif-device/blob/master/device/actuator/SLPF/act_server/schema.json).
+- This information can also be found under the [SLPF Actuator](https://github.com/oasis-open/openc2-oif-device/blob/master/device/actuator/SLPF/ReadMe.md) page.
 - If you are registering a new actuator for the first time while utilizing the MQTT transport you may need to update the `MQTT_TOPICS` environment variable. Read the MQTT Topics section [here](transport/mqtt/ReadMe.md)

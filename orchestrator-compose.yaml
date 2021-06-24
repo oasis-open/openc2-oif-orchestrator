@@ -1,6 +1,11 @@
 version: '3'
 
 volumes:
+  etcd:
+    labels:
+      com.screaming_bunny.container: 'Etcd'
+      com.screaming_bunny.description: 'Persistent Etcd Volume'
+
   database:
     labels:
       com.screaming_bunny.container: 'MariaDB'
@@ -14,13 +19,15 @@ volumes:
 services:
   core:
     hostname: core
-    image: g2inc/oif-orchestrator-core
+    image: oif/orchestrator-core
     build:
       context: ./orchestrator/core
       dockerfile: Dockerfile
     env_file:
       - ./environment/database.connect.env
       - ./environment/queue.connect.env
+      - ./environment/etcd.connect.env
+      - ./environment/security.env
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8080']
       interval: 30s
@@ -36,15 +43,15 @@ services:
 
   core-gui:
     hostname: core-gui
-    image: g2inc/oif-orchestrator-gui
+    image: oif/orchestrator-gui
     build:
-      context: ./orchestrator/gui/client
+      context: ./orchestrator/gui
       dockerfile: Dockerfile
     environment:
       ORC_HOST: core
       ORC_PORT: 8080
     ports:
-      - '8080:80'
+      - 8080:80
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:80']
       interval: 30s
@@ -56,67 +63,53 @@ services:
       - core
     restart: on-failure:5
 
-  transport-mqtt:
-    hostname: transport-mqtt
-    image: g2inc/oif-orchestrator-transport-mqtt
+  transport-http:
+    hostname: transport-http
+    image: oif/orchestrator-transport-http
     build:
-      context: ./orchestrator/transport/mqtt
+      context: ./orchestrator/transport/http
       dockerfile: Dockerfile
-    working_dir: /opt/transport/MQTT
     env_file:
       - ./environment/queue.connect.env
-      - ./environment/mqtt_transport.env
+      - ./environment/security.env
     external_links:
       - queue
     depends_on:
       - queue
-    entrypoint:
-      - sh
-      - dev_start.sh
 
   transport-https:
     hostname: transport-https
-    image: g2inc/oif-orchestrator-transport-https
+    image: oif/orchestrator-transport-https
     build:
       context: ./orchestrator/transport/https
       dockerfile: Dockerfile
-    working_dir: /opt/transport
     env_file:
       - ./environment/queue.connect.env
+      - ./environment/security.env
     external_links:
       - queue
-    ports:
-      - 5000:5000
     depends_on:
       - queue
-    entrypoint:
-      - sh
-      - dev_start.sh
-    
-  transport-coap:
-    hostname: transport-coap
-    image: g2inc/oif-orchestrator-transport-coap
+
+  transport-mqtt:
+    hostname: transport-mqtt
+    image: oif/orchestrator-transport-mqtt
     build:
-      context: ./orchestrator/transport/coap
+      context: ./orchestrator/transport/mqtt
       dockerfile: Dockerfile
-    working_dir: /opt/transport/COAP
     env_file:
       - ./environment/queue.connect.env
+      - ./environment/etcd.connect.env
+      - ./environment/mqtt_transport.env
+      - ./environment/security.env
     external_links:
       - queue
-    ports:
-      - '5683:5683/udp'
     depends_on:
       - queue
-    entrypoint:
-      - sh
-      - dev_start.sh
 
   queue:
     hostname: rabbit
     image: rabbitmq:management-alpine
-    ports:
-      - '15672:15672'
     volumes:
       - queue:/var/lib/rabbitmq
     healthcheck:
@@ -138,4 +131,15 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    restart: on-failure:5
+
+  etcd:
+    hostname: etcd
+    image: quay.io/coreos/etcd:v3.3.25
+    environment:
+      ALLOW_NONE_AUTHENTICATION: 'yes'
+      ETCD_DATA_DIR: '/data/etcd'
+    volumes:
+      - etcd:/data/etcd
+    command: sh -c 'etcd -listen-client-urls http://0.0.0.0:2379 -advertise-client-urls http://etcd:2379'
     restart: on-failure:5

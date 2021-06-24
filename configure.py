@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 import atexit
 import os
 import re
-import shutil
 import sys
 
 from datetime import datetime
@@ -39,7 +37,7 @@ init_now = datetime.now()
 
 if options.log_file:
     name, ext = os.path.splitext(options.log_file)
-    ext = ".log" if ext is "" else ext
+    ext = ".log" if ext == "" else ext
     fn = f"{name}-{init_now:%Y.%m.%d_%H.%M.%S}{ext}"
     # log_file = open(fn, "w+")
     log_file = open(options.log_file, "w+")
@@ -60,13 +58,13 @@ CONFIG = FrozenDict(
         ("colorama", "colorama"),
         ("yaml", "pyyaml")
     ),
-    ImagePrefix="g2inc",
+    ImagePrefix="oif",
     Logging=FrozenDict(
         Default=(
-            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml -f orchestrator-compose.log.yaml"),
+            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
         ),
         Central=(
-            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
+            ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml -f orchestrator-compose.log.yaml"),
         )
     ),
     Composes=tuple(file for file in os.listdir(RootDir) if re.match(r"^\w*?-compose(\.\w*?)?\.yaml$", file))
@@ -105,13 +103,26 @@ if __name__ == "__main__":
     # -------------------- Build Base Images -------------------- #
     Stylize.h1(f"[Step {get_count()}]: Build Base Images ...")
 
-    Stylize.info("Building base alpine python3 image")
     build_image(
         docker_sys=system,
         console=Stylize,
+        name="base alpine",
+        path="./base",
+        dockerfile="./Dockerfile_alpine",
+        tag=f"{CONFIG.ImagePrefix}/alpine",
+        rm=True
+    )
+
+    build_image(
+        docker_sys=system,
+        console=Stylize,
+        name="base alpine python3",
         path="./base",
         dockerfile="./Dockerfile_alpine-python3",
-        tag=f"{CONFIG.ImagePrefix}/oif-python",
+        tag=f"{CONFIG.ImagePrefix}/python3",
+        buildargs=dict(
+            BASE_IMAGE=f"{CONFIG.ImagePrefix}/alpine"
+        ),
         rm=True
     )
 
@@ -126,20 +137,19 @@ if __name__ == "__main__":
 
     compose_images = []
 
-    Stylize.h1(f"Build images ...")
     for compose in CONFIG.Composes:
         with open(f"./{compose}", "r") as orc_compose:
             for service, opts in load(orc_compose.read(), Loader=Loader)["services"].items():
                 if "build" in opts and opts["image"] not in compose_images:
                     compose_images.append(opts["image"])
-                    Stylize.info(f"Building {opts['image']} image")
                     build_image(
                         docker_sys=system,
                         console=Stylize,
-                        rm=True,
+                        name=service,
                         path=opts["build"]["context"],
                         dockerfile=opts["build"].get("dockerfile", "Dockerfile"),
-                        tag=opts["image"]
+                        tag=opts["image"],
+                        rm=True
                     )
 
     # -------------------- Cleanup Images -------------------- #
@@ -160,6 +170,6 @@ if __name__ == "__main__":
 
     Stylize.success("\nConfiguration Complete")
     for key, opts in CONFIG.Logging.items():
-        Stylize.info(f"{key} logging")
+        Stylize.h3(f"{key} logging")
         for opt in opts:
             Stylize.info(f"-- Run 'docker-compose {opt[1]} up' to start the {opt[0]} compose")

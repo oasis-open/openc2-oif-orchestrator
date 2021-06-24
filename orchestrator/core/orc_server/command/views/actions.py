@@ -6,25 +6,27 @@ import uuid
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from dynamic_preferences.registries import global_preferences_registry
+from typing import List, Tuple, Union
 
 # Local imports
 from actuator.models import Actuator, ActuatorProfile
 from device.models import Device
 from orchestrator.models import Protocol, Serialization
 from tracking import log
-from utils import get_or_none, safe_cast
+from utils import get_or_none, safe_cast, to_bytes, to_str
 from ..models import SentHistory, ResponseHistory
 
 global_preferences = global_preferences_registry.manager()
+User = get_user_model()
 
 
 class Validator:
-    _usr: get_user_model()
+    _usr: User
     _cmd: dict
     _actuator: str
     _channel: dict
 
-    def __init__(self, usr, cmd: dict, actuator: str, channel: dict):
+    def __init__(self, usr: User, cmd: dict, actuator: str, channel: dict):
         """
         Process a command prior to sending it to the specified actuator(s)/profile
         :param usr: user sending command
@@ -37,7 +39,7 @@ class Validator:
         self._actuator = actuator
         self._channel = channel or {}
 
-    def validate(self):
+    def validate(self) -> Union[Tuple[dict, int], Tuple[List[Actuator], Protocol, Serialization]]:
         """
         Validate given the class vars
         :return: response tuple or data tuple
@@ -50,19 +52,19 @@ class Validator:
         if err:
             return err
 
-        actuators = None
-        err = self._val_actuator()
-        if err:
-            if isinstance(err, (Actuator, list)):
-                actuators = err
-            else:
-                return err
+        actuators: List[Actuator] = []
+        acts = self._val_actuator()
+        if isinstance(acts[0], dict) and isinstance(acts[1], int):
+            return acts
+        if isinstance(acts[0], tuple) and isinstance(acts[1], str):
+            return acts[0]
+        if isinstance(acts[0], list) and isinstance(acts[1], str):
+            actuators = acts
 
         protocol, serialization = self._val_channel(actuators)
-
         return actuators, protocol, serialization
 
-    def _val_user(self):
+    def _val_user(self) -> Union[Tuple[dict, int], None]:
         if self._usr is None:
             log.error(msg="invalid user attempted to send a command")
             return dict(
@@ -71,7 +73,7 @@ class Validator:
             ), 401
         return None
 
-    def _val_cmd(self):
+    def _val_cmd(self) -> Union[Tuple[dict, int], None]:
         if len(self._cmd.keys()) == 0:
             log.error(usr=self._usr, msg="User attempted to send an empty command")
             return dict(
@@ -82,58 +84,59 @@ class Validator:
         # TODO: Validate command
         return None
 
-    def _val_actuator(self):
-        if self._actuator is None:  # TODO: Actuator broadcast??
+    def _val_actuator(self) -> Union[Tuple[dict, int], Tuple[Tuple[dict, int], str], Tuple[List[Actuator], str]]:
+        if self._actuator is None:
+            # TODO: Actuator broadcast??
             log.error(usr=self._usr, msg="User attempted to send to a null actuator")
             return dict(
                 detail="actuator invalid",
                 response="Actuator Invalid: actuator cannot be none"
             ), 400
 
-        act_type = self._actuator.split("/", 1)
-        if len(act_type) != 2:
+        act_arr = self._actuator.split("/", 1)
+        if len(act_arr) != 2:
             log.error(usr=self._usr, msg=f"User attempted to send to an invalid actuator - {self._actuator}")
             return dict(
                 detail="actuator invalid",
                 response="Actuator Invalid: application error"
             ), 400
 
-        _type, _act_prof = act_type
-        _type = bleach.clean(str(_type))
-        _act_prof = bleach.clean(str(_act_prof).replace("_", " "))
+        act_type, act = act_arr
+        act_type = bleach.clean(str(act_type))
+        act = bleach.clean(str(act).replace("_", " "))
 
-        if _type == "actuator":  # Single Actuator
-            actuators = get_or_none(Actuator, actuator_id=_act_prof)
+        if act_type == "actuator":  # Single Actuator
+            actuators = get_or_none(Actuator, actuator_id=act)
             rtn = [actuators, ]
             if actuators is None:
                 rtn = dict(
                     detail="actuator invalid",
                     response="Actuator Invalid: actuator must be specified with a command"
                 ), 404
-            return rtn
+            return rtn, 'device'
 
-        if _type == "profile":  # Profile Actuators
-            actuators = get_or_none(ActuatorProfile, name__iexact=_act_prof)
+        if act_type == "profile":  # Profile Actuators
+            print(f'Profile: {act}')
+            actuators = get_or_none(ActuatorProfile, name__iexact=act)
             if actuators is None:
                 return dict(
-                    detail=f"profile cannot be found",
-                    response=f"Profile Invalid: profile must be a valid registered profile with the orchestrator"
+                    detail="profile cannot be found",
+                    response="Profile Invalid: profile must be a valid registered profile with the orchestrator"
                 ), 400
-            return list(Actuator.objects.filter(profile__iexact=_act_prof.replace(" ", "_")))
+            return list(Actuator.objects.filter(profile__iexact=act.replace(" ", "_"))), 'profile'
 
         return dict(
             detail="actuator invalid",
             response="Actuator Invalid: application error"
         ), 400
 
-    def _val_channel(self, act: Actuator):
-        if len(act) == 1:
+    def _val_channel(self, act: Actuator) -> Tuple[Protocol, Serialization]:
+        if isinstance(act, list) and len(act) == 1:
             act = act[0]
             if isinstance(act, Actuator):
-                dev = get_or_none(Device, device_id=act.device.device_id)
-
                 proto = self._channel.get("protocol", None)
                 if proto:
+                    dev = get_or_none(Device, device_id=act.device.device_id)
                     proto = get_or_none(dev.transport, protocol__name=bleach.clean(str(proto)))
                     proto = proto.protocol if proto else None
 
@@ -145,19 +148,17 @@ class Validator:
         return None, None
 
 
-def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serialization):
+def get_headers(proto: Protocol, com: SentHistory, proto_acts: List[Actuator], serial: Serialization, fmt: str):
     orc_ip = global_preferences.get("orchestrator__host", "127.0.0.1")
-    orc_id = global_preferences.get("orchestrator__id", "")
-    corr_id = com.coap_id or str(com.command_id)
 
     headers = dict(
         source=dict(
-            orchestratorID=orc_id,
+            orchestratorID=global_preferences.get("orchestrator__id", ""),
             transport=dict(
                 type=proto.name,
                 socket=f"{orc_ip}:{proto.port}"
             ),
-            correlationID=corr_id,
+            correlationID=to_str(com.coap_id or com.command_id),
             date=f"{com.received_on:%a, %d %b %Y %X %Z}"
         ),
         destination=[]
@@ -167,7 +168,6 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
         com.actuators.add(act)
         trans = act.device.transport.filter(protocol__name=proto.name).first()
         encoding = (serial if serial else trans.serialization.first()).name.lower()
-
         dev = [d for d in headers["destination"] if d["deviceID"] == str(act.device.device_id)]
         profile = str(act.profile).lower()
 
@@ -176,23 +176,37 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts, serial: Serializa
             headers["destination"][idx]["profile"].append(profile)
 
         else:
-            dest = dict(
+            dst = dict(
                 deviceID=str(act.device.device_id),
+                transport=trans.transport_id,
                 socket=f"{trans.host}:{trans.port}",
                 profile=[profile],
                 encoding=encoding
             )
+            # PubSub
             if trans.protocol.pub_sub:
-                dest.update(
-                    topic=trans.topic,
-                    channel=trans.channel
+                dst.update(
+                    prefix=trans.prefix,
+                    **({'format': fmt} if fmt else {})
                 )
 
-            headers["destination"].append(dest)
+            if trans.protocol.name.startswith('HTTP'):
+                dst.update(
+                    path=trans.path
+                )
+
+            # Get Auth
+            auth = {"username": trans.username} if hasattr(trans, "username") else {}
+            for key in ["password", "ca_cert", "client_cert", "client_key"]:
+                val = getattr(trans, key, '')
+                if val != '':
+                    auth[key] = to_str(settings.CRYPTO.encrypt(to_bytes(val)))
+            dst.update({'auth': auth} if len(auth.keys()) > 0 else {})
+            headers["destination"].append(dst)
     return headers
 
 
-def action_send(usr, cmd: dict, actuator: str, channel: dict):
+def action_send(usr: User, cmd: dict, actuator: str, channel: dict):
     """
     Process a command prior to sending it to the specified actuator(s)/profile
     :param usr: user sending command
@@ -201,11 +215,26 @@ def action_send(usr, cmd: dict, actuator: str, channel: dict):
     :param channel: serialization & protocol to send the command
     :return: response Tuple(dict, int)
     """
+    print(f'Validator({usr}, {cmd}, {actuator}, {channel})')
     val = Validator(usr, cmd, actuator, channel)
-    actuators, protocol, serialization = val.validate()
+    rslt = val.validate()
+    print(f'Validator: {rslt}')
+    if len(rslt) == 2:
+        return rslt
+    acts, protocol, serialization = rslt
+    (actuators, fmt) = acts
 
     # Store command in db
-    cmd_id = cmd.get("id", uuid.uuid4())
+    if "id" in cmd:
+        cmd_id = cmd.get("id", uuid.uuid4())
+        try:
+            cmd_id = uuid.UUID(cmd_id, version=4)
+        except ValueError:
+            cmd_id = uuid.uuid4()
+            cmd["id"] = str(cmd_id)
+    else:
+        cmd_id = uuid.uuid4()
+
     if get_or_none(SentHistory, command_id=cmd_id):
         return dict(
             command_id=[
@@ -240,7 +269,7 @@ def action_send(usr, cmd: dict, actuator: str, channel: dict):
             log.info(usr=usr, msg=f"Send command {com.command_id}/{com.coap_id.hex()} to buffer")
             settings.MESSAGE_QUEUE.send(
                 msg=json.dumps(cmd),
-                headers=get_headers(proto, com, proto_acts, serialization),
+                headers=get_headers(proto, com, proto_acts, serialization, fmt),
                 routing_key=proto.name.lower().replace(" ", "_")
             )
 
