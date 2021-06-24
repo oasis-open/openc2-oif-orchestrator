@@ -3,7 +3,7 @@ Authlib==0.15.4
 bson==0.5.10
 canonicaljson==1.4.0
 cbor2==5.4.0
-cryptography==3.3
+cryptography==3.3.2
 edn_format==0.7.5
 kombu==5.1.0
 msgpack==1.0.2
