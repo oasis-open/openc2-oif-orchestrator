@@ -8,16 +8,15 @@ import * as AccountActions from '../../actions/account';
 import { RootState } from '../../reducers';
 
 // Interfaces
-type ChangePasswordProps = Record<string, any>
-
 interface ChangePasswordState {
   password: {
     old_password: string;
     new_password_1: string;
     new_password_2: string;
   },
-  errors: Record<string, any>;
   status: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  errors: Record<string, any>;
 }
 
 // Redux Connector
@@ -35,8 +34,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-type ConnectorProps = ConnectedProps<typeof connector>;
-type ChangePasswordConnectedProps = ChangePasswordProps & ConnectorProps;
+type ChangePasswordConnectedProps = ConnectedProps<typeof connector>;
 
 // Component
 class ChangePassword extends Component<ChangePasswordConnectedProps, ChangePasswordState> {

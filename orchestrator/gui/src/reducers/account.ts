@@ -4,9 +4,10 @@ export interface AccountState {
   accounts: Array<account.Account>;
   sort: string;
   count: number;
-  errors: Record<string, any>;
   status: Record<string, any>;
   refresh: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  errors: Record<string, any>;
 }
 
 const initialState: AccountState = {

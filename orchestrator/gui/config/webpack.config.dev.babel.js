@@ -48,11 +48,6 @@ export default merge(baseConfig, {
     open: false,
     historyApiFallback: true,
     proxy: {
-      '/ws': {
-        target: 'ws://localhost:8080',
-        secure: false,
-        ws: true
-      },
       '/api': {
         target: 'http://localhost:8080',
         secure: false

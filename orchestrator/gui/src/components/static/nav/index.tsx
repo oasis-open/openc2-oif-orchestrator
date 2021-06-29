@@ -49,12 +49,10 @@ class DoubleNav extends Component<DoubleNavConnectedProps, DoubleNavState> {
     super(props);
     this.navigate = this.navigate.bind(this);
     this.setSize = this.setSize.bind(this);
-
     this.topNav = null;
     this.bottomNav = null;
 
     const { history } = this.props;
-
     this.state = {
       active: history.location.pathname
     };
