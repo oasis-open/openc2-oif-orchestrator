@@ -9,7 +9,8 @@ from .models.transports import (
     # Transport Specific
     TransportHTTP,
     TransportHTTPS,
-    TransportMQTT
+    TransportMQTT,
+    TransportOpenDXL
 )
 
 
@@ -45,6 +46,11 @@ class TransportMQTTAdmin(TransportChildAdmin):
     base_model = TransportMQTT
 
 
+@admin.register(TransportOpenDXL)
+class TransportOpenDXLAdmin(TransportChildAdmin):
+    base_model = TransportOpenDXL
+
+
 @admin.register(Transport)
 class TransportParentAdmin(TransportSharedOptions, PolymorphicParentModelAdmin):
     """
@@ -52,7 +58,7 @@ class TransportParentAdmin(TransportSharedOptions, PolymorphicParentModelAdmin):
     """
     # Polymorphic Options
     base_model = Transport  # Optional, explicitly set here.
-    child_models = (Transport, TransportAuth, TransportHTTP, TransportHTTPS, TransportMQTT)
+    child_models = (Transport, TransportAuth, TransportHTTP, TransportHTTPS, TransportMQTT, TransportOpenDXL)
     list_filter = (PolymorphicChildModelFilter, )
 
 

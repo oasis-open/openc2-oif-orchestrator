@@ -22,7 +22,4 @@ class TransportHTTPSSerializer(TransportHTTPSerializer, TransportAuthSerializer)
 
     class Meta:
         model = TransportHTTPS
-        fields = removeDuplicates(
-            TransportHTTPSerializer.Meta.fields,
-            TransportAuthSerializer.Meta.fields
-        )
+        fields = removeDuplicates(TransportHTTPSerializer.Meta.fields, TransportAuthSerializer.Meta.fields)

@@ -7,6 +7,7 @@ from .auth import TransportAuth, TransportAuthSerializer, TransportAuthFields
 from .http import TransportHTTP, TransportHTTPSerializer
 from .https import TransportHTTPS, TransportHTTPSSerializer
 from .mqtt import TransportMQTT, TransportMQTTSerializer
+from .opendxl import TransportOpenDXL, TransportOpenDXLSerializer
 
 
 class TransportPolymorphicSerializer(PolymorphicSerializer):
@@ -17,7 +18,8 @@ class TransportPolymorphicSerializer(PolymorphicSerializer):
         # Protocol Specific
         TransportHTTP: TransportHTTPSerializer,
         TransportHTTPS: TransportHTTPSSerializer,
-        TransportMQTT: TransportMQTTSerializer
+        TransportMQTT: TransportMQTTSerializer,
+        TransportOpenDXL: TransportOpenDXLSerializer
     }
     model_names = [m.__name__ for m in model_serializer_mapping]
 
@@ -101,7 +103,9 @@ __all__ = [
     'TransportHTTP',
     'TransportHTTPS',
     'TransportMQTT',
+    'TransportOpenDXL',
     'TransportHTTPSerializer',
     'TransportHTTPSSerializer',
-    'TransportMQTTSerializer'
+    'TransportMQTTSerializer',
+    'TransportOpenDXLSerializer'
 ]

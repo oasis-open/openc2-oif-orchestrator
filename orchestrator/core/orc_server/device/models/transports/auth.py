@@ -74,8 +74,7 @@ class TransportAuthSerializer(TransportSerializer):
 
     class Meta:
         model = TransportAuth
-        fields = (*TransportSerializer.Meta.fields,
-                  *TransportAuthFields)
+        fields = (*TransportSerializer.Meta.fields, *TransportAuthFields)
 
     def create_or_update(self, instance, validated_data):
         validated_data = self.verify_pass(validated_data)
@@ -87,10 +86,8 @@ class TransportAuthSerializer(TransportSerializer):
         pass2 = data.get('password_2')
         if pass1 or pass2:
             if pass1 != pass2:
-                raise DjangoValidationError(
-                    'Transport authentication passwords do not match')
-            data['password'] = base64.b64decode(pass1).decode('utf-8') if re.match(
-                r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$', pass1) else pass1
+                raise DjangoValidationError('Transport authentication passwords do not match')
+            data['password'] = base64.b64decode(pass1).decode('utf-8') if re.match(r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$', pass1) else pass1
             del data['password_1']
             del data['password_2']
         return data

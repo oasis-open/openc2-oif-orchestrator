@@ -215,10 +215,10 @@ def action_send(usr: User, cmd: dict, actuator: str, channel: dict):
     :param channel: serialization & protocol to send the command
     :return: response Tuple(dict, int)
     """
-    print(f'Validator({usr}, {cmd}, {actuator}, {channel})')
+    # print(f'Validator({usr}, {cmd}, {actuator}, {channel})')
     val = Validator(usr, cmd, actuator, channel)
     rslt = val.validate()
-    print(f'Validator: {rslt}')
+    # print(f'Validator: {rslt}')
     if len(rslt) == 2:
         return rslt
     acts, protocol, serialization = rslt

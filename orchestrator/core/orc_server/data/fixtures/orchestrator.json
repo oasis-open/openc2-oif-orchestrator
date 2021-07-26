@@ -20,8 +20,9 @@
     "model": "orchestrator.protocol",
     "pk": 3,
     "fields": {
-      "name": "COAP",
-      "port": 5683
+      "name": "OpenDXL",
+      "pub_sub": true,
+      "port": 8883
     }
   },
   {

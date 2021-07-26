@@ -1,7 +1,9 @@
 import copy
 
-from typing import Any, List
+from typing import Any, Iterable, List, Mapping, Union
 from .general import safe_cast
+
+DictLike = Union[Mapping, Iterable]
 
 
 # Dictionary Classes
@@ -14,20 +16,21 @@ class ObjectDict(dict):
         SAME AS
     d.key = 'value'
     """
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, seq: DictLike = None, **kwargs):
         """
         Initialize an QueryDict
         :param args: positional parameters
         :param kwargs: key/value parameters
         """
-        dict.__init__(self, *args, **kwargs)
-        Cls = self.__class__
+        data = dict(seq) if seq else {}
+        data.update(kwargs)
 
-        for k, v in self.items():
-            if isinstance(v, dict) and not isinstance(v, Cls):
-                dict.__setitem__(self, k, Cls(v))
+        for k, v in data.items():
+            if isinstance(v, dict) and not isinstance(v, self.__class__):
+                data[k] = self.__class__(v)
             elif isinstance(v, (list, tuple)):
-                dict.__setitem__(self, k, tuple(Cls(i) if isinstance(i, dict) else i for i in v))
+                data[k] = tuple(self.__class__(i) if isinstance(i, dict) else i for i in v)
+        dict.__init__(self, **data)
 
     def __setitem__(self, key: str, value: Any) -> None:
         """
@@ -36,7 +39,7 @@ class ObjectDict(dict):
         :param value: property value
         :return: None
         """
-        value = ObjectDict(value) if isinstance(value, dict) else value
+        value = self.__class__(value) if isinstance(value, dict) else value
         dict.__setitem__(self, key, value)
 
     __getattr__ = dict.__getitem__
@@ -230,7 +233,7 @@ class QueryDict(ObjectDict):
         :param sep: key separator character
         :return: list of composite keys
         """
-        sep = sep if sep else self.separator
+        sep = sep or self.separator
         return self._compositeKeys(self, sep)
 
     def setSeperator(self, value: str) -> None:
@@ -244,7 +247,7 @@ class QueryDict(ObjectDict):
         :param sep: path separator character
         :return: list of keys
         """
-        sep = sep if sep else self.separator
+        sep = sep or self.separator
         rtn = []
         key_vals = {}
         if isinstance(obj, self.__class__):

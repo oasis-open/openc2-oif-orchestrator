@@ -53,12 +53,12 @@ class TransportMQTTSerializer(TransportAuthSerializer):
     MQTT Transport API Serializer
     """
     prefix = serializers.CharField(max_length=30, **EmptySerializerCharField)
-    response_topic = serializers.CharField(max_length=60, **EmptySerializerCharField)
-    broadcast_topic = serializers.CharField(max_length=60, **EmptySerializerCharField)
-    device_topic = serializers.CharField(max_length=60, **EmptySerializerCharField)
-    profile_topic = serializers.CharField(max_length=60, **EmptySerializerCharField)
+    responseTopic = serializers.CharField(source="response_topic", max_length=60, **EmptySerializerCharField)
+    broadcastTopic = serializers.CharField(source="broadcast_topic", max_length=60, **EmptySerializerCharField)
+    deviceTopic = serializers.CharField(source="device_topic", max_length=60, **EmptySerializerCharField)
+    profileTopic = serializers.CharField(source="profile_topic", max_length=60, **EmptySerializerCharField)
 
     class Meta:
         model = TransportMQTT
         fields = (*TransportAuthSerializer.Meta.fields,
-                  "prefix", "response_topic", "broadcast_topic", "device_topic", "profile_topic")
+                  "prefix", "responseTopic", "broadcastTopic", "deviceTopic", "profileTopic")

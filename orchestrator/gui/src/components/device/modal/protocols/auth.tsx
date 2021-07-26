@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormText, Input, Label } from 'reactstrap';
 import BaseOptions, { BaseOptionsProps, BaseOptionsState } from './base';
 import { FileBase64, FileInfo, pick } from '../../../utils';
 
 // Interfaces
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface AuthProps extends BaseOptionsProps {}
+interface AuthProps extends BaseOptionsProps {
+  noLogin: boolean;
+  noCerts: boolean;
+}
 
-interface AuthState extends BaseOptionsState {
+export interface AuthState extends BaseOptionsState {
   username: string;
   password1: string;
   password2: string;
@@ -23,7 +26,7 @@ interface AuthState extends BaseOptionsState {
 }
 
 // Component
-const DefaultState: AuthState = {
+export const DefaultState: AuthState = {
   username: '',
   password1: '',
   password2: '',
@@ -39,6 +42,12 @@ const DefaultState: AuthState = {
 };
 
 class Auth extends BaseOptions<AuthProps, AuthState> {
+  // eslint-disable-next-line react/static-property-placement
+  static defaultProps = {
+    noLogin: false,
+    noCerts: false
+  }
+
   initial: Partial<AuthState>;
 
   constructor(props: AuthProps) {
@@ -80,13 +89,55 @@ class Auth extends BaseOptions<AuthProps, AuthState> {
   }
 
   render() {
+    const { noCerts, noLogin } = this.props;
     const {
       auth, password1, password2, username
     } = this.state;
+    let certFields: null|ReactElement = null;
+    let loginFields: null|ReactElement = null;
 
-    return (
-      <fieldset className="border border-info p-2">
-        <legend>Authentication</legend>
+    if (!noCerts) {
+      certFields = (
+        <div className="form-row">
+          <div className="form-group col-lg-4">
+            <Label for="ca_cert">CA Certificate</Label>
+            <FileBase64
+              id="ca_cert"
+              className="form-control"
+              name="ca_cert"
+              onDone={ this.certChange }
+            />
+            <small className='form-text text-info'>Only use unencrypted &lsquo;.cert&rsquo; files</small>
+            <FormText color={ auth.ca_cert ? 'success' : 'muted' }>{ `CA Certificate is ${auth.ca_cert ? '' : 'not '} set` }</FormText>
+          </div>
+          <div className="form-group col-lg-4">
+            <Label for="client_cert">Client Certificate</Label>
+            <FileBase64
+              id="client_cert"
+              className="form-control"
+              name="client_cert"
+              onDone={ this.certChange }
+            />
+            <small className='form-text text-info'>Only use unencrypted &lsquo;.cert&rsquo; files</small>
+            <FormText color={ auth.client_cert ? 'success' : 'muted' }>{ `Client Certificate is ${auth.client_cert ? '' : 'not '} set` }</FormText>
+          </div>
+          <div className="form-group col-lg-4">
+            <Label for="client_key">Client Key</Label>
+            <FileBase64
+              id="client_key"
+              className="form-control"
+              name="client_key"
+              onDone={ this.certChange }
+            />
+            <small className='form-text text-info'>Only use unencrypted &lsquo;.key&rsquo; files</small>
+            <FormText color={ auth.client_key ? 'success' : 'muted' }>{ `Client Key is ${auth.client_key ? '' : 'not '} set` }</FormText>
+          </div>
+        </div>
+      );
+    }
+
+    if (!noLogin) {
+      loginFields = (
         <div className="form-row">
           <div className="form-group col-lg-4">
             <Label for="username">Username</Label>
@@ -122,40 +173,15 @@ class Auth extends BaseOptions<AuthProps, AuthState> {
               onChange={ this.inputChange }
             />
           </div>
-          <div className="form-group col-lg-4">
-            <Label for="ca_cert">CA Certificate</Label>
-            <FileBase64
-              id="ca_cert"
-              className="form-control"
-              name="ca_cert"
-              onDone={ this.certChange }
-            />
-            <small className='form-text text-info'>Only use unencrypted &lsquo;.cert&rsquo; files</small>
-            <FormText color={ auth.ca_cert ? 'success' : 'muted' }>{ `CA Certificate is ${auth.ca_cert ? '' : 'not '} set` }</FormText>
-          </div>
-          <div className="form-group col-lg-4">
-            <Label for="client_cert">Client Certificate</Label>
-            <FileBase64
-              id="client_cert"
-              className="form-control"
-              name="client_cert"
-              onDone={ this.certChange }
-            />
-            <small className='form-text text-info'>Only use unencrypted &lsquo;.cert&rsquo; files</small>
-            <FormText color={ auth.client_cert ? 'success' : 'muted' }>{ `Client Certificate is ${auth.client_cert ? '' : 'not '} set` }</FormText>
-          </div>
-          <div className="form-group col-lg-4">
-            <Label for="client_key">Client Key</Label>
-            <FileBase64
-              id="client_key"
-              className="form-control"
-              name="client_key"
-              onDone={ this.certChange }
-            />
-            <small className='form-text text-info'>Only use unencrypted &lsquo;.key&rsquo; files</small>
-            <FormText color={ auth.client_key ? 'success' : 'muted' }>{ `Client Key is ${auth.client_key ? '' : 'not '} set` }</FormText>
-          </div>
         </div>
+      );
+    }
+
+    return (
+      <fieldset className="border border-info p-2">
+        <legend>Authentication</legend>
+        { loginFields || '' }
+        { certFields  || ''}
       </fieldset>
     );
   }
