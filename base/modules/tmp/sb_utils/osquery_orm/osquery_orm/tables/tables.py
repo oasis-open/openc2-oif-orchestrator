@@ -1,5 +1,6 @@
 from peewee import Model
 from . import cross_platform, freebsd, linux, macos, windows
+from .platform_base import mac_lin, mac_lin_win, mac_win
 
 
 class BindDatabase:
@@ -31,17 +32,17 @@ class CrossPlatform(BindDatabase):
     EtcProtocols = cross_platform.EtcProtocols
     EtcServices = cross_platform.EtcServices
     # example
-    File = cross_platform.File
+    File = cross_platform.File  # overwritten in MacOS, Linux, Windows
     FirefoxAddons = cross_platform.FirefoxAddons
-    Groups = cross_platform.Groups
-    Hash = cross_platform.Hash
+    Groups = cross_platform.Groups  # overwritten in MacOS, Windows
+    Hash = cross_platform.Hash  # overwritten in Linux
     IntelMeInfo = cross_platform.IntelMeInfo
-    InterfaceAddresses = cross_platform.InterfaceAddresses
-    InterfaceDetails = cross_platform.InterfaceDetails
+    InterfaceAddresses = cross_platform.InterfaceAddresses  # overwritten in Windows
+    InterfaceDetails = cross_platform.InterfaceDetails  # overwritten in Linux, Windows
     KernelInfo = cross_platform.KernelInfo
-    ListeningPorts = cross_platform.ListeningPorts
-    LoggedInUsers = cross_platform.LoggedInUsers
-    OS_Version = cross_platform.OSVersion
+    ListeningPorts = cross_platform.ListeningPorts  # overwritten in Linux
+    LoggedInUsers = cross_platform.LoggedInUsers  # overwritten in Windows
+    OS_Version = cross_platform.OSVersion  # overwritten in Linux, Windows
     OsqueryEvents = cross_platform.OsqueryEvents
     OsqueryExtensions = cross_platform.OsqueryExtensions
     OsqueryFlags = cross_platform.OsqueryFlags
@@ -51,20 +52,19 @@ class CrossPlatform(BindDatabase):
     OsquerySchedule = cross_platform.OsquerySchedule
     PlatformInfo = cross_platform.PlatformInfo
     ProcessMemoryMap = cross_platform.ProcessMemoryMap
-    ProcessOpenSockets = cross_platform.ProcessOpenSockets
-    Processes = cross_platform.Processes
+    ProcessOpenSockets = cross_platform.ProcessOpenSockets  # overwritten in MacOS, Linux, Windows
+    Processes = cross_platform.Processes  # overwritten in MacOS, Windows
     PythonPackages = cross_platform.PythonPackages
     Routes = cross_platform.Routes
     SSH_Configs = cross_platform.SshConfigs
     StartupItems = cross_platform.StartupItems
     SystemInfo = cross_platform.SystemInfo
-    Time = cross_platform.Time
+    Time = cross_platform.Time  # overwritten in Windows
     Uptime = cross_platform.Uptime
     UserGroups = cross_platform.UserGroups
     UserSSHKeys = cross_platform.UserSshKeys
-    Users = cross_platform.Users
+    Users = cross_platform.Users  # overwritten in MacOS, Windows
     YcloudInstanceMetadata = cross_platform.YcloudInstanceMetadata
-
     # Posix_Hash
     # Posix_InterfaceDetails
     # Posix_Routes
@@ -75,7 +75,90 @@ class FreeBSD(CrossPlatform):
     PkgPackages = freebsd.PkgPackages
 
 
-class Linux(CrossPlatform):
+class MacOS_Linux(CrossPlatform):
+    AcpiTables = mac_lin.AcpiTables
+    AptSources = mac_lin.AptSources
+    Augeas = mac_lin.Augeas
+    AuthorizedKeys = mac_lin.AuthorizedKeys
+    BlockDevices = mac_lin.BlockDevices
+    CpuTime = mac_lin.CpuTime
+    Crontab = mac_lin.Crontab
+    DeviceFile = mac_lin.DeviceFile
+    DeviceHash = mac_lin.DeviceHash
+    DevicePartitions = mac_lin.DevicePartitions
+    DiskEncryption = mac_lin.DiskEncryption  # overwritten in MacOS
+    DnsResolvers = mac_lin.DnsResolvers
+    DockerContainerFsChanges = mac_lin.DockerContainerFsChanges
+    DockerContainerLabels = mac_lin.DockerContainerLabels
+    DockerContainerMounts = mac_lin.DockerContainerMounts
+    DockerContainerNetworks = mac_lin.DockerContainerNetworks
+    DockerContainerPorts = mac_lin.DockerContainerPorts
+    DockerContainerProcesses = mac_lin.DockerContainerProcesses
+    DockerContainerStats = mac_lin.DockerContainerStats
+    DockerContainers = mac_lin.DockerContainers  # overitten in Linux
+    DockerImageHistory = mac_lin.DockerImageHistory
+    DockerImageLabels = mac_lin.DockerImageLabels
+    DockerImageLayers = mac_lin.DockerImageLayers
+    DockerImages = mac_lin.DockerImages
+    DockerInfo = mac_lin.DockerInfo
+    DockerNetworkLabels = mac_lin.DockerNetworkLabels
+    DockerNetworks = mac_lin.DockerNetworks
+    DockerVersion = mac_lin.DockerVersion
+    DockerVolumeLabels = mac_lin.DockerVolumeLabels
+    DockerVolumes = mac_lin.DockerVolumes
+    ExtendedAttributes = mac_lin.ExtendedAttributes
+    FileEvents = mac_lin.FileEvents
+    HardwareEvents = mac_lin.HardwareEvents
+    InterfaceIpv6 = mac_lin.InterfaceIpv6
+    KnownHosts = mac_lin.KnownHosts
+    Last = mac_lin.Last
+    LoadAverage = mac_lin.LoadAverage
+    LxdCertificates = mac_lin.LxdCertificates
+    LxdCluster = mac_lin.LxdCluster
+    LxdClusterMembers = mac_lin.LxdClusterMembers
+    LxdImages = mac_lin.LxdImages
+    LxdInstanceConfig = mac_lin.LxdInstanceConfig
+    LxdInstanceDevices = mac_lin.LxdInstanceDevices
+    LxdInstances = mac_lin.LxdInstances
+    LxdNetworks = mac_lin.LxdNetworks
+    LxdStoragePools = mac_lin.LxdStoragePools
+    Magic = mac_lin.Magic
+    MemoryArrayMappedAddresses = mac_lin.MemoryArrayMappedAddresses
+    MemoryArrays = mac_lin.MemoryArrays
+    MemoryDeviceMappedAddresses = mac_lin.MemoryDeviceMappedAddresses
+    MemoryDevices = mac_lin.MemoryDevices
+    MemoryErrorInfo = mac_lin.MemoryErrorInfo
+    Mounts = mac_lin.Mounts
+    OemStrings = mac_lin.OemStrings
+    PciDevices = mac_lin.PciDevices  # overwritten in Linux
+    ProcessEnvs = mac_lin.ProcessEnvs
+    ProcessOpenFiles = mac_lin.ProcessOpenFiles
+    ProcessOpenPipes = mac_lin.ProcessOpenPipes
+    ProcessEvents = mac_lin.ProcessEvents  # overwritten in MacOS, Linux
+    PrometheusMetrics = mac_lin.PrometheusMetrics
+    ShellHistory = mac_lin.ShellHistory
+    SmartDriveInfo = mac_lin.SmartDriveInfo
+    SmbiosTables = mac_lin.SmbiosTables
+    SocketEvents = mac_lin.SocketEvents
+    Sudoers = mac_lin.Sudoers
+    SuidBin = mac_lin.SuidBin
+    SystemControls = mac_lin.SystemControls  # overwritten in MacOS
+    UlimitInfo = mac_lin.UlimitInfo
+    UsbDevices = mac_lin.UsbDevices
+    UserEvents = mac_lin.UserEvents
+    YumSources = mac_lin.YumSources
+
+
+class MacOS_Windows(CrossPlatform):
+    Certificates = mac_win.Certificates  # overwritten in Windows
+
+
+class MacOS_Linux_Windows(CrossPlatform):
+    Yara = mac_lin_win.Yara
+    YaraEvents = mac_lin_win.YaraEvents
+
+
+class Linux(MacOS_Linux, MacOS_Linux_Windows):
     # acpi_tables
     ApparmorEvents = linux.ApparmorEvents
     ApparmorProfiles = linux.ApparmorProfiles
@@ -100,7 +183,7 @@ class Linux(CrossPlatform):
     # docker_container_ports
     # docker_container_processes
     # docker_container_stats
-    # docker_containers
+    DockerContainers = mac_lin.Linux_DockerContainers
     # docker_image_history
     # docker_image_labels
     # docker_image_layers
@@ -154,13 +237,13 @@ class Linux(CrossPlatform):
     Msr = linux.Msr
     NpmPackages = linux.Linux_NpmPackages  # NpmPackages
     # oem_strings
-    OSVersion = cross_platform.Linux_OSVersion
-    # pci_devices
+    OS_Version = cross_platform.Linux_OSVersion
+    PciDevices = mac_lin.Linux_PciDevices
     PortageKeywords = linux.PortageKeywords
     PortagePackages = linux.PortagePackages
     PortageUse = linux.PortageUse
     # process_envs
-    # process_events
+    ProcessEvents = mac_lin.Linux_ProcessEvents
     ProcessFileEvents = linux.ProcessFileEvents
     ProcessNamespaces = linux.ProcessNamespaces
     # process_open_files
@@ -192,7 +275,7 @@ class Linux(CrossPlatform):
     # yum_sources
 
 
-class MacOS(CrossPlatform):
+class MacOS(MacOS_Linux, MacOS_Windows, MacOS_Linux_Windows):
     AccountPolicyData = macos.AccountPolicyData
     # acpi_tables
     AdConfig = macos.AdConfig
@@ -220,7 +303,7 @@ class MacOS(CrossPlatform):
     DeviceFirmware = macos.DeviceFirmware
     # device_hash
     # device_partitions
-    # disk_encryption
+    DiskEncryption = mac_lin.MacOS_DiskEncryption
     DiskEvents = macos.DiskEvents
     # dns_resolvers
     # docker_container_fs_changes
@@ -296,7 +379,7 @@ class MacOS(CrossPlatform):
     PowerSensors = macos.PowerSensors
     Preferences = macos.Preferences
     # process_envs
-    # process_events
+    ProcessEvents = mac_lin.MacOS_ProcessEvents
     # process_open_files
     # process_open_pipes
     ProcessOpenSockets = cross_platform.Linux_MacOS_Windows_ProcessOpenSockets
@@ -318,7 +401,7 @@ class MacOS(CrossPlatform):
     # socket_events
     # sudoers
     # suid_bin
-    # system_controls
+    SystemControls = mac_lin.MacOS_SystemControls
     SystemExtensions = macos.SystemExtensions
     TemperatureSensors = macos.TemperatureSensors
     TimeMachineBackups = macos.TimeMachineBackups
@@ -340,13 +423,13 @@ class MacOS(CrossPlatform):
     # yum_sources
 
 
-class Windows(CrossPlatform):
+class Windows(MacOS_Windows, MacOS_Linux_Windows):
     AppcompatShims = windows.AppcompatShims
     Authenticode = windows.Authenticode
     Autoexec = windows.Autoexec
     BackgroundActivitiesModerator = windows.BackgroundActivitiesModerator
     BitlockerInfo = windows.BitlockerInfo
-    # certificates
+    Certificates = mac_win.Windows_Certificates
     ChassisInfo = windows.ChassisInfo
     ChocolateyPackages = windows.ChocolateyPackages
     Connectivity = windows.Connectivity
@@ -369,7 +452,7 @@ class Windows(CrossPlatform):
     NTFS_ACL_Permissions = windows.NtfsAclPermissions
     NTFS_JournalEvents = windows.NtfsJournalEvents
     OfficeMru = windows.OfficeMru
-    OSVersion = cross_platform.Windows_OSVersion
+    OS_Version = cross_platform.Windows_OSVersion
     Patches = windows.Patches
     PhysicalDiskPerformance = windows.PhysicalDiskPerformance
     Pipes = windows.Pipes

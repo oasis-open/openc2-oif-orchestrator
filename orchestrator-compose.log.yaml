@@ -10,21 +10,29 @@ volumes:
       com.screaming_bunny.description: 'Persistent Log Data Volume'
 
 services:
-  core:
+  producer-core:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "core"
+        tag: "producer-core"
 
-  core-gui:
+  consumer-core:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "core-gui"
+        tag: "consumer-core"
+
+  gui:
+    logging:
+      driver: syslog
+      options:
+        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
+        syslog-format: rfc5424
+        tag: "gui"
 
   transport-http:
     logging:

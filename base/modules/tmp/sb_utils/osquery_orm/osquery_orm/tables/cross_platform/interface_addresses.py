@@ -23,3 +23,6 @@ class InterfaceAddresses(BaseModel):
 # OS specific properties for Windows
 class Windows_InterfaceAddresses(InterfaceAddresses):
     friendly_name = TextField(help_text="The friendly display name of the interface.")
+
+    class Meta:
+        table_name = "interface_addresses"

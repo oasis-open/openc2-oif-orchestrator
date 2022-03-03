@@ -43,7 +43,7 @@ def _bytestr_format_dict(bytestr, value_dict):
             key = groups["mapping_key"]
             value = value_dict[key]
         if value is None:
-            raise ValueError("Unsupported conversion_type: {0}".format(groups["conversion_type"]))
+            raise ValueError(f"Unsupported conversion_type: {groups['conversion_type']}")
         return value
     return RE_PY_MAPPING_PARAM.sub(replace, bytestr)
 
@@ -103,6 +103,8 @@ class OSQueryCursor:
                 if psub.remaining != 0:
                     raise ProgrammingError(f"Not all parameters were used in the SQL statement: {psub.remaining}")
 
+        table_name = stmt.split(b"FROM")[1].split(b"AS")[0].strip(b" \"").decode(PY_CHARSET)
+        self._handle_pragma(self._connection.query(f"PRAGMA table_info({table_name})"))
         self._handle_result(self._connection.query(stmt.decode(PY_CHARSET)))
         return self._stored_results
 
@@ -148,27 +150,35 @@ class OSQueryCursor:
             executed = '(Nothing executed yet)'
         return fmt.format(class_name=self.__class__.__name__, stmt=executed)
 
-    def _handle_result(self, result: ExtensionResponse):
+    def _handle_pragma(self, pragma: ExtensionResponse):
         def column(col: str) -> Tuple[str, None, None, None, None, None, None]:
             return col, None, None, None, None, None, None
 
+        if not isinstance(pragma, ExtensionResponse):
+            raise InterfaceError('Result was not an ExtensionResponse')
+        columns = []
+        for col in pragma.response:
+            columns.append(col["name"])
+        self._description = tuple(map(column, columns))
+
+    def _handle_result(self, result: ExtensionResponse):
         if not isinstance(result, ExtensionResponse):
             raise InterfaceError('Result was not an ExtensionResponse')
 
         if result.status.code != 0:
             raise DatabaseError(result.status.message)
-        columns = set()
-        for row in result.response:
-            columns.update(set(row.keys()))
         self._rowcount = len(result.response)
-        self._description = tuple(map(column, columns))
-        self._stored_results = [list(r.values()) for r in result.response]
+        columns = set(c for r in result.response for c in r.keys())
+        self._description = tuple(d for d in self._description if d[0] in columns)
+        self._stored_results = [[r.get(d[0]) for d in self._description] for r in result.response]
 
     def _fetch_row(self):
         if self._fetchcount == len(self._stored_results):
             return None
 
-        if self._nextrow is None:
+        if self._nextrow is None and len(self._stored_results) == 0:
+            return None
+        elif self._nextrow is None:
             row = self._stored_results[0]
         else:
             row = self._nextrow

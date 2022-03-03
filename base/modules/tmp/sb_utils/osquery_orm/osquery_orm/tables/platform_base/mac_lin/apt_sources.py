@@ -2,7 +2,7 @@
 OSQuery apt_sources ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import TextField, IntegerField
+from peewee import IntegerField, TextField
 
 
 class AptSources(BaseModel):
@@ -25,3 +25,6 @@ class AptSources(BaseModel):
 # OS specific properties for Linux
 class Linux_AptSources(AptSources):
     pid_with_namespace = IntegerField(help_text="Pids that contain a namespace")  # {'additional': True, 'hidden': True}
+
+    class Meta:
+        table_name = "apt_sources"

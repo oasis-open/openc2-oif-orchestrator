@@ -2,7 +2,7 @@
 OSQuery temperature_sensors ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import ForeignKeyField, TextField, DoubleField
+from peewee import DoubleField, ForeignKeyField, TextField
 from .smc_keys import SmcKeys
 
 

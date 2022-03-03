@@ -2,7 +2,7 @@
 OSQuery prometheus_metrics ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, DoubleField
+from peewee import BigIntegerField, DoubleField, TextField
 
 
 class PrometheusMetrics(BaseModel):

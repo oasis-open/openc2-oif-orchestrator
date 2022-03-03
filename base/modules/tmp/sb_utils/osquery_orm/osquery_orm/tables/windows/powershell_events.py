@@ -2,7 +2,7 @@
 OSQuery powershell_events ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, DoubleField, IntegerField
+from peewee import BigIntegerField, DoubleField, IntegerField, TextField
 
 
 class PowershellEvents(BaseModel):

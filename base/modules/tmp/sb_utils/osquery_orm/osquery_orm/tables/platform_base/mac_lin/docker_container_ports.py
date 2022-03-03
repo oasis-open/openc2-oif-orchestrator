@@ -2,7 +2,7 @@
 OSQuery docker_container_ports ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import TextField, IntegerField
+from peewee import IntegerField, TextField
 
 
 class DockerContainerPorts(BaseModel):

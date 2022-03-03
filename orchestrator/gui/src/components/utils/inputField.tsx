@@ -13,14 +13,15 @@ interface InputFieldProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const DefaultProps: InputFieldProps = {
-  name: 'input',
+const DefaultProps = {
+  label: '',
   type: 'text',
+  error: false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onChange: (_e: React.ChangeEvent<HTMLInputElement>) => {}
 };
 
-const InputField: FunctionComponent<InputFieldProps> = (props=DefaultProps)  => {
+const InputField: FunctionComponent<InputFieldProps> = (props)  => {
   const {
     name, label, type, error, onChange
   } = props;
@@ -41,5 +42,7 @@ const InputField: FunctionComponent<InputFieldProps> = (props=DefaultProps)  => 
     </FormGroup>
   );
 };
+
+InputField.defaultProps = DefaultProps;
 
 export default InputField;

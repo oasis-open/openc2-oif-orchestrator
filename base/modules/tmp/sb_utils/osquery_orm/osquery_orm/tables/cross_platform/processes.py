@@ -2,7 +2,7 @@
 OSQuery processes ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, IntegerField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class Processes(BaseModel):
@@ -52,6 +52,9 @@ class Windows_Processes(Processes):
     handle_count = BigIntegerField(help_text="Total number of handles that the process has open. This number is the sum of the handles currently opened by each thread in the process.")
     percent_processor_time = BigIntegerField(help_text="Returns elapsed time that all of the threads of this process used the processor to execute instructions in 100 nanoseconds ticks.")
 
+    class Meta:
+        table_name = "processes"
+
 
 # OS specific properties for MacOS
 class MacOS_Processes(Processes):
@@ -59,3 +62,6 @@ class MacOS_Processes(Processes):
     uppid = BigIntegerField(help_text="The 64bit parent pid that is never reused. Returns -1 if we couldn\'t gather them from the system.")
     cpu_type = IntegerField(help_text="Indicates the specific processor designed for installation.")
     cpu_subtype = IntegerField(help_text="Indicates the specific processor on which an entry may be used.")
+
+    class Meta:
+        table_name = "processes"

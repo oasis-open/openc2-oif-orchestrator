@@ -2,7 +2,7 @@
 OSQuery process_memory_map ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import IntegerField, BigIntegerField, TextField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class ProcessMemoryMap(BaseModel):

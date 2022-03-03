@@ -2,7 +2,7 @@
 OSQuery file ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, IntegerField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class File(BaseModel):
@@ -43,13 +43,22 @@ class Windows_File(File):
     file_version = TextField(help_text="File version")
     product_version = TextField(help_text="File product version")
 
+    class Meta:
+        table_name = "file"
+
 
 # OS specific properties for MacOS
 class MacOS_File(File):
     bsd_flags = TextField(help_text="The BSD file flags (chflags). Possible values: NODUMP, UF_IMMUTABLE, UF_APPEND, OPAQUE, HIDDEN, ARCHIVED, SF_IMMUTABLE, SF_APPEND")
+
+    class Meta:
+        table_name = "file"
 
 
 # OS specific properties for Linux
 class Linux_File(File):
     pid_with_namespace = IntegerField(help_text="Pids that contain a namespace")  # {'additional': True, 'hidden': True}
     mount_namespace_id = TextField(help_text="Mount namespace id")  # {'hidden': True}
+
+    class Meta:
+        table_name = "file"

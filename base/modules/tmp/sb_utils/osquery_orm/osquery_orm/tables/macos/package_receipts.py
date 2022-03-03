@@ -2,7 +2,7 @@
 OSQuery package_receipts ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import TextField, DoubleField
+from peewee import DoubleField, TextField
 
 
 class PackageReceipts(BaseModel):

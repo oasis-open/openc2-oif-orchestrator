@@ -2,7 +2,7 @@
 OSQuery user_ssh_keys ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import ForeignKeyField, BigIntegerField, TextField, IntegerField
+from peewee import BigIntegerField, ForeignKeyField, IntegerField, TextField
 from .users import Users
 
 
@@ -25,3 +25,6 @@ class UserSshKeys(BaseModel):
 # OS specific properties for Linux
 class Linux_UserSshKeys(UserSshKeys):
     pid_with_namespace = IntegerField(help_text="Pids that contain a namespace")  # {'additional': True, 'hidden': True}
+
+    class Meta:
+        table_name = "user_ssh_keys"

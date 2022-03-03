@@ -2,7 +2,7 @@
 OSQuery docker_info ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, IntegerField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class DockerInfo(BaseModel):

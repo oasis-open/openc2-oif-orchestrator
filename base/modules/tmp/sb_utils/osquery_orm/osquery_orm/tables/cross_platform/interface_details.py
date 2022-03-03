@@ -2,7 +2,7 @@
 OSQuery interface_details ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, IntegerField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class InterfaceDetails(BaseModel):
@@ -38,10 +38,16 @@ class InterfaceDetails(BaseModel):
 class Posix_InterfaceDetails(InterfaceDetails):
     link_speed = BigIntegerField(help_text="Interface speed in Mb/s")
 
+    class Meta:
+        table_name = "interface_details"
+
 
 # OS specific properties for Linux
 class Linux_InterfaceDetails(InterfaceDetails):
     pci_slot = TextField(help_text="PCI slot number")
+
+    class Meta:
+        table_name = "interface_details"
 
 
 # OS specific properties for Windows
@@ -63,3 +69,6 @@ class Windows_InterfaceDetails(InterfaceDetails):
     dns_domain_suffix_search_order = TextField(help_text="Array of DNS domain suffixes to be appended to the end of host names during name resolution.")
     dns_host_name = TextField(help_text="Host name used to identify the local computer for authentication by some utilities.")
     dns_server_search_order = TextField(help_text="Array of server IP addresses to be used in querying for DNS servers.")
+
+    class Meta:
+        table_name = "interface_details"

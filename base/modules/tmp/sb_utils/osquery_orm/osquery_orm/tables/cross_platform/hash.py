@@ -2,7 +2,7 @@
 OSQuery hash ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import TextField, IntegerField
+from peewee import IntegerField, TextField
 
 
 class Hash(BaseModel):
@@ -26,8 +26,14 @@ class Hash(BaseModel):
 class Posix_Hash(Hash):
     ssdeep = TextField(help_text="ssdeep hash of provided filesystem data")
 
+    class Meta:
+        table_name = "hash"
+
 
 # OS specific properties for Linux
 class Linux_Hash(Hash):
     pid_with_namespace = IntegerField(help_text="Pids that contain a namespace")  # {'additional': True, 'hidden': True}
     mount_namespace_id = TextField(help_text="Mount namespace id")  # {'hidden': True}
+
+    class Meta:
+        table_name = "hash"

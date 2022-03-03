@@ -90,6 +90,22 @@ class FrozenDict(ObjectDict):
     update = _immutable
     setdefault = _immutable
 
+    # Custom functions
+    def unfreeze(self) -> dict:
+        rtn = {}
+        for k, v in self.items():
+            rtn[k] = self._unfreeze(v)
+
+        return rtn
+
+    # Helper functions
+    def _unfreeze(self, obj: Any) -> Any:
+        if isinstance(obj, self.__class__):
+            return obj.unfreeze()
+        if isinstance(obj, tuple):
+            return [self._unfreeze(i) for i in obj]
+        return obj
+
 
 class QueryDict(ObjectDict):
     """
@@ -107,7 +123,7 @@ class QueryDict(ObjectDict):
         """
         Get a key/path from the QueryDict
         :param path: key(s) to get the value of separated by the separator character
-        :param default: default value if the pey/path is not found
+        :param default: default value if the key/path is not found
         :return: value of key/path or default
         """
         if self.separator in path:
@@ -199,6 +215,11 @@ class QueryDict(ObjectDict):
                         raise KeyError(f"{self.separator.join(keys[:idx])} does not exist")
                 else:
                     print(f"Other - {type(ref)}")
+
+    def setdefault(self, path: str, default: Any) -> Any:
+        if path not in self.compositeKeys():
+            self.set(path, default)
+        return self.get(path)
 
     def __contains__(self, path: str) -> bool:
         """

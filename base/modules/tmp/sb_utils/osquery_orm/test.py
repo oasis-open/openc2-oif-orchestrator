@@ -20,3 +20,8 @@ if __name__ == '__main__':
 
     rslt = db.tables.macos.OS_Version.select()
     print(f"\nOS Version: {list(rslt)}\n")
+
+    rslt = db.tables.macos.Routes.select()
+    rslt_rows = '\n--> '.join([str(r.dict()) for r in rslt])
+    print(f"\nResults:\n--> {rslt_rows}\n")
+

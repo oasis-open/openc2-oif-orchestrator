@@ -74,7 +74,6 @@ const Home: FunctionComponent<HomeConnectedProps> = (props) => {
             <CardBody>
               <ul>
                 {/* <li>CoAP - Nonstandard, no specification</li> */}
-                <li>HTTP - Nonstandard, no specification</li>
                 <li>
                   <a href="https://docs.oasis-open.org/openc2/open-impl-https" rel="noopener noreferrer" target="_blank">HTTPS</a>
                   <sup>* Official</sup>
@@ -84,7 +83,6 @@ const Home: FunctionComponent<HomeConnectedProps> = (props) => {
                 </li>
                 <li>
                   <a href="https://github.com/oasis-tcs/openc2-transf-odxl" rel="noopener noreferrer" target="_blank">OpenDXL - In Progress</a>
-                  <p className="mb-1">- Currently not implemented</p>
                 </li>
                 {/* <li>ZMQ - Nonstandard, no specification</li> */}
               </ul>

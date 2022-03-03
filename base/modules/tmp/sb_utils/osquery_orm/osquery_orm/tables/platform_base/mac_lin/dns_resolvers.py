@@ -2,7 +2,7 @@
 OSQuery dns_resolvers ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import IntegerField, BigIntegerField, TextField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class DnsResolvers(BaseModel):
@@ -22,3 +22,6 @@ class DnsResolvers(BaseModel):
 # OS specific properties for Linux
 class Linux_DnsResolvers(DnsResolvers):
     pid_with_namespace = IntegerField(help_text="Pids that contain a namespace")  # {'additional': True, 'hidden': True}
+
+    class Meta:
+        table_name = "dns_resolvers"

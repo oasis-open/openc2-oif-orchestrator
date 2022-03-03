@@ -23,3 +23,6 @@ class SystemControls(BaseModel):
 # OS specific properties for MacOS
 class MacOS_SystemControls(SystemControls):
     field_name = TextField(help_text="Specific attribute of opaque type")
+
+    class Meta:
+        table_name = "system_controls"

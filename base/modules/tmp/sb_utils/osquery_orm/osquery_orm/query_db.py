@@ -52,7 +52,7 @@ class OsQueryDatabase(Database):
         table = self.tables._cross_platform.OsqueryRegistry
         # pylint: disable=C0121
         rslts = table.select(table.name).where(table.active == True).where(table.internal == False).where(table.registry == 'table')
-        return tuple(r.name for r in rslts)
+        return tuple(sorted(r.name for r in rslts))
 
     def get_indexes(self, table, schema=None):
         schema = schema or 'main'

@@ -43,6 +43,9 @@ class ProcessEvents(BaseModel):
 class MacOS_ProcessEvents(ProcessEvents):
     status = BigIntegerField(help_text="OpenBSM Attribute: Status of the process")
 
+    class Meta:
+        table_name = "process_events"
+
 
 # OS specific properties for Linux
 class Linux_ProcessEvents(ProcessEvents):
@@ -51,3 +54,6 @@ class Linux_ProcessEvents(ProcessEvents):
     fsgid = BigIntegerField(help_text="Filesystem group ID at process start")
     sgid = BigIntegerField(help_text="Saved group ID at process start")
     syscall = TextField(help_text="Syscall name: fork, vfork, clone, execve, execveat")
+
+    class Meta:
+        table_name = "process_events"

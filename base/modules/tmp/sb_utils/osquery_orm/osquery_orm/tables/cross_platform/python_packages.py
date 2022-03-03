@@ -2,7 +2,7 @@
 OSQuery python_packages ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import TextField, IntegerField
+from peewee import IntegerField, TextField
 
 
 class PythonPackages(BaseModel):
@@ -26,3 +26,6 @@ class PythonPackages(BaseModel):
 # OS specific properties for Linux
 class Linux_PythonPackages(PythonPackages):
     pid_with_namespace = IntegerField(help_text="Pids that contain a namespace")  # {'additional': True, 'hidden': True}
+
+    class Meta:
+        table_name = "python_packages"

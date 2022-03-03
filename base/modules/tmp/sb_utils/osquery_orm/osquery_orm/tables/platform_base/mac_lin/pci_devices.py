@@ -30,3 +30,6 @@ class Linux_PciDevices(PciDevices):
     subsystem_vendor = TextField(help_text="Vendor of PCI device subsystem")
     subsystem_model_id = TextField(help_text="Model ID of PCI device subsystem")
     subsystem_model = TextField(help_text="Device description of PCI device subsystem")
+
+    class Meta:
+        table_name = "pci_devices"

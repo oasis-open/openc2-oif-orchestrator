@@ -2,7 +2,7 @@
 OSQuery users ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, IntegerField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class Users(BaseModel):
@@ -31,12 +31,21 @@ class Users(BaseModel):
 class Windows_Users(Users):
     type = TextField(help_text="Whether the account is roaming (domain), local, or a system profile")
 
+    class Meta:
+        table_name = "users"
+
 
 # OS specific properties for MacOS
 class MacOS_Users(Users):
     is_hidden = IntegerField(help_text="IsHidden attribute set in OpenDirectory")
 
+    class Meta:
+        table_name = "users"
+
 
 # OS specific properties for Linux
 class Linux_Users(Users):
     pid_with_namespace = IntegerField(help_text="Pids that contain a namespace")  # {'additional': True, 'hidden': True}
+
+    class Meta:
+        table_name = "users"

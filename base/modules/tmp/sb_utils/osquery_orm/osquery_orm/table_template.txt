@@ -6,7 +6,5 @@ ${field_imports}${local_imports}
 class ${class_name}(BaseModel):
     ${description}
 ${schema}
-
-    class Meta:
-        table_name = "${table_name}"
+${metadata}
 ${extended_schema}

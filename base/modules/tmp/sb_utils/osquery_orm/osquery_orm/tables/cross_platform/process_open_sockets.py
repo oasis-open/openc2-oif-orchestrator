@@ -2,7 +2,9 @@
 OSQuery process_open_sockets ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import IntegerField, BigIntegerField, TextField
+from peewee import BigIntegerField, ForeignKeyField, IntegerField, TextField
+from .etc_protocols import EtcProtocols
+from ..consts import SocketFamily
 
 
 class ProcessOpenSockets(BaseModel):
@@ -14,8 +16,9 @@ class ProcessOpenSockets(BaseModel):
     pid = IntegerField(help_text="Process (or thread) ID")  # {'index': True}
     fd = BigIntegerField(help_text="Socket file descriptor number")
     socket = BigIntegerField(help_text="Socket handle or inode number")
-    family = IntegerField(help_text="Network protocol (IPv4, IPv6)")
-    protocol = IntegerField(help_text="Transport protocol (TCP/UDP)")
+    family = IntegerField(choices=SocketFamily, help_text="Network protocol (IPv4, IPv6)")
+    # protocol = IntegerField(help_text="Transport protocol (TCP/UDP)")
+    protocol = ForeignKeyField(EtcProtocols, EtcProtocols.number, column_name="protocol", help_text="Transport protocol (TCP/UDP)")
     local_address = TextField(help_text="Socket local address")
     remote_address = TextField(help_text="Socket remote address")
     local_port = IntegerField(help_text="Socket local port")
@@ -30,7 +33,13 @@ class ProcessOpenSockets(BaseModel):
 class Linux_MacOS_Windows_ProcessOpenSockets(ProcessOpenSockets):
     state = TextField(help_text="TCP socket state")
 
+    class Meta:
+        table_name = "process_open_sockets"
+
 
 # OS specific properties for Linux
 class Linux_ProcessOpenSockets(Linux_MacOS_Windows_ProcessOpenSockets):
     net_namespace = TextField(help_text="The inode number of the network namespace")
+
+    class Meta:
+        table_name = "process_open_sockets"

@@ -17,11 +17,11 @@ volumes:
       com.screaming_bunny.description: 'Persistent RabbitMQ Volume'
 
 services:
-  core:
-    hostname: core
-    image: oif/orchestrator-core
+  producer-core:
+    hostname: producer-core
+    image: oif/orchestrator-producer-core
     build:
-      context: ./orchestrator/core
+      context: ./orchestrator/producer-core
       dockerfile: Dockerfile
     env_file:
       - ./environment/database.connect.env
@@ -41,8 +41,32 @@ services:
       - database
     restart: on-failure:5
 
-  core-gui:
-    hostname: core-gui
+  consumer-core:
+    hostname: consumer-core
+    image: oif/orchestrator-consumer-core
+    build:
+      context: ./orchestrator/consumer-core
+      dockerfile: Dockerfile
+    env_file:
+      - ./environment/database.connect.env
+      - ./environment/queue.connect.env
+      - ./environment/etcd.connect.env
+      - ./environment/security.env
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    external_links:
+      - database
+      - queue
+    depends_on:
+      - queue
+      - database
+    restart: on-failure:5
+
+  gui:
+    hostname: gui
     image: oif/orchestrator-gui
     build:
       context: ./orchestrator/gui
@@ -58,9 +82,11 @@ services:
       timeout: 10s
       retries: 5
     external_links:
-      - core
+      - producer-core
+      - consumer-core
     depends_on:
-      - core
+      - producer-core
+      - consumer-core
     restart: on-failure:5
 
   transport-http:

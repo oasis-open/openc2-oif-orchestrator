@@ -2,7 +2,7 @@
 OSQuery deb_packages ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, IntegerField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class DebPackages(BaseModel):
@@ -28,3 +28,6 @@ class DebPackages(BaseModel):
 class Linux_DebPackages(DebPackages):
     pid_with_namespace = IntegerField(help_text="Pids that contain a namespace")  # {'additional': True, 'hidden': True}
     mount_namespace_id = TextField(help_text="Mount namespace id")  # {'hidden': True}
+
+    class Meta:
+        table_name = "deb_packages"

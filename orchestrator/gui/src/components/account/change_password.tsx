@@ -119,7 +119,7 @@ class ChangePassword extends Component<ChangePasswordConnectedProps, ChangePassw
               className='form-control'
               type='password'
               required
-              placeholder='password'
+              placeholder='old password'
               value={ atob(password.old_password) }
               onChange={ this.updatePassword }
             />
@@ -132,7 +132,7 @@ class ChangePassword extends Component<ChangePasswordConnectedProps, ChangePassw
               className='form-control'
               type='password'
               required
-              placeholder='password'
+              placeholder='new password'
               value={ atob(password.new_password_1) }
               onChange={ this.updatePassword }
             />
@@ -145,7 +145,7 @@ class ChangePassword extends Component<ChangePasswordConnectedProps, ChangePassw
               className='form-control'
               type='password'
               required
-              placeholder='password'
+              placeholder='new password'
               value={ atob(password.new_password_2) }
               onChange={ this.updatePassword }
             />

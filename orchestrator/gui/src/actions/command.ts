@@ -4,14 +4,44 @@ import { ActionFailureResult, ActionRequestResult, ActionSuccessResult } from '.
 import { Actuator } from './actuator';
 import { withGUIAuth } from './util';
 
+// Command Typing
+const OpenC2Action = {
+  'scan': 'Systematic examination of some aspect of the entity or its environment',
+  'locate': 'Find an object physically, logically, functionally, or by organization',
+  'query': 'Initiate a request for information',
+  'deny': 'Prevent a certain event or action from completion, such as preventing a flow from reaching a destination or preventing access',
+  'contain': 'Isolate a file, process, or entity so that it cannot modify or access assets or processes',
+  'allow': 'Permit access to or execution of a Target',
+  'start': 'Initiate a process, application, system, or activity',
+  'stop': 'Halt a system or end an activity',
+  'restart': 'Stop then start a system or an activity',
+  'cancel': 'Invalidate a previously issued Action',
+  'set': 'Change a value, configuration, or state of a managed entity',
+  'update': 'Instruct a component to retrieve, install, process, and operate in accordance with a software update, reconfiguration, or other update',
+  'redirect': 'Change the flow of traffic to a destination other than its original destination',
+  'create': 'Add a new entity of a known type (e.g., data, files, directories)',
+  'delete': 'Remove an entity (e.g., data, files, flows)',
+  'detonate': 'Execute and observe the behavior of a Target (e.g., file, hyperlink) in an isolated environment',
+  'restore': 'Return a system to a previously known state',
+  'copy': 'Duplicate an object, file, data flow, or artifact',
+  'investigate': 'Task the recipient to aggregate and report information as it pertains to a security event or incident',
+  'remediate': 'Task the recipient to eliminate a vulnerability or attack point'
+};
+
 export interface OpenC2Command {
-  action: string;
+  action: keyof typeof OpenC2Action;
   target: Record<string, any>;
   args?: Record<string, any>;
   actuator?: Record<string, any>;
   command_id?: string;
 }
-export type OpenC2Response = Record<string, any>
+
+// Response Typing
+export interface OpenC2Response {
+  status: number;
+  status_text?: string;
+  resutls: Record<string, any>;
+}
 
 export interface Command {
   actuators: Array<Actuator>;

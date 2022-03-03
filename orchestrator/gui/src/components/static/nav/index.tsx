@@ -96,8 +96,20 @@ class DoubleNav extends Component<DoubleNavConnectedProps, DoubleNavState> {
     );
   }
 
+  NavAdmin() {
+    const { admin } = this.props;
+    const { active } = this.state;
+    if (admin) {
+      return [
+        <NavItem key="admin" dropdown external href="/admin" text="Admin" target="_blank" active={ active } />,
+        <DropdownItem key="div1" divider />
+      ];
+    }
+    return '';
+  }
+
   NavBottom() {
-    const { admin, username } = this.props;
+    const { username } = this.props;
     const { active } = this.state;
 
     return (
@@ -145,7 +157,7 @@ class DoubleNav extends Component<DoubleNavConnectedProps, DoubleNavState> {
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>{ `Hello, ${username}` }</DropdownToggle>
                 <DropdownMenu right>
-                  { admin ? <NavItem dropdown external href="/admin" text="Admin" target="_blank" active={ active } /> : '' }
+                  { this.NavAdmin() }
                   { /* <NavItem dropdown href="/account/settings" text="User Settings" active={ active } click={ this.navigate } /> */ }
                   <NavItem dropdown href="/account/change_password" text="Change Password" active={ active } click={ this.navigate } />
                   <DropdownItem divider />

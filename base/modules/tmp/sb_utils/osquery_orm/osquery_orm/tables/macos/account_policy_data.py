@@ -2,7 +2,7 @@
 OSQuery account_policy_data ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import ForeignKeyField, BigIntegerField, DoubleField
+from peewee import BigIntegerField, DoubleField, ForeignKeyField
 from ..cross_platform import MacOS_Users
 
 

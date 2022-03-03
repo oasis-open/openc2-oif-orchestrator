@@ -2,7 +2,7 @@
 OSQuery gatekeeper_approved_apps ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import TextField, DoubleField
+from peewee import DoubleField, TextField
 
 
 class GatekeeperApprovedApps(BaseModel):

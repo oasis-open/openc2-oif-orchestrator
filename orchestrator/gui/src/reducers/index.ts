@@ -14,13 +14,13 @@ export interface RootState {
   router: Reducer<RouterState<History>, LocationChangeAction<History>>; // MUST BE 'router'
   // Custom Reducers
   Account: AccountState;
-  Actuator: ActuatorState,
-  Auth: AuthState,
-  Command: CommandState,
-  Conformance: ConformanceState,
-  Device: DeviceState,
-  Generate: GenerateState,
-  Util: UtilState
+  Actuator: ActuatorState;
+  Auth: AuthState;
+  Command: CommandState;
+  Conformance: ConformanceState;
+  Device: DeviceState;
+  Generate: GenerateState;
+  Util: UtilState;
 }
 
 export default (history: History) => combineReducers({

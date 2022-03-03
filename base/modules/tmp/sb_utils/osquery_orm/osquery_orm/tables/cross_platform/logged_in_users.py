@@ -2,7 +2,7 @@
 OSQuery logged_in_users ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import BigIntegerField, TextField, IntegerField
+from peewee import BigIntegerField, IntegerField, TextField
 
 
 class LoggedInUsers(BaseModel):
@@ -24,3 +24,6 @@ class LoggedInUsers(BaseModel):
 class Windows_LoggedInUsers(LoggedInUsers):
     sid = TextField(help_text="The user\'s unique security identifier")
     registry_hive = TextField(help_text="HKEY_USERS registry hive")
+
+    class Meta:
+        table_name = "logged_in_users"

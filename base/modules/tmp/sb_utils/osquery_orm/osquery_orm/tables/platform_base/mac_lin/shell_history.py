@@ -2,8 +2,8 @@
 OSQuery shell_history ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import ForeignKeyField, IntegerField, BigIntegerField, TextField
-from .users import Users
+from peewee import BigIntegerField, ForeignKeyField, IntegerField, TextField
+from ...cross_platform import Users
 
 
 class ShellHistory(BaseModel):

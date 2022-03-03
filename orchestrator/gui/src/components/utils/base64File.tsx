@@ -20,15 +20,13 @@ interface FileBase64Props {
 }
 
 const DefaultProps = {
-  id: '',
   name: '',
   className: '',
-  onDone: () => {},
   multiple: false,
   style: {}
 };
 
-const FileBase64: FunctionComponent<FileBase64Props> = (props=DefaultProps) => {
+const FileBase64: FunctionComponent<FileBase64Props> = (props) => {
   const {
     id, name, className, onDone, multiple, style
   } = props;
@@ -90,5 +88,7 @@ const FileBase64: FunctionComponent<FileBase64Props> = (props=DefaultProps) => {
     />
   );
 };
+
+FileBase64.defaultProps = DefaultProps;
 
 export default FileBase64;

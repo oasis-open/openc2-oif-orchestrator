@@ -2,7 +2,7 @@
 OSQuery routes ORM
 """
 from osquery_orm.orm import BaseModel
-from peewee import TextField, IntegerField
+from peewee import IntegerField, TextField
 
 
 class Routes(BaseModel):
@@ -26,3 +26,6 @@ class Routes(BaseModel):
 # OS specific properties for Posix
 class Posix_Routes(Routes):
     hopcount = IntegerField(help_text="Max hops expected")
+
+    class Meta:
+        table_name = "routes"

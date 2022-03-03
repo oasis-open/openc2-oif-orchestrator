@@ -27,9 +27,7 @@ export default merge(baseConfig, {
       ],
       exclude: [
         '**/*.(stories|spec).(js|jsx)$',
-        DEPEND_DIR,
-        '**/theme-switcher/download_themes.js',
-        path.join(COMPONENTS_DIR, 'utils', 'theme-switcher', 'assets')
+        DEPEND_DIR
       ]
     }),
     new CircularDependencyPlugin({
@@ -41,7 +39,6 @@ export default merge(baseConfig, {
     new webpack.NoEmitOnErrorsPlugin()
   ],
   devServer: {
-    contentBase: BUILD_DIR,
     compress: true,
     port: 3000,
     hot: true,
@@ -52,6 +49,9 @@ export default merge(baseConfig, {
         target: 'http://localhost:8080',
         secure: false
       }
+    },
+    static: {
+      directory: BUILD_DIR
     }
   },
   optimization: {
