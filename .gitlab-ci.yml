@@ -1,4 +1,4 @@
-image: ${GITLAB_CI_REGISTRY}/screamingbunny/docker/plus:centos-python3
+image: ${GITLAB_CI_REGISTRY}/screamingbunny/docker/plus:alpine-python3
 
 variables:
   GIT_SSL_NO_VERIFY: "true"
@@ -12,11 +12,11 @@ before_script:
   - REPO=${CI_REPOSITORY_URL#*@}
   - REPO_BASE=${REPO%.com/*}.com
   - REPO_URL=git@${REPO_BASE}:${REPO#*/}
-  - yum update -y
-  - yum install --disablerepo=epel -y git openssh-clients ca-certificates
+  - apk update --no-cache
+  - apk add --no-cache git openssh-clients ca-certificates
   - update-ca-trust force-enable
-  - echo "$HII_CA_PUBLIC" | base64 --decode | tr -d '\r' > /etc/pki/ca-trust/source/anchors/hii_ca.crt
-  - update-ca-trust extract
+  - echo "$HII_CA_PUBLIC" | base64 --decode | tr -d '\r' > /etc/ssl/certs/hii_ca.crt
+  - update-ca-certificates
   - mkdir -p ~/.ssh && chmod 700 ~/.ssh
   - echo "$SSH_PRIVATE_KEY" | base64 --decode | tr -d '\r' > ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
