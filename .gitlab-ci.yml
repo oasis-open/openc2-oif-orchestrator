@@ -1,4 +1,4 @@
-image: ${GITLAB_CI_REGISTRY}/screamingbunny/docker/plus:alpine-python3
+image: python:3.8-buster
 
 variables:
   GIT_SSL_NO_VERIFY: "true"
@@ -12,10 +12,10 @@ before_script:
   - REPO=${CI_REPOSITORY_URL#*@}
   - REPO_BASE=${REPO%.com/*}.com
   - REPO_URL=git@${REPO_BASE}:${REPO#*/}
-  - apk update --no-cache
-  - apk add --no-cache git openssh-clients ca-certificates
+  - apt-get update -y
+  - apt-get install --disablerepo=epel -y git openssh-clients ca-certificates
   - update-ca-trust force-enable
-  - echo "$HII_CA_PUBLIC" | base64 --decode | tr -d '\r' > /etc/ssl/certs/hii_ca.crt
+  - echo "$HII_CA_PUBLIC" | base64 --decode | tr -d '\r' > /usr/local/share/ca-certificates/hii_ca.crt
   - update-ca-certificates
   - mkdir -p ~/.ssh && chmod 700 ~/.ssh
   - echo "$SSH_PRIVATE_KEY" | base64 --decode | tr -d '\r' > ~/.ssh/id_rsa
