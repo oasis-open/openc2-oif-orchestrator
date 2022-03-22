@@ -13,7 +13,7 @@ before_script:
   - REPO_BASE=${REPO%.com/*}.com
   - REPO_URL=git@${REPO_BASE}:${REPO#*/}
   - apt-get update -y
-  - apt-get install -y git openssh-clients ca-certificates
+  - apt-get install -y git ca-certificates
   - update-ca-trust force-enable
   - echo "$HII_CA_PUBLIC" | base64 --decode | tr -d '\r' > /usr/local/share/ca-certificates/hii_ca.crt
   - update-ca-certificates
