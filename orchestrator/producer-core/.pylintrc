@@ -1,6 +1,6 @@
 [MASTER]
 # Python code to execute, usually for sys.path manipulation such as pygtk.require().
-init-hook='import sys; sys.path.append("./orc_server")'
+init-hook='import sys; sys.path.append("./producer_server")'
 
 # Add files or directories to the blacklist. They should be base names, not paths.
 ignore=tests.py,migrations,db_testing

@@ -1,3 +1,0 @@
-# SB-Utils@git+https://github.com/ScreamBun/SB_utils.git@develop#subdirectory=root
-pylint
-pylint_django
