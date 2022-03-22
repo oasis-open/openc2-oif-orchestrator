@@ -14,7 +14,6 @@ before_script:
   - REPO_URL=git@${REPO_BASE}:${REPO#*/}
   - apt-get update -y
   - apt-get install -y git ca-certificates
-  - update-ca-trust force-enable
   - echo "$HII_CA_PUBLIC" | base64 --decode | tr -d '\r' > /usr/local/share/ca-certificates/hii_ca.crt
   - update-ca-certificates
   - mkdir -p ~/.ssh && chmod 700 ~/.ssh
