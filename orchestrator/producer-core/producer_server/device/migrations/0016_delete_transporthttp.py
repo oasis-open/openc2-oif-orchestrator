@@ -6,10 +6,10 @@ from django.db import migrations
 def update_context(apps, schema_editor):
     http_model = apps.get_model('device', 'transporthttp')
     https_model = apps.get_model('device', 'transporthttps')
-    ContentType = apps.get_model('contenttypes', 'ContentType')
-    http_ct = ContentType.objects.get_for_model(http_model)
-    https_ct = ContentType.objects.get_for_model(https_model)
-    http_ct.objects.update(polymorphic_ctype=https_ct)
+    for http_trans in http_model.objects.all():
+        new_https = https_model(**http_trans)
+        new_https.save()
+        http_trans.delete()
 
 
 class Migration(migrations.Migration):
