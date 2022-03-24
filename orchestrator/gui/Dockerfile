@@ -1,5 +1,5 @@
 # GUI Builder
-FROM node:12-alpine as builder
+FROM node:fermium-alpine as builder
 
 ENV YARN_INSTALL="yarn --network-timeout 100000 --frozen-lockfile"
 

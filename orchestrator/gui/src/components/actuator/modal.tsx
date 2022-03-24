@@ -7,7 +7,9 @@ import {
 } from 'reactstrap';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
-import { validate as uuidValidate, version as uuidVersion, v4 as uuid4, NIL } from 'uuid';
+import {
+  validate as uuidValidate, version as uuidVersion, v4 as uuid4, NIL
+} from 'uuid';
 import { objectValues, safeGet } from '../utils';
 import { Actuator, Device } from '../../actions';
 import { RootState } from '../../reducers';
