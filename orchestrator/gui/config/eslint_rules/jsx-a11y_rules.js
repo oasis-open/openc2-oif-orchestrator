@@ -1,6 +1,6 @@
 // jsx-a11y Rules
 module.exports = {
-  'jsx-a11y/accessible-emoji': 0,
+  'jsx-a11y/accessible-emoji': 1,
   'jsx-a11y/alt-text': [2, {
     area: [],
     elements: ['img', 'object', 'area', 'input[type=\"image\"]'],
