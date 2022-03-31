@@ -9341,9 +9341,9 @@ react-json-editor-ajrm@^2.5.13:
   dependencies:
     "@babel/runtime" "^7.0.0-rc.0"
 
-"react-json-generator@https://github.com/czack425/react-json-generator#develop":
+"react-json-generator@https://github.com/czack425/react-json-generator":
   version "1.1.2"
-  resolved "https://github.com/czack425/react-json-generator#49ec4886596e311df58ed2fac5e392313d5f8262"
+  resolved "https://github.com/czack425/react-json-generator#401ca510c7a59c288267c86874f7151406d58c33"
   dependencies:
     "@babel/runtime" "^7.17.8"
     "@fortawesome/fontawesome-svg-core" " ^6.1.1"
