@@ -41,30 +41,6 @@ services:
       - database
     restart: on-failure:5
 
-  consumer-core:
-    hostname: consumer-core
-    image: oif/orchestrator-consumer-core
-    build:
-      context: ./orchestrator/consumer-core
-      dockerfile: Dockerfile
-    env_file:
-      - ./environment/database.connect.env
-      - ./environment/queue.connect.env
-      - ./environment/etcd.connect.env
-      - ./environment/security.env
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8080']
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    external_links:
-      - database
-      - queue
-    depends_on:
-      - queue
-      - database
-    restart: on-failure:5
-
   gui:
     hostname: gui
     image: oif/orchestrator-gui
@@ -88,20 +64,6 @@ services:
       - producer-core
       - consumer-core
     restart: on-failure:5
-
-  transport-http:
-    hostname: transport-http
-    image: oif/orchestrator-transport-http
-    build:
-      context: ./orchestrator/transport/http
-      dockerfile: Dockerfile
-    env_file:
-      - ./environment/queue.connect.env
-      - ./environment/security.env
-    external_links:
-      - queue
-    depends_on:
-      - queue
 
   transport-https:
     hostname: transport-https

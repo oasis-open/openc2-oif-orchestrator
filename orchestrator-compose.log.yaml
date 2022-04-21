@@ -18,14 +18,6 @@ services:
         syslog-format: rfc5424
         tag: "producer-core"
 
-  consumer-core:
-    logging:
-      driver: syslog
-      options:
-        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
-        syslog-format: rfc5424
-        tag: "consumer-core"
-
   gui:
     logging:
       driver: syslog
@@ -33,14 +25,6 @@ services:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
         tag: "gui"
-
-  transport-http:
-    logging:
-      driver: syslog
-      options:
-        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
-        syslog-format: rfc5424
-        tag: "transport-http"
 
   transport-https:
     logging:

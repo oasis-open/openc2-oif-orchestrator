@@ -70,8 +70,8 @@ CONFIG = FrozenDict(
         ("python3", r"ccoe-gitlab.*plus:alpine-python3( as.*)?", fr"oif/python3\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
     ),
     Repos=FrozenDict(
-        Orchestrator=('Producer-Core', 'Consumer-Core','GUI'),
-        Transport=('HTTP', 'HTTPS', 'MQTT'),
+        Orchestrator=('Producer-Core', 'GUI'),
+        Transport=('HTTPS', 'MQTT'),
     )
 )
 
