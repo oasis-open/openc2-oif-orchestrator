@@ -1,5 +1,5 @@
 # SB-Utils@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
-bleach==4.1.0
+bleach==5.0.0
 cryptography  # Use version from SB-Utils
 django==3.2.12
 django-cors-headers==3.11.0

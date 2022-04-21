@@ -39,7 +39,7 @@ date_diff() {
 
 if [[ -f  /opt/producer_server/migration_complete ]]; then
     # seconds in a week - 604800
-    if [[ 604800 > $(date_diff "$(cat /opt/producer_server/migration_complete)") ]]; then
+    if [[ 604800 < $(date_diff "$(cat /opt/producer_server/migration_complete)") ]]; then
         echo "Less than week, not checking migration"
     else
         migrate

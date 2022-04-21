@@ -38,7 +38,7 @@ class SentHistory(models.Model):
     )
     received_on = models.DateTimeField(
         default=timezone.now,
-        help_text="Time the command was received"
+        help_text="DateTime the command was received"
     )
     actuators = models.ManyToManyField(
         Actuator,
@@ -46,7 +46,7 @@ class SentHistory(models.Model):
     )
     command = JSONField(
         blank=True,
-        help_text="Command that was received",
+        help_text="Command that was created",
         null=True
     )
 
@@ -91,11 +91,11 @@ class ResponseHistory(models.Model):
     command = models.ForeignKey(
         SentHistory,
         on_delete=models.CASCADE,
-        help_text="Command that was received"
+        help_text="Command that the response originated"
     )
     received_on = models.DateTimeField(
         default=timezone.now,
-        help_text="Time the respose was received"
+        help_text="DateTime the response was received"
     )
     actuator = models.ForeignKey(
         Actuator,
@@ -165,7 +165,7 @@ class HistorySerializer(serializers.ModelSerializer):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.request = kwargs.get("context", None).get("request", None)
+        self.request = kwargs.get("context", {}).get("request", None)
 
     command_id = serializers.UUIDField(format="hex_verbose")
     user = serializers.SlugRelatedField(
