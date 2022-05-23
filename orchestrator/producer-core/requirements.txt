@@ -2,7 +2,7 @@
 bleach==5.0.0
 cryptography  # Use version from SB-Utils
 django==3.2.12
-django-cors-headers==3.11.0
+django-cors-headers==3.12.0
 django-dynamic-preferences==1.12.0
 django-fernet-fields==0.6
 django-polymorphic==3.1.0
@@ -20,4 +20,4 @@ jsonfield==3.1.0
 python-etcd  # Use version from SB-Utils
 pyexcel-xls==0.7.0
 PyMySQL==1.0.2
-whitenoise==6.0.0
+whitenoise==6.1.0

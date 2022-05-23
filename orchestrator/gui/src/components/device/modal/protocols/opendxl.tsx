@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Label } from 'reactstrap';
-import Auth, { AuthState, DefaultState as DefaultAuthState} from './auth';
+import Auth, { AuthState, DefaultState as DefaultAuthState } from './auth';
 import BaseOptions, { BaseOptionsProps } from './base';
 import { pick } from '../../../utils';
 
@@ -17,11 +17,11 @@ interface OpenDxlState extends AuthState {
 
 // Component
 const DefaultState: OpenDxlState = {
-  ...DefaultAuthState,
   prefix: '',
   requestTopic: '',
   responseTopic: '',
-  serviceTopic: ''
+  serviceTopic: '',
+  ...DefaultAuthState
 };
 
 class OpenDxlOptions extends BaseOptions<OpenDxlProps, OpenDxlState> {

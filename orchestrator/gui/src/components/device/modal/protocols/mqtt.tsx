@@ -1,14 +1,14 @@
 import React from 'react';
 import { Input, Label } from 'reactstrap';
-import Auth from './auth';
-import BaseOptions, { BaseOptionsProps, BaseOptionsState } from './base';
+import Auth, { AuthState, DefaultState as DefaultAuthState } from './auth';
+import BaseOptions, { BaseOptionsProps } from './base';
 import { pick } from '../../../utils';
 
 // Interfaces
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MQTTProps extends BaseOptionsProps {}
 
-interface MQTTState extends BaseOptionsState {
+interface MQTTState extends AuthState {
   prefix: string;
   broadcastTopic: string;
   deviceTopic: string;
@@ -22,7 +22,8 @@ const DefaultState: MQTTState = {
   broadcastTopic: '',
   deviceTopic: '',
   profileTopic: '',
-  responseTopic: ''
+  responseTopic: '',
+  ...DefaultAuthState
 };
 
 class MQTTOptions extends BaseOptions<MQTTProps, MQTTState> {

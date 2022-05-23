@@ -144,6 +144,7 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
         device = super().create(validated_data)
 
         for trans in self.initial_data.get('transport', []):
+            print(trans, flush=True)
             tr = TransportPolymorphicSerializer(data=trans)
             tr.is_valid(raise_exception=True)
             t = tr.create_or_update(None, tr.validated_data)
@@ -157,6 +158,7 @@ class DeviceSerializer(QueryFieldsMixin, WritableNestedModelSerializer):
         device = super().update(instance, validated_data)
 
         for trans in self.initial_data.get('transport', []):
+            print(trans, flush=True)
             tr = TransportPolymorphicSerializer(data=trans)
             tr.is_valid(raise_exception=True)
             tr.update(tr.instance, tr.validated_data)

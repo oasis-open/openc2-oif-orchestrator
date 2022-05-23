@@ -4,19 +4,29 @@ import BaseOptions, { BaseOptionsProps, BaseOptionsState } from './base';
 import { FileBase64, FileInfo, pick } from '../../../utils';
 
 // Interfaces
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface AuthProps extends BaseOptionsProps {
   noLogin: boolean;
   noCerts: boolean;
 }
 
-export interface AuthState extends BaseOptionsState {
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface NullAuth {}
+
+interface BasicAuth {
   username: string;
   password1: string;
   password2: string;
-  ca_cert: string;
+}
+
+interface CertAuth {
+  ca_cert?: string;
   client_cert: string;
   client_key: string;
+}
+
+type AuthOptions = NullAuth | BasicAuth | CertAuth | (BasicAuth & CertAuth)
+
+export type AuthState = BaseOptionsState & AuthOptions & {
   auth: {
     password: boolean;
     ca_cert: boolean;
@@ -30,9 +40,6 @@ export const DefaultState: AuthState = {
   username: '',
   password1: '',
   password2: '',
-  ca_cert: '',
-  client_cert: '',
-  client_key: '',
   auth: {
     password: false,
     ca_cert: false,
