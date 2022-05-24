@@ -249,7 +249,11 @@ def mqtt_on_message(client: mqtt.Client, userdata: List[str], msg: mqtt.MQTTMess
         print(f"Received: {payload}")
 
         # TODO: validate origin format
-        profile, broker_socket = payload.origin.rsplit("@", 1)
+        try:
+            profile, broker_socket = payload.origin.rsplit("@", 1)
+        except ValueError:
+            profile = ""
+            broker_socket = '{}:{}'.format(*client.socket().getpeername())
 
         # Copy necessary headers
         header = {
