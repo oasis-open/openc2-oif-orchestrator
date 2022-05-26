@@ -26,21 +26,21 @@ services:
         syslog-format: rfc5424
         tag: "gui"
 
-  transport-https:
+  transport-producer-https:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "transport-https"
+        tag: "transport-producer-https"
 
-  transport-mqtt:
+  transport-producer-mqtt:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "transport-mqtt"
+        tag: "transport-producer-mqtt"
 
   queue:
     logging:

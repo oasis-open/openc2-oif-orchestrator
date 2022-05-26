@@ -1,15 +1,15 @@
 version: '3'
 
 volumes:
-  etcd:
-    labels:
-      com.screaming_bunny.container: 'Etcd'
-      com.screaming_bunny.description: 'Persistent Etcd Volume'
-
   database:
     labels:
       com.screaming_bunny.container: 'MariaDB'
       com.screaming_bunny.description: 'Persistent MariaDB Volume'
+
+  etcd:
+    labels:
+      com.screaming_bunny.container: 'Etcd'
+      com.screaming_bunny.description: 'Persistent Etcd Volume'
 
   queue:
     labels:
@@ -35,10 +35,12 @@ services:
       retries: 5
     external_links:
       - database
+      - etcd
       - queue
     depends_on:
-      - queue
       - database
+      - etcd
+      - queue
     restart: on-failure:5
 
   gui:
@@ -65,8 +67,8 @@ services:
       - consumer-core
     restart: on-failure:5
 
-  transport-https:
-    hostname: transport-https
+  transport-producer-https:
+    hostname: transport-producer-https
     image: oif/orchestrator-transport-https
     build:
       context: ./orchestrator/transport/https
@@ -75,12 +77,15 @@ services:
       - ./environment/queue.connect.env
       - ./environment/security.env
     external_links:
+      - etcd
       - queue
     depends_on:
+      - etcd
       - queue
+    restart: on-failure:5
 
-  transport-mqtt:
-    hostname: transport-mqtt
+  transport-producer-mqtt:
+    hostname: transport-producer-mqtt
     image: oif/orchestrator-transport-mqtt
     build:
       context: ./orchestrator/transport/mqtt
@@ -91,9 +96,12 @@ services:
       - ./environment/mqtt_transport.env
       - ./environment/security.env
     external_links:
+      - etcd
       - queue
     depends_on:
+      - etcd
       - queue
+    restart: on-failure:5
 
   queue:
     hostname: rabbit
