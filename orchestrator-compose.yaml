@@ -48,8 +48,8 @@ services:
       context: ./orchestrator/gui
       dockerfile: Dockerfile
     environment:
-      ORC_HOST: core
-      ORC_PORT: 8080
+      PRODUCER_HOST: core
+      PRODUCER_PORT: 8080
     ports:
       - 8080:80
     healthcheck:
