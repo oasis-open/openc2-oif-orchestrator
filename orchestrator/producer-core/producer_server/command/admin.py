@@ -1,6 +1,7 @@
-from django.contrib import admin
+import os
 
-from .models import SentHistory, ResponseHistory
+from django.contrib import admin
+from .models import SentHistory, ResponseHistory, ReceivedCommandHistory
 
 
 class ResponseInline(admin.TabularInline):
@@ -28,6 +29,19 @@ class ResponseHistoryAdmin(admin.ModelAdmin):
     list_display = ('command', 'received_on', 'actuator', 'response')
     readonly_fields = ('received_on', )
 
+
+# Consumer
+if os.getenv("intermediate", False):
+    class ReceivedCommandHistoryAdmin(admin.ModelAdmin):
+        """
+        Received Command History admin
+        """
+        list_display = ('command_id', '_coap_id', 'received_on')
+        filter_horizontal = ('generated_commands', )
+        readonly_fields = ('_coap_id', 'received_on', 'generated_commands', )
+
+    # Register model
+    admin.site.register(ReceivedCommandHistory, ReceivedCommandHistoryAdmin)
 
 # Register models
 admin.site.register(SentHistory, SentHistoryAdmin)

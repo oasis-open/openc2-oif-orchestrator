@@ -78,7 +78,6 @@ class TransportAuthSerializer(TransportSerializer):
 
     def create_or_update(self, instance, validated_data):
         validated_data = self.verify_pass(validated_data)
-        print(validated_data, flush=True)
         return super().create_or_update(instance, validated_data)
 
     # Serializer Methods
@@ -86,13 +85,11 @@ class TransportAuthSerializer(TransportSerializer):
         pass1 = data.get('password1')
         pass2 = data.get('password2')
         if pass1 or pass2:
-            print(f"PASSWORD - {pass1} - {pass2}", flush=True)
             if pass1 != pass2:
                 raise DjangoValidationError('Transport authentication passwords do not match')
             data['password'] = base64.b64decode(pass1).decode('utf-8') if re.match(r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$', pass1) else pass1
             del data['password1']
             del data['password2']
-        print(data, flush=True)
         return data
 
     def get_auth(self, obj):

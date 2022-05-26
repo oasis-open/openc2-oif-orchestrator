@@ -11,7 +11,7 @@ class MessageQueue:
     })
     _exchange = 'orchestrator'
     _consumerKey = 'response'
-    _producerExchange = 'transport'
+    _producerExchange = 'producer_transport'
 
     def __init__(self, hostname='127.0.0.1', port=5672, auth=_auth, exchange=_exchange,
                  consumer_key=_consumerKey, producer_exchange=_producerExchange, callbacks=None):
@@ -54,7 +54,6 @@ class MessageQueue:
         :return: None
         """
         headers = headers or {}
-        exchange = exchange if exchange == self._producerExchange else self._producerExchange
         if routing_key is None:
             raise ValueError('Routing Key cannot be None')
         self.producer.publish(

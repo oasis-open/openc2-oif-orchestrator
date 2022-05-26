@@ -333,7 +333,7 @@ QUEUE = {
     },
     "exchange": "orchestrator",
     "consumer_key": "response",
-    "producer_exchange": "transport"
+    "producer_exchange": "producer_transport"
 }
 
 MESSAGE_QUEUE: MessageQueue
