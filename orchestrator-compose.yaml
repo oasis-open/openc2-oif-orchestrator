@@ -50,7 +50,7 @@ services:
       context: ./orchestrator/gui
       dockerfile: Dockerfile
     environment:
-      PRODUCER_HOST: core
+      PRODUCER_HOST: producer-core
       PRODUCER_PORT: 8080
     ports:
       - 8080:80
@@ -75,6 +75,7 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./environment/queue.connect.env
+      - ./environment/etcd.connect.env
       - ./environment/security.env
     external_links:
       - etcd
