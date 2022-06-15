@@ -48,6 +48,10 @@ export default merge(baseConfig, {
       '/api': {
         target: 'http://localhost:8080',
         secure: false
+      },
+      '/assets': {
+        target: 'http://localhost:8080',
+        secure: false
       }
     },
     static: {
