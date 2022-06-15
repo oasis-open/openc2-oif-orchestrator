@@ -1,11 +1,11 @@
 # GUI Builder
-FROM node:12-alpine as builder
+FROM node:gallium-alpine as builder
 
-ENV YARN_INSTALL="yarn --network-timeout 100000 --frozen-lockfile"
+ENV YARN_INSTALL="yarn --network-timeout 100000"
 
 ADD . /tmp/gui
 
-RUN apk add --no-cache git yarn && \
+RUN apk add --no-cache git && \
 cd /tmp/gui && \
 yarn cache clean && \
 $YARN_INSTALL || while [ $? -ne 0 ]; do $YARN_INSTALL; done  && \

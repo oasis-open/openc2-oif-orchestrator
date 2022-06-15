@@ -56,4 +56,5 @@ babel.config.js
 src/registerServiceWorker.js
 
 # Tmp Ignore
+src/@types
 src/components/conformance

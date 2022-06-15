@@ -61,6 +61,7 @@ interface RootState {  // TODO: convert state to TypeScript
   [store: string]: {
     sort: string;
     count: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     errors: Record<string, any>;
   } & ( { actuators: Array<Actuator.Actuator>; } | { devices: Array<Device.Device>; } )
 }

@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
-
+import { RootState } from '../../reducers';
 
 // Styles
 import '../dependencies/css/icon-animations.scss';
@@ -56,14 +56,6 @@ interface ErrorProps {
 }
 
 // Redux Connector
-interface RootState {  // TODO: convert state to TypeScript
-  Util: {
-    site_title: string;
-  };
-  Router: History;
-  router?: History;
-}
-
 const mapStateToProps = (state: RootState) => ({
   siteTitle: state.Util.site_title
 });
@@ -95,7 +87,7 @@ const Error: FunctionComponent<ErrorConnectedProps> = props =>  {
 
   const gearIcons = gears.map((styles, idx) => {
     // eslint-disable-next-line react/no-array-index-key
-    return <FontAwesomeIcon icon={ faCog } key={ idx } className="spinner" style={ styles } />;
+    return <FontAwesomeIcon key={ idx } icon={ faCog } className="spinner" style={ styles } />;
   });
 
   return (

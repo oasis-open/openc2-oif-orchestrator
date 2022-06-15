@@ -10,45 +10,37 @@ volumes:
       com.screaming_bunny.description: 'Persistent Log Data Volume'
 
 services:
-  core:
+  producer-core:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "core"
+        tag: "producer-core"
 
-  core-gui:
+  gui:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "core-gui"
+        tag: "gui"
 
-  transport-http:
+  transport-producer-https:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "transport-http"
+        tag: "transport-producer-https"
 
-  transport-https:
+  transport-producer-mqtt:
     logging:
       driver: syslog
       options:
         syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
         syslog-format: rfc5424
-        tag: "transport-https"
-
-  transport-mqtt:
-    logging:
-      driver: syslog
-      options:
-        syslog-address: 'udp://127.0.0.1:${LOG_PORT:-514}'
-        syslog-format: rfc5424
-        tag: "transport-mqtt"
+        tag: "transport-producer-mqtt"
 
   queue:
     logging:

@@ -15,6 +15,7 @@ export interface GenerateState {
     schema: Array<string>;  // ['Record', 'Enumerated', 'Map', 'Choice', 'ArrayOf', 'Array'],
     base: Array<string>;  // ['String']
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: Record<string, any>;
 }
 

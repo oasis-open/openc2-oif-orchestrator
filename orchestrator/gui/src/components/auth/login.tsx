@@ -50,13 +50,6 @@ class Login extends Component<LoginConnectedProps, LoginConnectedState> {
     };
   }
 
-  onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const { onSubmit } = this.props;
-    const { password, username } = this.state;
-    onSubmit(username, password);
-  }
-
   handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     if (name === 'username') {
@@ -64,6 +57,13 @@ class Login extends Component<LoginConnectedProps, LoginConnectedState> {
     } else if (name === 'password') {
       this.setState({ password: value });
     }
+  }
+
+  onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const { onSubmit } = this.props;
+    const { password, username } = this.state;
+    onSubmit(username, password);
   }
 
   render() {

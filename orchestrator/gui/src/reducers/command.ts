@@ -5,6 +5,7 @@ export interface CommandState {
   commands: Array<command.Command>;
   sort: string;
   count: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: Record<string, any>;
 }
 

@@ -10,6 +10,7 @@ export interface UtilState {
     [protocol: string]: boolean;
   };
   serializations: Array<string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: Record<string, any>;
 }
 

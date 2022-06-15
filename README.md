@@ -16,17 +16,12 @@ As documented in [Public Participation Invited](https://github.com/oasis-open/op
 developers to create and test OpenC2 specifications and
 implementations without having to recreate an entire OpenC2
 ecosystem.  The OIF consists of two major parts:
-* The
-["OIF Orchestrator" (this
-repository)](https://github.com/oasis-open/openc2-oif-orchestrator),
+* The ["OIF Orchestrator" (this repository)](https://github.com/oasis-open/openc2-oif-orchestrator),
 which functions as an OpenC2 producer, and 
-* The "[OIF
-Device](https://github.com/oasis-open/openc2-oif-device)",
-which functions as an OpenC2 consumer. 
+* The "[OIF Device](https://github.com/oasis-open/openc2-oif-device)", which functions as an OpenC2 consumer. 
 
 When used together the OIF Orchestrator and Device implement
-both sides of the OpenC2 [Producer / Consumer
-model](https://docs.oasis-open.org/openc2/oc2ls/v1.0/cs02/oc2ls-v1.0-cs02.html#16-overview). The following diagram
+both sides of the OpenC2 [Producer / Consumer model](https://docs.oasis-open.org/openc2/oc2ls/v1.0/cs02/oc2ls-v1.0-cs02.html#16-overview). The following diagram
 provides a high-level overview of the OIF:
 
 ![Insert Overview Diagram](/docs/images/overview.png)
@@ -57,7 +52,7 @@ capability that will determine if the vendor implementation
 meets the requirements set forth in OpenC2 specifications.
 
 
-To get started please reference [README.md in the /docs folder](./docs/README.md)
+To get started please reference [README.md in the /docs folder](docs/README.md)
 
 
 ## Maintainers

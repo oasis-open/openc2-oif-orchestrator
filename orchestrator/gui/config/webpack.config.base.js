@@ -6,7 +6,7 @@ import webpack from 'webpack';
 import { merge } from 'webpack-merge';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import Loaders from './webpack.loaders';
+import Loaders, { commonImages } from './webpack.loaders';
 
 const NODE_ENV = 'production';
 
@@ -129,7 +129,7 @@ export default {
         }
       },
       {  // Common Image Formats
-        test: /\.(?:bmp|ico|gif|png|jpe?g|tiff|webp)$/,
+        test: commonImages,
         use: Loaders.url
       }
     ]

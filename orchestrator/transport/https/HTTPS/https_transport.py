@@ -1,10 +1,20 @@
 import json
+import os
 import requests
 import uuid
 import kombu
 
 from typing import Union
-from sb_utils import Auth, Consumer, Message, MessageType, Producer, SerialFormats, safe_json
+from sb_utils import Auth, Consumer, EtcdCache, FrozenDict, Message, MessageType, Producer, SerialFormats, safe_cast, safe_json
+
+# Gather transport from etcd
+transport_cache = EtcdCache(
+    host=os.environ.get("ETCD_HOST", "localhost"),
+    port=safe_cast(os.environ.get("ETCD_PORT", 2379), int, 2379),
+    # Add base of 'orchestrator' ??
+    base='transport/HTTPS',
+    callbacks=[lambda d: print(f"Update - {d}")]
+)
 
 
 def process_message(body: Union[dict, str], message: kombu.Message) -> None:
@@ -23,17 +33,19 @@ def process_message(body: Union[dict, str], message: kombu.Message) -> None:
     corr_id = uuid.UUID(rcv_headers["source"]["correlationID"])  # correlation ID
 
     for device in rcv_headers["destination"]:
-        device_socket = device["socket"]  # device IP:port
+        transport = transport_cache.cache.get(device["transport"])
+        device_socket = f"{transport['host']}:{transport['port']}"  # device IP:port
+
         encoding = device["encoding"]  # message encoding
-        path = f"/{device['path']}" if "path" in device else ""
+        path = f"/{transport['path']}" if "path" in transport else ""
 
         if device_socket and encoding and orc_socket:
-            with Auth(device.get("auth", {})) as auth:
+            with Auth(transport) as auth:
                 for profile in device["profile"]:
                     print(f"Sending command to {profile}@{device_socket}")
                     rtn_headers = {
                         "socket": device_socket,
-                        "correlationID": corr_id,
+                        "correlationID": str(corr_id),
                         "profile": profile,
                         "encoding": encoding,
                         "transport": "https"
@@ -47,28 +59,32 @@ def process_message(body: Union[dict, str], message: kombu.Message) -> None:
                         content_type=SerialFormats.from_value(encoding),
                         content=body
                     )
+                    prod_kwargs = {
+                        "cert": (auth.clientCert, auth.clientKey) if auth.clientCert and auth.clientKey else None,
+                        "verify": auth.caCert if auth.caCert else False
+                    }
 
                     try:
                         rslt = requests.post(
-                            url=f"https://{device_socket}{path}",
+                            url=f"http{'s' if transport['prod'] else ''}://{device_socket}{path}",
                             headers={
                                 "Content-Type": f"application/openc2-cmd+{encoding};version=1.0",
                                 # Numeric status code supplied by Actuator's OpenC2-Response
                                 # "Status": ...,
-                                "X-Request-ID": request.request_id,
+                                "X-Request-ID": str(request.request_id),
                                 # RFC7231-7.1.1.1 -> Sun, 06 Nov 1994 08:49:37 GMT
                                 "Date": f"{request.created:%a, %d %b %Y %H:%M:%S GMT}",
                                 "From": request.origin,
                                 # "Host": f"{profile}@{device_socket}"
                             },
                             data=request.serialize(),  # command being encoded
-                            cert=(auth.clientCert, auth.clientKey) if auth.clientCert and auth.clientKey else None,
-                            verify=auth.caCert if auth.caCert else False
+                            **(prod_kwargs if transport["prod"] else {})
                         )
 
                         response = Message.oc2_loads(rslt.content, encoding)
                         print(f"Response from request: {rslt.status_code} - H:{dict(rslt.headers)} - C:{response}")
                         # TODO: UPDATE HEADERS WITH RESPONSE INFO
+                        response = response.content
                     except requests.exceptions.ConnectionError as err:
                         response = str(getattr(err, "message", err))
                         rtn_headers["error"] = True
@@ -76,7 +92,7 @@ def process_message(body: Union[dict, str], message: kombu.Message) -> None:
                     except json.decoder.JSONDecodeError as err:
                         response = str(getattr(err, "message", err))
                         rtn_headers["error"] = True
-                        print(f"Message error: {err}")
+                        print(f"Message error: {err} - `{rslt.content}`")
                     except Exception as err:
                         response = str(getattr(err, "message", err))
                         rtn_headers["error"] = True
@@ -104,12 +120,15 @@ if __name__ == "__main__":
     print("Connecting to RabbitMQ...")
     try:
         consumer = Consumer(
-            exchange="transport",
+            exchange="producer_transport",
             routing_key="https",
             callbacks=[process_message],
             debug=True
         )
-
+        consumer.join()
     except Exception as err:
         print(f"Consumer Error: {err}")
         consumer.shutdown()
+    finally:
+        print(f"Transport stopping")
+        transport_cache.shutdown()

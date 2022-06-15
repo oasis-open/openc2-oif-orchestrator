@@ -128,6 +128,50 @@ def publish_single(config: FrozenDict, topic, payload, client_id="", properties:
     client.loop_forever()
 
 
+# MQTT Basic Send
+def mqtt_publish(recipients: List[str], source: dict, device: dict, body: Union[bytes, str], topic: str, auth: Auth, headers: dict) -> None:
+    # pylint: disable=unbalanced-tuple-unpacking
+    (orc_id, corr_id) = destructure(source, "orchestratorID", "correlationID")
+    # pylint: disable=unbalanced-tuple-unpacking
+    (fmt, encoding, broker_socket) = destructure(device, ("format", "broadcast"), ("encoding", "json"), ("socket", "localhost:1883"))
+    (host, port) = broker_socket.split(":", 1)
+    payload = Message(
+        recipients=recipients,
+        origin=f"{orc_id}@{broker_socket}",
+        msg_type=MessageType.Request,
+        request_id=uuid.UUID(corr_id),
+        content_type=SerialFormats(encoding) if encoding in SerialFormats else SerialFormats.JSON,
+        content=json.loads(body)
+    )
+    print(f"Sending {broker_socket} topic: {topic} -> {payload}")
+    publish_props = Properties(PacketTypes.PUBLISH)
+    publish_props.PayloadFormatIndicator = int(SerialFormats.is_binary(payload.content_type) is False)
+    publish_props.ContentType = "application/openc2"  # Content-Type
+    publish_props.UserProperty = ("msgType", payload.msg_type)  # User Property
+    publish_props.UserProperty = ("encoding", payload.content_type)  # User Property
+
+    try:
+        publish_single(
+            config=FrozenDict(
+                MQTT_HOST=host,
+                MQTT_PORT=safe_cast(port, int, 1883),
+                USERNAME=auth.username,
+                PASSWORD=auth.password,
+                TLS_SELF_SIGNED=safe_cast(os.environ.get("MQTT_TLS_SELF_SIGNED", 0), int, 0),
+                CAFILE=auth.caCert,
+                CLIENT_CERT=auth.clientCert,
+                CLIENT_KEY=auth.clientKey
+            ),
+            topic=topic,
+            payload=payload.serialize(),
+            properties=publish_props
+        )
+        print(f"Placed payload onto topic {topic} Payload Sent: {payload}")
+    except Exception as e:
+        print(f"There was an error sending command to {broker_socket} topic: {topic} -> {e}")
+        send_error_response(e, headers)
+
+
 def send_mqtt(body: Union[bytes, str], message: kombu.Message) -> None:
     """
     AMQP Callback when we receive a message from internal buffer to be published to broker
@@ -147,51 +191,23 @@ def send_mqtt(body: Union[bytes, str], message: kombu.Message) -> None:
             return
 
         # pylint: disable=unbalanced-tuple-unpacking
-        (orc_id, corr_id) = destructure(source, "orchestratorID", "correlationID")
-        # pylint: disable=unbalanced-tuple-unpacking
-        (prefix, deviceID, fmt, encoding, broker_socket) = destructure(device, "prefix", ("deviceID", ""), "format", ("encoding", "json"), ("socket", "localhost:1883"))
-        (host, port) = broker_socket.split(":", 1)
+        (prefix, deviceID, fmt, broker_socket) = destructure(device, "prefix", ("deviceID", ""), ("format", "broadcast"), ("socket", "localhost:1883"))
 
         with Auth(device.get("auth", {})) as auth:
-            # iterate through actuator profiles to send message to
-            for actuator in device.get("profile", []):
-                topic = get_topic(fmt=fmt, prefix=f"{prefix}/" if prefix else "", device_id=deviceID, profile=actuator)
+            if fmt == "profile":
+                # iterate through actuator profiles to send message to
+                for actuator in device.get("profile", []):
+                    topic = get_topic(fmt=fmt, prefix=f"{prefix}/" if prefix else "", profile=actuator)
+                    mqtt_publish([f"{actuator}@{broker_socket}"], source, device, body, topic, auth, headers)
+                    return
 
-                payload = Message(
-                    recipients=[f"{actuator}@{broker_socket}"],
-                    origin=f"{orc_id}@{broker_socket}",
-                    msg_type=MessageType.Request,
-                    request_id=uuid.UUID(corr_id),
-                    content_type=SerialFormats(encoding) if encoding in SerialFormats else SerialFormats.JSON,
-                    content=json.loads(body)
-                )
-                print(f"Sending {broker_socket} topic: {topic} -> {payload}")
-                publish_props = Properties(PacketTypes.PUBLISH)
-                publish_props.PayloadFormatIndicator = int(SerialFormats.is_binary(payload.content_type) is False)
-                publish_props.ContentType = "application/openc2"  # Content-Type
-                publish_props.UserProperty = ("msgType", payload.msg_type)  # User Property
-                publish_props.UserProperty = ("encoding", payload.content_type)  # User Property
-
-                try:
-                    publish_single(
-                        config=FrozenDict(
-                            MQTT_HOST=host,
-                            MQTT_PORT=safe_cast(port, int, 1883),
-                            USERNAME=auth.username,
-                            PASSWORD=auth.password,
-                            TLS_SELF_SIGNED=safe_cast(os.environ.get("MQTT_TLS_SELF_SIGNED", 0), int, 0),
-                            CAFILE=auth.caCert,
-                            CLIENT_CERT=auth.clientCert,
-                            CLIENT_KEY=auth.clientKey
-                        ),
-                        topic=topic,
-                        payload=payload.serialize(),
-                        properties=publish_props
-                    )
-                    # print(f"Placed payload onto topic {topic} Payload Sent: {payload}")
-                except Exception as e:
-                    print(f"There was an error sending command to {broker_socket} topic: {actuator} -> {e}")
-                    send_error_response(e, headers)
+            topic = get_topic(fmt=fmt, prefix=f"{prefix}/" if prefix else "", device_id=deviceID)
+            recipients: List[str] = []
+            if fmt == "broadcast":
+                print("BROADCAST")
+            elif fmt == "device":
+                recipients.append(f"{deviceID}@{broker_socket}")
+            mqtt_publish(recipients, source, device, body, topic, auth, headers)
 
 
 # MQTT functions
@@ -233,7 +249,11 @@ def mqtt_on_message(client: mqtt.Client, userdata: List[str], msg: mqtt.MQTTMess
         print(f"Received: {payload}")
 
         # TODO: validate origin format
-        profile, broker_socket = payload.origin.rsplit("@", 1)
+        try:
+            profile, broker_socket = payload.origin.rsplit("@", 1)
+        except ValueError:
+            profile = ""
+            broker_socket = '{}:{}'.format(*client.socket().getpeername())
 
         # Copy necessary headers
         header = {

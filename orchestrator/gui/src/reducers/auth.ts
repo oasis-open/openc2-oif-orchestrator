@@ -16,6 +16,7 @@ export interface AuthState {
     token: string;
   };
   refresh: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: Record<string, any>;
 }
 

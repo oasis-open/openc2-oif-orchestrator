@@ -4,6 +4,7 @@ import {
   ActionFailureResult, ActionRequestResult, ActionSuccessResult, MinimalAction
 } from './interfaces';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type RootState = Record<string, any>
 
 // API Base URL
