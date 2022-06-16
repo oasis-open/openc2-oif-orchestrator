@@ -11,13 +11,14 @@ At the time of writing this the OpenC2 MQTT Transport spec has not been finalize
 The payload of the message in MQTT is split into two parts, the header and the OpenC2 command itself. Here is an example of what that looks like:
 
 ```json
-"payload": {
+{
+  "payload": {
     "header": {
         "to":"openc2_isr_actuator_profile@127.0.0.1:1883",
         "from":"0a2cec81-51fa-4785-8069-723d7d46b105@127.0.0.1:1883",
         "content_type":"application/openc2-cmd+json;version=1.0",
         "correlationID":"a6b10d16-5537-41c9-9773-f69d17920600",
-        "created":"Wed, 22 May 2019 16:12:23 UTC",
+        "created":"Wed, 22 May 2019 16:12:23 UTC"
     },
     "body": {
         "action": "locate",

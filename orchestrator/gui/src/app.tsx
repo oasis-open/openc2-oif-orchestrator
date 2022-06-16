@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Dispatch } from 'redux';
 import { ConnectedProps, connect } from 'react-redux';
-import { History } from 'history';
 import { ConnectedRouter } from 'connected-react-router';
 import { Route, Switch } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';

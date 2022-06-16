@@ -24,10 +24,6 @@ interface RemotePaginationProps {
 
 // Component
 const DefaultProps = {
-  columns: [],
-  page: 0,
-  pageSize: 10,
-  totalSize: 0,
   defaultSort: [],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onTableChange: (_type: TableChangeType, _newState: TableChangeState<any>) => {}
@@ -36,7 +32,7 @@ const DefaultProps = {
 const RemotePagination: FunctionComponent<RemotePaginationProps> = (props) => {
   const {
     keyField, columns, data, page, pageSize, totalSize, defaultSort, onTableChange
-  } = { ...DefaultProps, ...props };
+  } = props;
 
   const pagination = paginationFactory({
     page,
@@ -75,5 +71,7 @@ const RemotePagination: FunctionComponent<RemotePaginationProps> = (props) => {
     />
   );
 };
+
+RemotePagination.defaultProps = DefaultProps;
 
 export default RemotePagination;

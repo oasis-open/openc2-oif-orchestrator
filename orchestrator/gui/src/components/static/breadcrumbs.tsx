@@ -23,6 +23,10 @@ type ConnectorProps = ConnectedProps<typeof connector>;
 type BreadcrumbsConnectedProps = BreadcrumbsProp & ConnectorProps;
 
 // Component
+const DefaultProps = {
+  navigate: () => {}
+};
+
 const Breadcrumbs: FunctionComponent<BreadcrumbsConnectedProps> = (props) =>  {
     const { history, isAuthenticated, navigate } = props;
     const { pathname } = history.location;
@@ -74,5 +78,7 @@ const Breadcrumbs: FunctionComponent<BreadcrumbsConnectedProps> = (props) =>  {
   }
   return (<div />);
 };
+
+Breadcrumbs.defaultProps = DefaultProps;
 
 export default connector(Breadcrumbs);

@@ -53,7 +53,7 @@ const CommandInfo: FunctionComponent<CommandInfoConnectedProps> = props => {
     return (cmd.responses || []).map((rsp, i) => (
       <div key={ rsp.actuator }>
         <p className="m-0">
-          <strong>{ `${rsp.actuator || 'Error'}:` }</strong>
+          <strong>{ `${rsp.actuator || 'Actuator Unknown'}:` }</strong>
         </p>
         <div className='position-relative mb-2'>
           <JSONPretty

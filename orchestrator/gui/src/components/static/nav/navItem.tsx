@@ -19,12 +19,13 @@ interface NavElmProps {
 }
 
 const DefaultProps = {
-  active: '',
+  // active: '',
+  // href: '#',
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   click: (_e: React.MouseEvent<HTMLElement, MouseEvent>) => {},
   dropdown: false,
   external: false,
-  href: '#',
+  icon: undefined,
   itemClasses: '',
   linkClasses: '',
   target: '_self',
@@ -35,7 +36,7 @@ const DefaultProps = {
 const NavElm: FunctionComponent<NavElmProps> = (props) => {
   const {
     active, click, dropdown, external, href, icon, itemClasses, linkClasses, target, text
-  } = { ...DefaultProps, ...props };
+  } = props;
   const classSet = new Set<string>(itemClasses.split(' '));
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -67,5 +68,7 @@ const NavElm: FunctionComponent<NavElmProps> = (props) => {
     </NavItem>
   );
 };
+
+NavElm.defaultProps = DefaultProps;
 
 export default NavElm;

@@ -51,6 +51,9 @@ module.exports = api => {
       [require('@babel/plugin-proposal-private-methods'), { loose: true }],
       require('@babel/plugin-proposal-json-strings'),
 
+      // Stage ??
+      ["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
+
       ...(development ? developmentPlugins : productionPlugins)
     ]
   };

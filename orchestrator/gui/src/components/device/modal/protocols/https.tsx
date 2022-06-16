@@ -1,5 +1,7 @@
 import React from 'react';
-import { Input, Label } from 'reactstrap';
+import {
+  Button, ButtonGroup, Input, Label
+} from 'reactstrap';
 import Auth from './auth';
 import BaseOptions, { BaseOptionsProps, BaseOptionsState } from './base';
 import { pick, removeEmpty } from '../../../utils';
@@ -10,16 +12,19 @@ interface HTTPSProps extends BaseOptionsProps {}
 
 interface HTTPSState extends BaseOptionsState {
   path: string;
+  prod: boolean;
 }
 
 // Component
 const DefaultState: HTTPSState = {
-  path: ''
+  path: '',
+  prod: false
 };
 
 class HTTPSOptions extends BaseOptions<HTTPSProps, HTTPSState> {
   constructor(props: HTTPSProps) {
     super(props);
+    this.valueToggle = this.valueToggle.bind(this);
     const { data } = this.props;
 
     this.state = {
@@ -32,9 +37,18 @@ class HTTPSOptions extends BaseOptions<HTTPSProps, HTTPSState> {
     return removeEmpty(this.state);
   }
 
+  valueToggle(e: any) {
+    const { name } = e.target;
+    this.setState(prevState => ({
+        [name]: !prevState[name]
+      } as Record<keyof HTTPSState, any>),
+      this.onStateChange
+    );
+  }
+
   render() {
     const { data } = this.props;
-    const { path } = this.state;
+    const { path, prod } = this.state;
 
     return (
       <div>
@@ -53,6 +67,32 @@ class HTTPSOptions extends BaseOptions<HTTPSProps, HTTPSState> {
                 onChange={ this.inputChange }
               />
               <small className='form-text text-muted'>Default: &lsquo;/&rsquo;</small>
+            </div>
+            <div className="form-group col-lg-4">
+              <Label for="prod">Security</Label>
+              <ButtonGroup role="group">
+                <Button
+                  className="form-control"
+                  as="checkbox"
+                  color={ prod ? 'success' : 'dark' }
+                  checked={ prod }
+                  onClick={ this.valueToggle }
+                  name="prod"
+                >
+                  Production
+                </Button>
+                <Button
+                  className="form-control"
+                  as="checkbox"
+                  color={ prod ? 'dark' : 'warning' }
+                  checked={ !prod }
+                  onClick={ this.valueToggle }
+                  name="prod"
+                >
+                  Testing
+                </Button>
+              </ButtonGroup>
+              <small className='form-text text-muted'>Default: &lsquo;Development&rsquo;</small>
             </div>
           </div>
         </fieldset>

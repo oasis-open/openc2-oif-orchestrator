@@ -23,7 +23,7 @@ const store = configureStore(history);
 const validThemes = ['cyborg', 'darkly', 'flatly', 'litera', 'lumen', 'slate', 'solar', 'spacelab', 'yeti'];
 
 const Root = () => (
-  <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeOptions={ validThemes }>
+  <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeRoot='assets' themeOptions={ validThemes }>
     <Provider store={ store } >
       <HelmetProvider>
         <App history={ history } />
