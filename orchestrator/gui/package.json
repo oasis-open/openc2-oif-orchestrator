@@ -187,5 +187,6 @@
     "setupFiles": [
       "./internals/scripts/CheckBuildsExist.js"
     ]
-  }
+  },
+  "packageManager": "yarn@3.2.1"
 }
