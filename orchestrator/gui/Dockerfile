@@ -10,10 +10,8 @@ yarn set version berry
 
 COPY yarn.lock .yarn .yarnrc.yml ./
 
-RUN [ -d .yarn/cache ] && rm -r .yarn/cache && \
-# $YARN_INSTALL || while [ $? -ne 0 ]; do $YARN_INSTALL; done  && \
-yarn && \
-yarn build && \
+RUN yarn && \
+yarn build || cat /tmp/xfs-*/pack.log && \
 mkdir -p /opt/orchestrator/gui && \
 cp -r build/* /opt/orchestrator/gui
 
