@@ -45,7 +45,7 @@ class Actuators extends Component<ActuatorsConnectedProps, ActuatorsState> {
   meta: {
     title: string;
     canonical: string;
-  }
+  };
 
   tableColumns: Array<ColumnDescriptionKeyed>;
   editOptions: RowEditOptions;
@@ -72,12 +72,14 @@ class Actuators extends Component<ActuatorsConnectedProps, ActuatorsState> {
         text: 'Device',
         dataField: 'device',
         sort: true,
+        // eslint-disable-next-line react/no-unstable-nested-components
         formatter: (cell: string) => <span>{ this.getDevice(cell) }</span>
       },
       {
         text: 'Profile',
         dataField: 'profile',
         sort: true,
+        // eslint-disable-next-line react/no-unstable-nested-components
         formatter: (cell: string) => <span>{ cell.replace(/_/g, ' ') }</span>
       }
     ];

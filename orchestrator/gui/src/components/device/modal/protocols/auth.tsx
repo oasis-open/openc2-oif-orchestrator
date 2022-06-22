@@ -53,7 +53,7 @@ class Auth extends BaseOptions<AuthProps, AuthState> {
   static defaultProps = {
     noLogin: false,
     noCerts: false
-  }
+  };
 
   initial: Partial<AuthState>;
 

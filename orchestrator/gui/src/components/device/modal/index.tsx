@@ -55,7 +55,7 @@ class DeviceModal extends Component<DeviceModalConnectedProps, DeviceModalState>
     className: '',
     data: undefined,
     register: false
-  }
+  };
 
   constructor(props: DeviceModalConnectedProps) {
     super(props);

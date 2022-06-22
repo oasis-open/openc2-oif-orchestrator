@@ -33,11 +33,11 @@ type AccountConnectedProps = AccountProps & ConnectorProps;
 
 // Component
 class Account extends Component<AccountConnectedProps, AccountState> {
-  validPages = ['all', 'change_password']
+  validPages = ['all', 'change_password'];
   meta: {
     title: string;
     canonical: string;
-  }
+  };
 
   constructor(props: AccountConnectedProps) {
     super(props);
