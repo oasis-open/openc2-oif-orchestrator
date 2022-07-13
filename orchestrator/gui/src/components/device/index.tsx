@@ -63,7 +63,7 @@ class Devices extends Component<DeviceConnectedProps, DeviceState> {
         text: 'Transport',
         dataField: 'transport',
         // eslint-disable-next-line react/no-unstable-nested-components
-        formatter: (cell: Array<Device.Transport>) => ( <span>{ cell.map(t => `${t.serialization} via ${t.protocol}`).join(' | ') }</span> ),
+        formatter: (cell: Array<Device.Transport>) => ( <span>{ cell.map(t => `${t.serialization} over ${t.protocol}`).join(' | ') }</span> ),
         sort: true
       }
     ];
