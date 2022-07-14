@@ -5,10 +5,12 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve --hot --progress --config ./config/webpack.config.dev.babel.js",
     "build": "cross-env NODE_ENV=production webpack --progress --config ./config/webpack.config.prod.babel.js",
+    "build-dev": "cross-env NODE_ENV=production webpack --progress --config ./config/webpack.config.dev.babel.js",
     "analyze": "yarn build && source-map-explorer build/js/*.bundle.min.js",
     "lint": "eslint . --cache --ext .js,.jsx,.ts,.tsx",
     "lint-errors": "yarn lint --quiet",
-    "test": "cross-env BABEL_DISABLE_CACHE=1 jest"
+    "test": "cross-env BABEL_DISABLE_CACHE=1 jest",
+    "watch": "onchange -d 5000 --verbose './src/**/*.*' -- yarn run build-dev"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": " ^6.1.1",
@@ -118,6 +120,7 @@
     "jest": "^28.1.1",
     "mini-css-extract-plugin": "^2.6.1",
     "node-sass": "^7.0.1",
+    "onchange": "^7.1.0",
     "optimize-css-assets-webpack-plugin": "6.0.1",
     "prettier": "^2.7.1",
     "react-hot-loader": "^4.13.0",
