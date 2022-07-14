@@ -5,7 +5,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve --hot --progress --config ./config/webpack.config.dev.babel.js",
     "build": "cross-env NODE_ENV=production webpack --progress --config ./config/webpack.config.prod.babel.js",
-    "build-dev": "cross-env NODE_ENV=production webpack --progress --config ./config/webpack.config.dev.babel.js",
+    "build-dev": "cross-env NODE_ENV=development webpack --progress --config ./config/webpack.config.dev.babel.js",
     "analyze": "yarn build && source-map-explorer build/js/*.bundle.min.js",
     "lint": "eslint . --cache --ext .js,.jsx,.ts,.tsx",
     "lint-errors": "yarn lint --quiet",
