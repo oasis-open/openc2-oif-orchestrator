@@ -15,7 +15,7 @@ def log(level=EVENT_LEVELS.Info, usr=None, msg=''):
     usr = None if getattr(usr, 'is_anonymous', True) else usr
 
     if level in getattr(settings, f"{TrackingConfig.Meta.prefix}_EVENT_LEVELS"):
-        print(f"{LEVEL_EVENTS.get(level, '')} Log: {usr} - {msg}")
+        print(f"{LEVEL_EVENTS.get(level, '')} Log: {usr} - {msg}"[:200])
         EventLog.objects.create(
             user=usr,
             level=level,
