@@ -88,7 +88,7 @@ class RemotePageTable extends Component<RemotePageTableConnectedProps, RemotePag
     info?: (data: Data) => void;
     delete?: (key: string) => void;
     navigate?: (url: string) => void;
-  }
+  };
 
   constructor(props: RemotePageTableConnectedProps) {
     super(props);
@@ -197,6 +197,7 @@ class RemotePageTable extends Component<RemotePageTableConnectedProps, RemotePag
     const { dataKey } = this.props;
     confirmAlert({
       title: 'Confirm Delete',
+      // eslint-disable-next-line react/no-unstable-nested-components
       childrenElement: () => (
         <div>
           <p>{ `Are you sure to delete: ${key}?` }</p>

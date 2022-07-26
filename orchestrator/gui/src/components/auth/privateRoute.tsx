@@ -24,7 +24,7 @@ class PrivateRoute extends Route<PrivateRouteConnectedProps> {
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     adminRequired: true
-  }
+  };
 
   render() {
     const {
