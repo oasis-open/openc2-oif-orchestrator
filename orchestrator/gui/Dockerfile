@@ -1,18 +1,16 @@
 # GUI Builder
 FROM node:gallium-alpine as builder
 
-ENV YARN_INSTALL="yarn --network-timeout 100000"
-
-ADD . /tmp/gui
+WORKDIR /tmp/gui
+COPY . ./
 
 RUN apk add --no-cache git && \
-cd /tmp/gui && \
-yarn cache clean && \
-$YARN_INSTALL || while [ $? -ne 0 ]; do $YARN_INSTALL; done  && \
+corepack enable
+
+RUN yarn && \
 yarn build && \
 mkdir -p /opt/orchestrator/gui && \
 cp -r build/* /opt/orchestrator/gui
-
 
 # GUI Image
 FROM oif/alpine

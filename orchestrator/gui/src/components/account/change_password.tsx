@@ -41,7 +41,7 @@ class ChangePassword extends Component<ChangePasswordConnectedProps, ChangePassw
   meta: {
     title: string;
     canonical: string;
-  }
+  };
 
   constructor(props: ChangePasswordConnectedProps) {
     super(props);

@@ -26,7 +26,7 @@ const DefaultProps = {
   style: {}
 };
 
-const FileBase64: FunctionComponent<FileBase64Props> = (props) => {
+const FileBase64: FunctionComponent<FileBase64Props> = props => {
   const {
     id, name, className, onDone, multiple, style
   } = props;

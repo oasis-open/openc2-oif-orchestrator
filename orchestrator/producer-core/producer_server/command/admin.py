@@ -18,7 +18,7 @@ class SentHistoryAdmin(admin.ModelAdmin):
     """
     list_display = ('command_id', '_coap_id', 'user', 'received_on', 'command')
     filter_horizontal = ('actuators', )
-    readonly_fields = ('received_on', 'actuators')
+    readonly_fields = ('_coap_id', 'received_on', 'actuators')
     inlines = [ResponseInline, ]
 
 

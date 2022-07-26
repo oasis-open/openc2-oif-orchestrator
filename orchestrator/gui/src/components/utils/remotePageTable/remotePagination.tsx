@@ -40,6 +40,7 @@ const RemotePagination: FunctionComponent<RemotePaginationProps> = (props) => {
     totalSize,
     hidePageListOnlyOnePage: true,
     showTotal: true,
+    // eslint-disable-next-line react/no-unstable-nested-components
     paginationTotalRenderer: (from, to, size) => (
       <span className="react-bootstrap-table-pagination-total ml-3">{ `Showing ${from} to ${to} of ${size} Results` }</span>
     ),

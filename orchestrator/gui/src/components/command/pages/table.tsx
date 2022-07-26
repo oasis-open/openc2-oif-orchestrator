@@ -33,6 +33,7 @@ const CommandTable: FunctionComponent<CommandTableConnectedProps> = props => {
     {
       text: 'Received',
       dataField: 'received_on',
+      // eslint-disable-next-line react/no-unstable-nested-components
       formatter: (cell: string) => <span>{ iso2local(cell) }</span>,
       sort: true
     },
@@ -44,6 +45,7 @@ const CommandTable: FunctionComponent<CommandTableConnectedProps> = props => {
     {
       text: 'Command',
       dataField: 'command',
+      // eslint-disable-next-line react/no-unstable-nested-components
       formatter: (cell: Command.OpenC2Command ) => {
         const { action, target } = cell;
         return <span>{ `${action} - ${Object.keys(target || {})[0] || ''}` }</span>;
