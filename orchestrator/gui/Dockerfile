@@ -5,13 +5,10 @@ WORKDIR /tmp/gui
 COPY . ./
 
 RUN apk add --no-cache git && \
-corepack enable && \
-yarn set version berry
-
-COPY yarn.lock .yarn .yarnrc.yml ./
+corepack enable
 
 RUN yarn && \
-yarn build || cat /tmp/xfs-*/pack.log && \
+yarn build && \
 mkdir -p /opt/orchestrator/gui && \
 cp -r build/* /opt/orchestrator/gui
 
