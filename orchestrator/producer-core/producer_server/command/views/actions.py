@@ -190,7 +190,7 @@ def get_headers(proto: Protocol, com: SentHistory, proto_acts: List[Actuator], s
                     **({'format': fmt} if fmt else {})
                 )
 
-            if trans.protocol.name.startswith(("HTTP", "HTTPS")):
+            if trans.protocol.name.startswith("HTTPS"):
                 dst.update(
                     path=trans.path
                 )
