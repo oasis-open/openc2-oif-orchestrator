@@ -61,6 +61,13 @@ type ActuatorModalConnectedProps = ActuatorModalProps & ConnectorProps;
 
 // Component
 class ActuatorModal extends Component<ActuatorModalConnectedProps, ActuatorModalState> {
+  // eslint-disable-next-line react/static-property-placement
+  static defaultProps = {
+    className: '',
+    data: {},
+    register: true
+  };
+
   register: boolean;
   schemaUpload?: HTMLInputElement;
   defaultParent?: Device.Device;
