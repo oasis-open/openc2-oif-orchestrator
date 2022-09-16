@@ -13,7 +13,7 @@ mkdir -p /opt/orchestrator/gui && \
 cp -r build/* /opt/orchestrator/gui
 
 # GUI Image
-FROM harbor.olympus.mtn/screamingbunny/docker:alpine
+FROM harbor.olympus.mtn/screamingbunny/docker/alpine:latest
 
 LABEL name="Orchestrator GUI" \
 vendor="OpenC2" \
