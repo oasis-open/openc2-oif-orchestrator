@@ -1,23 +1,3 @@
-# README
-![Insert GUI snippet](/docs/images/overview.png)
-
-# Table of Contents
-<ol>
-<li><a href="#oasis-tc-open-repository-openc2-oif-orchestrator">OASIS TC Open Repository: openc2-oif-orchestrator</a></li>
-<li><a href="#statement-of-purpose"> Statement of Purpose</a></li>
-<li><a href="#requirements-and-installation">Requirements and Installation</a></li>
-<li><a href="#usage">Usage</a></li>
-<ul>
-	<li><a href="#create-update-delete-devices">Create, Update, Delete Devices</a></li>
-	<li><a href="#create-update-delete-actuators">Create, Update, Delete Actuators</a></li>
-	<li><a href="#create-commands">Create Commands</a></li>
-	<li><a href="#create-responses">Create Responses</a></li>
-</ul>
-<li><a href="#maintainers">Maintainers</a></li>
-<li><a href="#about-oasis-tc-open-repositories">About OASIS TC Open Repositories</a></li>
-<li><a href="#feedback">Feedback</a></li>
-</ol>
-
 # OASIS TC Open Repository: openc2-oif-orchestrator
 
 This GitHub public repository [openc2-oif-orchestrator](https://github.com/oasis-open/openc2-oif-orchestrator) was created at the request of the [OASIS OpenC2 Technical Committee](https://www.oasis-open.org/committees/openc2/) as an [OASIS TC Open Repository](https://www.oasis-open.org/resources/open-repositories/) to support development of open source resources related to Technical Committee work.
@@ -28,9 +8,28 @@ All contributions made to this TC Open Repository are subject to open source lic
 
 As documented in [Public Participation Invited](https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/CONTRIBUTING.md#public-participation-invited), contributions to this TC Open Repository are invited from all parties, whether affiliated with OASIS or not. Participants must have a GitHub account, but no fees or OASIS membership obligations are required.  Participation is expected to be consistent with the [OASIS TC Open Repository Guidelines and Procedures](https://www.oasis-open.org/policies-guidelines/open-repositories), the open source [LICENSE.md](LICENSE.md) designated for this particular repository, and the requirement for an [Individual Contributor License Agreement](href="https://www.oasis-open.org/resources/open-repositories/cla/individual-cla) that governs intellectual property.
 
+
+
+# Table of Contents
+
+[Statement of Purpose](statement-of-purpose")  
+[Requirements and Installation](requirements-and-installation)  
+[Usage](usage)  
+* [Devices](devices)  
+* [Actuators](actuators)  
+* [Create Commands](create-commands)  
+* [Create Responses](create-responses)  
+* [User Features](user-features)  
+
+[Maintainers](maintainers)  
+[About OASIS TC Open Repositories](about-oasis-tc-open-repositories)  
+[Feedback](feedback)  
+  
+![Insert GUI snippet](/docs/images/overview.png)
+
 # Statement of Purpose
 
-**OpenC2 Integration Framework (OIF)** is a project which enable
+**OpenC2 Integration Framework (OIF)** is a project which enables
 developers to create and test OpenC2 specifications and
 implementations without having to recreate an entire OpenC2
 ecosystem.  The OIF consists of two major parts:
@@ -71,73 +70,37 @@ meets the requirements set forth in OpenC2 specifications.
 
 To get started please reference [README.md in the /docs folder](docs/README.md)
 1. Download and install the following programs:
-- [docker-compose](https://docs.docker.com/)
-- [node](https://nodejs.org/en/)
-- [node version manager (NVM)](https://github.com/nvm-sh/nvm)
-- [virtual environment](https://virtualenvwrapper.readthedocs.io/en/latest/)
-- [yarn](https://classic.yarnpkg.com/en/)
+- [Docker-Compose](https://docs.docker.com/)
+- [Node](https://nodejs.org/en/)
+- [Node Version Manager (NVM)](https://github.com/nvm-sh/nvm)
+- [yarn](https://classic.yarnpkg.com/en/)  
 
-2. Clone the [openc2-oif-orchestrator git repository](https://github.com/oasis-open/openc2-oif-orchestrator) <br />
-_Note: Download and run the following script: **sb_git.py**. This script can be used to quickly clone and pull down the repo. In order to use it, you'll need your gitlab access token found in Gitlab under **Preferences and Access Keys** and the full path to your target directory._
+2. Clone the [openc2-oif-orchestrator git repository](https://github.com/oasis-open/openc2-oif-orchestrator)
 
-3. Download and place the following scripts as follows:
-	1. Place **dev-orchestrator.yaml** file in Orchestrator folder of your cloned repository
-	2. Place the **scripts** folder in Home folder<br />
-	_Note: Your folder does not need to be named **scripts**, neither does it need to be placed in the Home folder. However, you will need to make changes in any respective locations._ <br />
-	The current file structure should look like this:
-		```
-		├── home
-		│   ├── cloned openc2-oif-orchestrator repository
-		│   │   ├── Orchestrator
-		|	│   │   ├── dev-orchestrator.yaml
-		|	│   │   ├── GUI
-		|	|	│   │   ├── ...		
-		|	│   │   ├── ...		
-		│   │   ├── ...
-		│   ├── scripts
-		│   │   ├── monthly_commits
-		│   │   ├── bunny_build
-		│   │   ├── py
-		|	│   │   ├── build_containers.py
-		|	│   │   ├── monthly_commits.py
-		|	│   │   ├── utils.py
-		|	│   │   ├── _pycache_
-		│   ├── ...
-		├── ...
-
-		```	
-	3. Add the following excerpt to your shell configuration file (`~/.bashrc`): <br />
-		_Note: **~/scripts** corresponds to the name and location of your **scripts** folder created in step 2._
-
-		```
-		#Additional Path Configuration   
-		SCRIPTS=~/scripts 
-		export PATH=$PATH:$SCRIPTS 
-		```
-
-	4. Create a virtual environment. We will call it **orchvenv**.
-		```
-		mkvirtualenv orchvenv
-		```
+3. If you are working in a virtual environment, create one. Our example is called **orchvenv**.
+    ```
+    mkvirtualenv orchvenv
+    ```
 
 ### Now that all the requirements have been fulfilled, we can begin installation in your virtual environment.
 
-1. In the terminal, run `~/scripts/bunny_build`
+1. In the terminal, run `config.py`
 
 2. Go to the GUI repo, run `yarn` until you get a successful build
 
 3. Run `yarn build`
 
-4. Run `docker-compose -f dev-orchestrator.yaml -p orchestrator up` to bring up the Orchestrator GUI.
+4. Run `docker-compose -f dev-orchestrator.yaml -p orchestrator up` to bring up the Orchestrator GUI
 
-5. Open browser and go to [localhost:8080](http://localhost:8080/) to begin using the Orchestrator.
+5. Open browser and go to [localhost:8080](http://localhost:8080/) to begin using the Orchestrator
 
 
 # Usage
-## Create, Update, Delete Devices
-## Create, Update, Delete Actuators
-## Create Commands
-## Create Responses
+## Devices
+## Actuators
+## Creating Commands
+## Responses
+## User Features
 
 # Maintainers
 
