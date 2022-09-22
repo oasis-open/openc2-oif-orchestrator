@@ -1,5 +1,4 @@
-FROM oif/python3
-RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
+FROM harbor.olympus.mtn/screamingbunny/docker/alpine-python3
 
 MAINTAINER Screaming_Bunny
 

@@ -13,7 +13,7 @@
 
 ##### Adding Own Certs
 
-- The user has the option of adding personal certs instead of self signed generated certs on startup in development mode.
+- The user has the option of adding personal certs instead of self-signed generated certs on startup in development mode.
  
 1. Generate certs to be used.
  
@@ -53,7 +53,7 @@
 #### Starting Container
  - To start the container
 
-    - Use dev-compose.yaml, this will pull latest image from gitlab and start the service.
+    - Use dev-compose.yaml, this will pull the latest image from gitlab and start the service.
     ```
     docker-compose -f dev-compose.yaml up
     ```
