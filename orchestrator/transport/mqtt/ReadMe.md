@@ -30,6 +30,7 @@ The payload of the message in MQTT is split into two parts, the header and the O
             }
         }
     }
+  }
 }
 ```
 
@@ -38,14 +39,14 @@ Header descriptions:
 * `to`: Actuator profile name + the location of the MQTT broker. The transport on the device side uses this to route the message to the proper actuator
 * `from`: orchestratorID + the location of the MQTT broker for return sending. The Orchestrator-side transport is listening on a topic using the orchestratorID for responses.
 * `content_type`: The content_type of the message, contains the encoding type.
-* `correlationID`: Identifier for this specific command being sent. Needed for orchestrator to relate repsonse with original command.
+* `correlationID`: Identifier for this specific command being sent. Needed for orchestrator to relate response with original command.
 * `created`: Timestamp for when the message was initially created by the orchestrator.
 
 
 The body is the content of the OpenC2 Command/Response.
 
 ## MQTT Topics
-- The MQTT transport is subscribed to a [topic](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices) that is related to the actuator that the OpenC2 message should be routed to. The current convention is topic=actuatorProfileName (eg. openc2_isr_actuator_profile).
+- The MQTT transport is subscribed to a [topic](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices) that is related to the actuator that the OpenC2 message should be routed to. The current convention is topic=actuatorProfileName (e.g. openc2_isr_actuator_profile).
 - The environment variable `MQTT_TOPICS` is a string of comma-separated topics (lists are unsupported) that can be appended to when new actuators are added. The `MQTT_TOPICS` variable is preset to contain the topics relating to the included default actuator(s).
 
 ## Broker Location
@@ -54,7 +55,7 @@ The body is the content of the OpenC2 Command/Response.
 
 ## Ports
 - Default port for [RabbitMQ MQTT](https://www.rabbitmq.com/mqtt.html) Broker is `1883` or `8883` if TLS is activated for RabbitMQ MQTT. This can be modified through the `MQTT_PORT` environment variable (default 1883)
-- Read/Writes to an internal RabbitMQ AMQP Broker at default port `5672`. Note that the internal buffer can not be accessed outside of the docker network created during docker-compose. 
+- Read/Writes to an internal RabbitMQ AMQP Broker at default port `5672`. Note that the internal buffer can not be accessed outside the docker network created during docker-compose. 
 - All ports can be edited under the Docker Compose file under the queue port options.
 
 ## Adding certificates for TLS
