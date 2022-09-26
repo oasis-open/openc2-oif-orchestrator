@@ -1,0 +1,23 @@
+# SB-Utils@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
+bleach==5.0.1
+cryptography  # Use version from SB-Utils
+django==3.2.14
+django-cors-headers==3.13.0
+django-dynamic-preferences==1.13.0
+django-fernet-fields==0.6
+django-polymorphic==3.1.0
+django-rest-polymorphic==0.1.10
+django-rest-swagger==2.2.0
+djangorestframework==3.13.1
+djangorestframework-datatables==0.7.0
+djangorestframework-files==1.1.0
+djangorestframework-jwt==1.11.0
+djangorestframework-queryfields==1.0.0
+djangorestframework-xml==2.0.0
+drf-writable-nested==0.6.4
+gunicorn==20.1.0
+jsonfield==3.1.0
+python-etcd  # Use version from SB-Utils
+pyexcel-xls==0.7.0
+PyMySQL==1.0.2
+whitenoise==6.2.0

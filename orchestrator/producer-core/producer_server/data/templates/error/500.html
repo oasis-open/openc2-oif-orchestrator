@@ -1,0 +1,18 @@
+{% extends "error/base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="card mx-auto border-danger mb-3">
+                <div class="card-header">
+                    <h3>Server Error (500)</h3>
+                </div>
+                <div class="card-body">
+					<p>Error Message Here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
