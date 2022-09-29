@@ -1,7 +1,7 @@
 # SB-Utils@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=root
 bleach==5.0.1
 cryptography  # Use version from SB-Utils
-django==3.2.14
+django==3.2.15
 django-cors-headers==3.13.0
 django-dynamic-preferences==1.13.0
 django-fernet-fields==0.6
