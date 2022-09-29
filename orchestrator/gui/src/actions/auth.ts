@@ -40,10 +40,11 @@ export const login = (username: string, password: string) => createAction({
   ]
 });
 
-export  interface LoginAction extends ActionSuccessResult {
+export interface LoginAction extends ActionSuccessResult {
   type: typeof LOGIN_SUCCESS;
   payload: {
-    token: string;
+    access: string;
+    refresh: string;
   }
 }
 
@@ -69,7 +70,7 @@ export const refreshAccessToken = (token: string) => createAction({
   endpoint: `${baseAPI}/jwt/refresh/`,
   method: 'POST',
   headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({ token }),
+  body: JSON.stringify({ refresh: token }),
   types: [
     TOKEN_REFRESH, TOKEN_REFRESHED, TOKEN_FAILURE
   ]
