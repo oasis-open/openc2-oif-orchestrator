@@ -97,10 +97,40 @@ To get started please reference [README.md in the /docs folder](docs/README.md)
 
 # Usage
 ## Devices
+
+The first step to using OIF is establishing the connection with another Device.  
+Along the menu bar, you will see a tab labelled "Devices" that will bring you to the Orchestrator Devices viewer.  
+Using the Register button, you may register a Device, entering a Name, a Device UUID, and Connection and 
+connection Authentication information to the Device.  
+The Device will now appear on the Devices page for viewing and editing its connection information.  
+
 ## Actuators
+
+Once you have entered a Device, you can enter an Actuator with OpenC2 capabilities on that Device into OIF using the Actuators  
+tab of the menu bar. Actuators are given a Name, a UUID, a Parent Device, and a Schema defining its OpenC2 capabilities.   
+OIF accepts schemas in JSON schema format. These documents can be pasted in, or pulled using the "Upload Schema" option at the bottom of the text box.
+
+
 ## Creating Commands
+
+The Command tab of the menu bar gives access to the Command Generator, OIF's tool for sending OpenC2 commands.  
+The left side of the page has a selection of all loaded Actuator schemas to choose from, and after making this selection the chosen schema will appear onscreen.  
+The right side of the screen has the command generation tools available from the chosen schema, with a Creator, Message, and Warning tab.  
+The Creator tab houses the user options for command generation based on the chosen schema, with these utilities lying under the "OpenC2-Command" option.
+The structural elements of an OpenC2 command are all represented here, with form options valid for the input schema to generate a corresponding OpenC2 command.  
+In addition to the Creator tab, the Message and Warnings tabs are useful tools for viewing the text of the message to be sent  
+or any warnings or errors in the command.  
+  
 ## Responses
+
+After sending a command, you can view its text, data, and status or results using the Previous Commands option of the Command menu tab.  
+This view displays the historical command info, with an additional "Info" button to view the full command text as well as any responses received by OIF that are attributed to that command. 
+
 ## User Features
+  
+On the far right of the menu bar is the access to user features, with a breakdown of all the user's site entries, command history, and authentication, as well as password and logout options.  
+
+
 
 # Maintainers
 
