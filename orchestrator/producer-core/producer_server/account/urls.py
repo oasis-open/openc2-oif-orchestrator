@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from . import views
 
@@ -12,9 +12,9 @@ router.register('(?P<username>[^/.]+)/history', views.UserHistoryViewSet)
 urlpatterns = [
     # JWT Tokens
     path('jwt/', include([
-        path('', obtain_jwt_token),
-        path('refresh/', refresh_jwt_token),
-        path('verify/', verify_jwt_token),
+        path('', views.OrchTokenObtainPairView.as_view(), name='token_obtain_pair'),
+        path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+        path('verify/', TokenVerifyView.as_view(), name='token_verify'),
     ])),
 
     # User Actions
