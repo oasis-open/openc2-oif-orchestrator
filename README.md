@@ -1,5 +1,9 @@
 # OASIS TC Open Repository: openc2-oif-orchestrator
 
+<a href="https://openc2.org/" target="_blank">![OpenC2](https://github.com/ScreamBun/SB_Utils/blob/master/assets/images/openc2.png?raw=true)</a>
+
+[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/downloads/release/python-3100/)
+
 This GitHub public repository [openc2-oif-orchestrator](https://github.com/oasis-open/openc2-oif-orchestrator) was created at the request of the [OASIS OpenC2 Technical Committee](https://www.oasis-open.org/committees/openc2/) as an [OASIS TC Open Repository](https://www.oasis-open.org/resources/open-repositories/) to support development of open source resources related to Technical Committee work.
 
 While this TC Open Repository remains associated with the sponsor TC, its development priorities, leadership, intellectual property terms, participation rules, and other matters of governance are separate and distinct from the OASIS TC Process and related policies.
@@ -115,7 +119,7 @@ OIF accepts schemas in JSON schema format. These documents can be pasted in, or 
 
 The Command tab of the menu bar gives access to the Command Generator, OIF's tool for sending OpenC2 commands.  
 The left side of the page has a selection of all loaded Actuator schemas to choose from, and after making this selection the chosen schema will appear onscreen.  
-The right side of the screen has the command generation tools available from the chosen schema, with a Creator, Message, and Warning tab.  
+The right side of the screen has command generation tools available from the chosen schema, with Creator, Message, and Warning tabs.  
 The Creator tab houses the user options for command generation based on the chosen schema, with these utilities lying under the "OpenC2-Command" option.
 The structural elements of an OpenC2 command are all represented here, with form options valid for the input schema to generate a corresponding OpenC2 command.  
 In addition to the Creator tab, the Message and Warnings tabs are useful tools for viewing the text of the message to be sent  
@@ -123,7 +127,7 @@ or any warnings or errors in the command.
   
 ## Responses
 
-After sending a command, you can view its text, data, and status or results using the Previous Commands option of the Command menu tab.  
+After sending a command, you can view its text, data, status or results with the Previous Commands option of the Command menu tab.  
 This view displays the historical command info, with an additional "Info" button to view the full command text as well as any responses received by OIF that are attributed to that command. 
 
 ## User Features
