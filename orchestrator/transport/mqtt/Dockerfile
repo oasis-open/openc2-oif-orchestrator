@@ -1,4 +1,4 @@
-FROM harbor.olympus.mtn/screamingbunny/alpine-python3
+FROM screambunn/alpine-python3
 
 MAINTAINER Screaming_Bunny
 
