@@ -9,6 +9,7 @@
 <a name="table-of-contents"></a>
 ## Table of Contents
 * [Installation](#installation)
+  * [Walk Through](docs/WalkThrough.md)
 * [Background](#background)
 * [Statement of Purpose](#statement-of-purpose")   
 * [Overview](#overview)  
