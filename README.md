@@ -7,21 +7,6 @@
 [![Docker Compose 1.20+](https://img.shields.io/badge/Docker%20Compose-1.20%2B-blue)](https://docs.docker.com/compose/install/)
 [![Open2C Lang Spec](https://img.shields.io/badge/Open2C%20Lang%20Spec-1.0-brightgreen)](https://github.com/dlemire60/openc2-oc2ls/releases/tag/v1.0-cs01)
 
-## Table of Contents
-* [Installation](#installation)
-  * [Walk Through](docs/WalkThrough.md)
-* [Background](#background)
-* [Statement of Purpose](#statement-of-purpose")   
-* [Overview](#overview)  
-  * [Devices](#devices)  
-  * [Actuators](#actuators)  
-  * [Create Commands](#commands)  
-  * [Create Responses](#responses)  
-  * [User Features](#user-features)
-* [Maintainers](#maintainers)
-* [About OASIS TC Open Repositories](#about-oasis-tc-open-repositories)
-* [Feedback](#feedback)  
-
 ## <a name="installation"></a> Installation
 
 To get started with the OpenC2 Integration Framework (OIF) Orchestrator please reference the [WalkThrough.md](docs/WalkThrough.md) found under docs.
