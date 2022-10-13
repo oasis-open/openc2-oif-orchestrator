@@ -1,4 +1,4 @@
-# <a name="OASIS-TC-Open-Repository:-openc2-oif-orchestrator"></a> OASIS TC Open Repository: openc2-oif-orchestrator
+# <a name="openC2-integration-framework-orchestrator"></a> OpenC2 Integration Framework Orchestrator
 
 <a href="https://openc2.org/" target="_blank">![OpenC2](https://github.com/ScreamBun/SB_Utils/blob/master/assets/images/openc2.png?raw=true)</a>
 
@@ -24,7 +24,7 @@
 
 ## <a name="installation"></a> Installation
 
-To get started with the OIF please reference the [WalkThrough.md](docs/WalkThrough.md) found under docs.
+To get started with the OpenC2 Integration Framework (OIF) Orchestrator please reference the [WalkThrough.md](docs/WalkThrough.md) found under docs.
 
 ## <a name="background"></a> Background
 
@@ -133,5 +133,5 @@ Initially, the associated TC members have designated one or more persons to serv
 
 Questions or comments about this TC Open Repository's activities should be composed as GitHub issues or comments. If use of an issue/comment is not possible or appropriate, questions may be directed by email to the Maintainer(s) <a href="#currentMaintainers">listed above</a>. Please send general questions about TC Open Repository participation to OASIS Staff at repository-admin@oasis-open.org and any specific CLA-related questions to repository-cla@oasis-open.org.
 
-[Top of Page](#OASIS-TC-Open-Repository:-openc2-oif-orchestrator)
+[Top of Page](#openC2-integration-framework-orchestrator)
 
