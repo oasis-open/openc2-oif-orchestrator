@@ -149,10 +149,8 @@ bottom right corner to alter the GUI color scheme.
 The `Hello, {USER}` menu at the right provides access to logoff,
 password change, and system administration features.
 Information about the system administration features is
-provided in the [Orchestrator README file](./README.md).
+provided in the [Orchestrator README file](../README.md/#user-features).
 
-> **NOTE:** The password change feature is currently
-> non-functional and will be fixed in a future update.
 
 ![OIF Orchestrator Home Screen](images/oif-orch-home-screen.png)
 
@@ -257,11 +255,15 @@ an actuator is:
    device. A schema can be pasted into the window, or the
    `Upload Schema` button at the bottom right opens a
    selection dialog to choose the appropriate schema file.
+   1. Examples (Found under `/docs/schemas` in the openc2-oif-orchestrator repository)
+      1. [OpenC2 SLPF Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_slpf-v1.0.1.json)
+      2. [OpenC2 Language Spec Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_lang-v1.0.1.json)
+   2. Experimental Examples - Coming Soon
+      1. SBOM 
+      2. OSQuery
+      3. Endpoint Response
 1. Click the `REGISTER` button at bottom right to complete
    the device registration.
-
-Example schemas can be found under `/docs/schemas` in the
-openc2-oif-orchestrator repository.
 
 The screenshots below show the registered actuators list and actuator
 editing dialog:
@@ -291,29 +293,29 @@ commands and associated responses (`Commands`).
 
 The steps to generate and send commands are as follows:
 
-* Select `Command Generator` from the main menu.
-* From the pull-down labeled `Schema`, select the schema for
+1. Select `Command Generator` from the main menu.
+2. From the pull-down labeled `Schema`, select the schema for
   the desired actuator or actuator profile; the schema will
   be loaded in the pane below for reference.
-* Select the `Creator` tab on the right side, then click on
+3. Select the `Creator` tab on the right side, then click on
   `Message Type` and pick `OpenC2_Command`; a set of
   selection boxes will appear below, based on the selected
   schema. These boxes update dynamically when appropriate as
   the command is constructed.
-* Use the selection boxes to specify the desired command;
+4. Use the selection boxes to specify the desired command;
   for example:
-  - action:  `query`
-  - target:  `features`
-  - feature:  `pairs`
-* Click the `Generate ID` button to assign a unique
+   - action:  `query`
+   - target:  `features`
+   - feature:  `pairs`
+5. Click the `Generate ID` button to assign a unique
   identifier to this command
-* Select the `Message` tab to see the message content and
+6. Select the `Message` tab to see the message content and
   choose the Protocol and Serialization for sending this
   command.  Options will be limited to those supported by
   the device with which the actuator is associated.
-* Click the `Send` button to issue the command to the
+7. Click the `Send` button to issue the command to the
   actuator.
-* A pop-up notification will appear reporting the command is
+8. A pop-up notification will appear reporting the command is
   sent, or any errors that occur.
 
 
