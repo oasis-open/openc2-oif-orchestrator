@@ -1,6 +1,7 @@
 # OASIS TC Open: oif-orchestrator-gui
 
 ## Server
+
 ### About this Image
 - Work in progress Not available as of yet
 
@@ -8,6 +9,7 @@
 - Work in progress Not available as of yet
 
 ## GUI
+
 ### About this Image
 - This image is Alpine 3.10 with a simple GUI for use with the GUI Server
 - UI port - 80
