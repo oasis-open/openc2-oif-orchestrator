@@ -1,7 +1,7 @@
-# O.I.F. (OpenC2 Integration Framework) Orchestrator Walk Through
+# OpenC2 Integration Framework (OIF) Orchestrator Walk Through
 
-This document provides a detailed walkthrough of the
-installation, configuration, and basic operations of the OIF
+This document provides a detailed walk through of the
+installation, configuration, startup, and basic operations of the OIF
 Orchestrator. The Orchestrator implements the OpenC2
 [Producer](https://docs.oasis-open.org/openc2/oc2ls/v1.0/cs02/oc2ls-v1.0-cs02.html#16-overview)
 function. The following diagram provides a high-level
@@ -9,97 +9,78 @@ overview of the OIF Orchestrator's construction:
 
 ![OIF Orchestrator Block Diagram](images/orch-block-diagram.png)
 
-This walkthrough focuses on the use of the HTTP / HTTPS
+This walk through focuses on the use of the HTTP / HTTPS
 transfer protocol for message exchange between the
 Orchestrator and the Device. Some additional notes are
 provided at the end for utilizing the MQTT publish /
 subscribe protocol in place of HTTP(S).
 
-## System Preparation
+## 1) System Preparation
+ - Required:  
+   - [Python 3.10+](https://www.python.org/)
+     - [pip 18+](https://pip.pypa.io/en/stable/)
+   - [Docker 18.0+](https://www.docker.com/)
+     - [Docker Compose 1.20+](https://docs.docker.com/compose/)
+ - Optional: 
+   - [Git Latest Version](https://git-scm.com/)
 
-Developers need the following tools to start working with
-OIF:
- - Required:  [Python](https://www.python.org/),
-   [pip](https://pip.pypa.io/en/stable/),
-   [Docker](https://www.docker.com/), [Docker
-Compose](https://docs.docker.com/compose/)
- - Optional: [git](https://git-scm.com/)
-
-The OIF Orchestrator requires
-[Python](https://www.python.org/) and
-[Docker](https://www.docker.com/) to operate. Developers
-should ensure both of the following are installed on their
-system:
-
-- Docker, version 18 or higher
-- Python, version 3.6 or higher
-
-OIF Orchestrator also requires
-[pip](https://pip.pypa.io/en/stable/) (version 18 or higher) and [Docker
-Compose](https://docs.docker.com/compose/) (version 1.2 or higher)
-for configuration and
-setup.  Pip is usually [installed with
+[Pip](https://pip.pypa.io/en/stable/) and [Docker Compose](https://docs.docker.com/compose/)
+are needed for configuration and startup.  Pip is usually [installed with
 Python](https://pip.pypa.io/en/stable/installing/). Docker Compose is [installed with
 Docker](https://docs.docker.com/compose/install/) on Windows
 and Mac systems, but must be installed separately on Linux
-systems.  If working in a Linux environment, developers should also
-perform Docker's [post-installation steps for
-Linux](https://docs.docker.com/engine/install/linux-postinstall/),
+systems.  If using a Linux environment, then the [post-installation steps for
+Linux](https://docs.docker.com/engine/install/linux-postinstall/) are also needed,
 specifically:
 
- * Manage Docker as a non-root user, and
+ * Manage Docker as a non-root user
  * Configure Docker to start on boot
 
-Developers are advised to update all of the software
-components to the latest versions.
+Users are advised to update all the software components to the latest versions.
 
-
-Developers may optionally install [git](https://git-scm.com/)
-version control software, as a means of obtaining the OIF
+Users may optionally install [git](https://git-scm.com/) version control software, as a means of obtaining the OIF
 Orchestrator software.
 
-## Obtain OIF Orchestrator Software
+## 2) Obtain the Software
 
-Developers must acquire a local copy of the OIF Orchestrator
-software. There are two approaches for this:
- 1. Clone the [OIF
-    Orchestrator](https://github.com/oasis-open/openc2-oif-orchestrator)
-    repository in the desired location:<br>
-    `git clone
-    https://github.com/oasis-open/openc2-oif-orchestrator.git`
- 1. Download an ZIP archive by 
-    1. Navigating to the
-       [repository](https://github.com/oasis-open/openc2-oif-orchestrator).
+There are two approaches to obtain the software, clone via git or download using ZIP:
+ 1. Clone the [OIF Orchestrator Repository](https://github.com/oasis-open/openc2-oif-orchestrator) in the desired location:<br>
+    `git clone https://github.com/oasis-open/openc2-oif-orchestrator.git`
+ 1. Download a ZIP archive by 
+    1. Navigating to the [OIF Orchestrator Repository](https://github.com/oasis-open/openc2-oif-orchestrator).
 	1. Click on the green **Code** button.
 	1. Select **Download ZIP**.
 	1. Unwrap the ZIP archive in the desired location.
 
-## Configure OIF Orchestrator Software
+## 3) Configuration 
 
-To configure the OIF Orchestrator, navigate to the directory
-containing the local software copy and run `configure.py`
-with the desired options prior to starting the Orchestrator
-for the first time. The relevant options are:
- - `-f FILE` or `--log_file FILE` -- Enables logging to the designated file
- - `-h` or `--help` -- Shows the help and exits
- - `-v` or `--verbose` -- Enables verbose output    	
+To configure the OIF Orchestrator, navigate to the directory containing the local software copy 
+and run `configure.py` with the desired options prior to starting the OIF Orchestrator for the first time.
 
-The basic configuration command is
+View all configuration options:
+```bash 
+python3 configure.py -h
+```
+
+Run with default configuration:
 ```bash 
 python3 configure.py
 ```
 
+Run with logging to the designated file and in verbose mode:
+```bash 
+python3 configure.py -f FILE -v
+```
 
-## Running OIF Orchestrator (Docker Compose)
+## 4) Run the OIF Orchestrator
 
-As described in [its
-documentation](https://docs.docker.com/compose/), Docker
+As described in [its documentation](https://docs.docker.com/compose/), Docker
 Compose is used to "define and run multi-container Docker
 applications". To start OIF Orchestrator in its default
 configuration, the only required command is:
 
 ```bash
-	docker-compose -f orchestrator-compose.yaml up
+  docker-compose -f orchestrator-compose.yaml up
 ```
 
 This command will:
@@ -115,20 +96,20 @@ The Orchestrator can also be started in detached mode using
 the docker-compose `-d` or `--detach` option:
 
 ```bash
-	docker-compose up --detach
+  docker-compose up --detach
 ```
 
 A detached instance of OIF is terminated with the complementary command:
 
 ```bash
-	docker-compose down
+docker-compose down
 ```
 
 This command should also be run after terminating an
 attached OIF instance with `ctrl-c`, as it also performs a number
 of desirable clean-up actions.
 
-## Accessing the Orchestrator GUI
+## 5) Accessing the Orchestrator GUI
 
 The OIF Orchestrator provides a graphical user interface
 (GUI) for the user to manage devices and
@@ -155,7 +136,7 @@ provided in the [Orchestrator README file](../README.md/#user-features).
 ![OIF Orchestrator Home Screen](images/oif-orch-home-screen.png)
 
 
-## Create Devices and  Actuators
+## 6) Create Devices and  Actuators
 
 An OIF Device is an entity that groups one or more OpenC2
 actuators and provides a communications interface so that
@@ -276,7 +257,7 @@ editing dialog:
 
 
 
-## Generating Commands and Viewing Responses
+## 7) Generating Commands and Viewing Responses
 
 Prerequisites for processing commands and responses:
 * A device has been registered
