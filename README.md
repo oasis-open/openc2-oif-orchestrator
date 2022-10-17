@@ -68,7 +68,7 @@ Initially, the associated TC members have designated one or more persons to serv
 ## About OASIS TC Open Repositories
 
 - [TC Open Repositories: Overview and Resources](https://www.oasis-open.org/resources/open-repositories)
-- [Frequently Asked Questions](https://www.oasis-open.org/resources/open-repositories/faq)
+- [Frequently Asked Questions](https://www.oasis-open.org/resources/open-repositories/faq-4)
 - [Open Source Licenses](https://www.oasis-open.org/resources/open-repositories/licenses)
 - [Contributor License Agreements (CLAs)](https://www.oasis-open.org/resources/open-repositories/cla)
 - [Maintainers' Guidelines and Agreement](https://www.oasis-open.org/resources/open-repositories/maintainers-guide)
