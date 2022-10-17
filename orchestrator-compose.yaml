@@ -19,7 +19,7 @@ volumes:
 services:
   producer-core:
     hostname: producer-core
-    image: oif/orchestrator-producer-core
+    image: screambunn/orchestrator_producer-core
     build:
       context: ./orchestrator/producer-core
       dockerfile: Dockerfile
@@ -41,11 +41,11 @@ services:
       - database
       - etcd
       - queue
-    restart: on-failure:5
+    restart: on-failure
 
   gui:
     hostname: gui
-    image: oif/orchestrator-gui
+    image: screambunn/orchestrator_gui
     build:
       context: ./orchestrator/gui
       dockerfile: Dockerfile
@@ -53,7 +53,7 @@ services:
       PRODUCER_HOST: producer-core
       PRODUCER_PORT: 8080
     ports:
-      - 8080:80
+      - "8080:80"
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:80']
       interval: 30s
@@ -63,11 +63,11 @@ services:
       - producer-core
     depends_on:
       - producer-core
-    restart: on-failure:5
+    restart: on-failure
 
   transport-producer-https:
     hostname: transport-producer-https
-    image: oif/orchestrator-transport-https
+    image: screambunn/orchestrator_transport_https
     build:
       context: ./orchestrator/transport/https
       dockerfile: Dockerfile
@@ -81,11 +81,11 @@ services:
     depends_on:
       - etcd
       - queue
-    restart: on-failure:5
+    restart: on-failure
 
   transport-producer-mqtt:
     hostname: transport-producer-mqtt
-    image: oif/orchestrator-transport-mqtt
+    image: screambunn/orchestrator_transport_mqtt
     build:
       context: ./orchestrator/transport/mqtt
       dockerfile: Dockerfile
@@ -100,7 +100,7 @@ services:
     depends_on:
       - etcd
       - queue
-    restart: on-failure:5
+    restart: on-failure
 
   queue:
     hostname: rabbit
@@ -112,7 +112,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    restart: on-failure:5
+    restart: on-failure
 
   database:
     hostname: database
@@ -126,7 +126,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    restart: on-failure:5
+    restart: on-failure
 
   etcd:
     hostname: etcd
@@ -137,4 +137,4 @@ services:
     volumes:
       - etcd:/data/etcd
     command: sh -c 'etcd -listen-client-urls http://0.0.0.0:2379 -advertise-client-urls http://etcd:2379'
-    restart: on-failure:5
+    restart: on-failure
