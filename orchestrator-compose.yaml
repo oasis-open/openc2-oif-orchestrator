@@ -125,7 +125,7 @@ services:
     volumes:
       - database:/var/lib/mysql
     healthcheck:
-      test: ['CMD', '/usr/bin/mysql/install/bin/mysql', '--protocol=tcp', '-h', 'mysql', '-u', '$MYSQL_USER', '-p$MYSQL_ROOT_PASSWORD', '-e', '"show databases;"', '||', 'exit 1']
+      test: ['CMD', '/usr/bin/mysql/install/bin/mysql', '--protocol=tcp', '-h', 'mysql', '-u', 'root', '-p$MYSQL_ROOT_PASSWORD', '-e', '"show databases;"', '||', 'exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
