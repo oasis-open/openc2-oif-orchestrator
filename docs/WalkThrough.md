@@ -179,6 +179,8 @@ The procedure to create a new device is:
 1. Enter the Device's IP address and Port.
    - Default port for HTTPS Transfer is 5001
    - Default port for MQTT Transfer is 1883
+   - Default host/broker for MQTT Transfer is 91.121.93.94 (test.mosquitto.org)
+   - <b>Note</b>: The test.mosquitto.org MQTT host/broker is for testing purposes only. 
 1. Select the transfer protocol to use with this device.
 1. Select the message serialization(s) to use with this device.
    JSON is the default serialization for OpenC2.
@@ -191,14 +193,15 @@ The procedure to create a new device is:
 The screenshots below show the registered devices list and device
 editing dialog:
 
-> **NOTE:** really need some better way of setting off / captioning the screenshots
-
-![Orchestrator Registered Devices List](images/oif-orch-dev-reg-screen.png)
+![Orchestrator Registered Devices List](images/oif-orc-dev-reg-screen.png)
 
 <hr>
 
-![Orchestrator Device Editing Dialog](images/oif-orch-edit-device.png)
+![Orchestrator Device Editing Dialog](images/oif-orc-edit-device-https.png)
 
+<hr>
+
+![Orchestrator Device Editing Dialog](images/oif-orc-edit-device-mqtt.png)
 
 Device registration notes:
 
