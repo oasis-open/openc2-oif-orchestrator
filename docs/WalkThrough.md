@@ -7,7 +7,11 @@ Orchestrator. The Orchestrator implements the OpenC2
 function. The following diagram provides a high-level
 overview of the OIF Orchestrator's construction:
 
+<table><tr><td style="padding:0;">
+ 
 ![OIF Orchestrator Block Diagram](images/oif-orc-block-diagram.png)
+
+</td></tr></table>
 
 This walk through focuses on the use of the HTTP / HTTPS
 transfer protocol for message exchange between the
