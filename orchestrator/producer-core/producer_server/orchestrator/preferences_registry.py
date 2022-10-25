@@ -68,7 +68,7 @@ class OrchestratorName(StringPreference):
     section = orchestrator
     name = "name"
     help_text = "The name of the orchestrator"
-    default = "Jazzy Ocelot"
+    default = "OpenC2 Orchestrator"
 
 
 @global_registry.register
