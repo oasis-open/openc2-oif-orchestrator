@@ -7,7 +7,7 @@ Orchestrator. The Orchestrator implements the OpenC2
 function. The following diagram provides a high-level
 overview of the OIF Orchestrator's construction:
 
-![OIF Orchestrator Block Diagram](images/orch-block-diagram.png)
+![OIF Orchestrator Block Diagram](images/oif-orc-block-diagram.png)
 
 This walk through focuses on the use of the HTTP / HTTPS
 transfer protocol for message exchange between the
@@ -118,23 +118,21 @@ review responses The GUI is accessed at
 `http://localhost:8080`.  Browsing to the User GUI location brings up the login
 screen:
 
-![OIF Orchestrator User Login](images/oif-orch-login.png)
+![OIF Orchestrator User Login](images/oif-orc-login.png)
 
 The default login credentials are 
  - Username: `admin`
  - Password: `password`
 
-After login to the User GUI you will seen the home screen
+After login to the User GUI you will see the home screen
 with the system menu. A `theme` menu is available in the
 bottom right corner to alter the GUI color scheme.
-The `Hello, {USER}` menu at the right provides access to logoff,
+The `Hello, {USER}` menu at the right provides access to log off,
 password change, and system administration features.
 Information about the system administration features is
 provided in the [Orchestrator README file](../README.md/#user-features).
 
-
-![OIF Orchestrator Home Screen](images/oif-orch-home-screen.png)
-
+![OIF Orchestrator Home Screen](images/oif-orc-home.png)  
 
 ## 6) Create Devices and  Actuators
 
@@ -147,9 +145,11 @@ specifications](https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=open
 it's an OIF construct. The following diagram illustrates the
 organization of an OIF Device:
 
+<table><tr><td style="padding:0;">
+
 ![OIF Device Block Diagram](./images/dev-block-diagram.png)
 
-
+</td></tr></table>
 
 Devices and their associated actuators have to be registered
 in the OIF Orchestrator before interactions with them are
@@ -179,6 +179,7 @@ The procedure to create a new device is:
 1. Enter the Device's IP address and Port.
    - Default port for HTTPS Transfer is 5001
    - Default port for MQTT Transfer is 1883
+   - Host: Enter your MQTT Broker
 1. Select the transfer protocol to use with this device.
 1. Select the message serialization(s) to use with this device.
    JSON is the default serialization for OpenC2.
@@ -190,15 +191,9 @@ The procedure to create a new device is:
 
 The screenshots below show the registered devices list and device
 editing dialog:
+/home/matt/Documents/SB/oif-orc-home-screen.png
 
-> **NOTE:** really need some better way of setting off / captioning the screenshots
-
-![Orchestrator Registered Devices List](images/oif-orch-dev-reg-screen.png)
-
-<hr>
-
-![Orchestrator Device Editing Dialog](images/oif-orch-edit-device.png)
-
+![Orchestrator Registered Devices List](images/oif-orc-devices.png)
 
 Device registration notes:
 
@@ -209,7 +204,21 @@ Device registration notes:
 - The red `x`  button in the registration dialog deletes the
   associated transport interfaces from the device.
 
+#### HTTPS Registration Screen Shots
 
+![Orchestrator Device Editing Dialog - HTTP](images/oif-orc-edit-device-https.png)
+
+![Orchestrator Device Editing Dialog - HTTP Options](images/oif-orc-edit-device-https-options.png)
+
+![Orchestrator Device Editing Dialog - HTTP Auth](images/oif-orc-edit-device-https-auth.png)
+
+#### MQTT Registration Screen Shots
+
+![Orchestrator Device Editing Dialog - MQTT](images/oif-orc-edit-device-mqtt.png)
+
+![Orchestrator Device Editing Dialog - MQTT Options](images/oif-orc-edit-device-mqtt-options.png)
+
+![Orchestrator Device Editing Dialog - MQTT Authentication](images/oif-orc-edit-device-mqtt-auth.png)
 
 ### Registering an Actuator with the OIF
 
@@ -217,10 +226,9 @@ The process for registering an actuator is similar to that
 for a device. Every actuator is associated with a device, so
 devices **must** be registered before their actuators. A
 device can have multiple actuators; each actuator is
-associated with a single device. The process for registering
-an actuator is:
+associated with a single device. 
 
-
+The process for registering an actuator is:
 1. Select `Actuators` from the Orchestrator menu; this
    brings up
   the list of registered actuators.
@@ -238,7 +246,9 @@ an actuator is:
    selection dialog to choose the appropriate schema file.
    1. Examples (Found under `/docs/schemas` in the openc2-oif-orchestrator repository)
       1. [OpenC2 SLPF Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_slpf-v1.0.1.json)
-      2. [OpenC2 Language Spec Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_lang-v1.0.1.json)
+         2. [About the Stateless Packet Filtering Actuator Profile and it's capabilities](https://docs.oasis-open.org/openc2/oc2slpf/v1.0/cs01/oc2slpf-v1.0-cs01.html) 
+      1. [OpenC2 Language Spec Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_lang-v1.0.1.json)
+         2. Provided to allow the user to create their own Actuator Profile
    2. Experimental Examples - Coming Soon
       1. SBOM 
       2. OSQuery
@@ -249,22 +259,19 @@ an actuator is:
 The screenshots below show the registered actuators list and actuator
 editing dialog:
 
-![Orchestrator Registered Actuators List](images/oif-orch-actuator-list.png)
+![Orchestrator Registered Actuators](images/oif-orc-actuators.png)
 
-<hr>
-
-![Orchestrator Actuator Editing Dialog](images/oif-orch-actuator-registration-populated.png)
-
-
+![Orchestrator Actuator Editing Dialog](images/oif-orc-actuator-edit.png)
 
 ## 7) Generating Commands and Viewing Responses
 
 Prerequisites for processing commands and responses:
-* A device has been registered
-* An actuator has been registered and associated with a
+- A device has been registered
+- An actuator has been registered and associated with a
   device
-* The OIF Orchestrator and Device are running, with a network
-  connection between them
+- The OIF Orchestrator and Device are running, with a network
+  connection between them 
+  - Link to the OIF Device walk through coming soon 
 
 The OIF Orchestrator has main menu functions to generate
 commands (`Command Generator`), and to view the history of
@@ -275,6 +282,9 @@ commands and associated responses (`Commands`).
 The steps to generate and send commands are as follows:
 
 1. Select `Command Generator` from the main menu.
+
+![Orchestrator Menu - Command Generator](images/oif-orc-menu-command-gen.png)
+
 2. From the pull-down labeled `Schema`, select the schema for
   the desired actuator or actuator profile; the schema will
   be loaded in the pane below for reference.
@@ -299,22 +309,23 @@ The steps to generate and send commands are as follows:
 8. A pop-up notification will appear reporting the command is
   sent, or any errors that occur.
 
+![Command Generator](images/oif-orc-command-gen.png)
 
-![Command Generator Screenshot](images/oif-orch-command-sent.png)
+### Viewing Previous Commands / Response History
 
-### Viewing Command / Response History
-
-To view commands and their associated responses, select
-`Commands` from the main menu. A list will appear of all
+To view previous commands and their associated responses, select
+`Previous Commands` from the main menu. A list will appear of all
 commands that have been sent.
 
-![Command History List](images/oif-orch-command-history.png)
+![Orchestrator Menu - Previous Commands](images/oif-orc-menu-prev-commands.png)
+
+![Previous Commands](images/oif-orc-prev-commands.png)
 
 Click on the `Info` button for any command to see the
 command / response history (the image below was edited to show
 complete command and response together).
 
-![Command / Response Details Example](images/oif-orch-cmd-rsps.png)
+![Previous Command Response Details](images/oif-orc-prev-command-details.png)
 
 ## (TBSL) Message Transfer via MQTT Publish / Subscribe
 
@@ -323,20 +334,21 @@ complete command and response together).
   the `MQTT_TOPICS` environment variable. Read the MQTT
   Topics section [here](/orchestrator/transport/mqtt/ReadMe.md)
 
+## Helpful Documentation
 
-## Container/Services ReadMe
-
-If needed, the ReadMe files for the OIF Orchestrator's
-components are linked here:
-
-|Orchestrator   | Transport  | Logger  |
-|:-:|:-:|:-:|
-| [Core](../orchestrator/core/ReadMe.md)  | [HTTPS](../orchestrator/transport/https/README.md)  | [GUI](../logger/gui/ReadMe.md)  |
-| [GUI](../orchestrator/gui/client/ReadMe.md)  | [MQTT](../orchestrator/transport/mqtt/ReadMe.md)  | [Server](../logger/server/ReadMe.md)  |
+If needed, the ReadMe files for the OIF Orchestrator's components are linked here:
+- Orchestrator
+  - [GUI](../orchestrator/gui/ReadMe.md)
+  - [Core](../orchestrator/producer-core/ReadMe.md) 
+- Transports
+  - [HTTPS](../orchestrator/transport/https/ReadMe.md)
+  - [MQTT](../orchestrator/transport/mqtt/ReadMe.md)
+- Logger
+  - [GUI](../logger/gui/ReadMe.md)
+  - [Server](../logger/server/ReadMe.md)
 
 Tutorials are available for extending the OIF:
-
-* Adding a [new serialization](./Serializations.md)
-* Adding a [new transport protocol](./Transport.md)
+- Adding a [new serialization](./Serializations.md)
+- Adding a [new transport protocol](./Transport.md)
 
 [Top of Page](#openC2-integration-framework-(oif)-orchestrator-walk-through)
