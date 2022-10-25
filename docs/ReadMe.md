@@ -23,7 +23,7 @@ more detailed start-up explanation can be found in
 The following diagram provides a high-level
 overview of the OIF Orchestrator's construction:
 
-![OIF Orchestrator Block Diagram](images/orch-block-diagram.png)
+![OIF Orchestrator Block Diagram](images/oif-orc-block-diagram.png)
 
 ## Container/Services ReadMe
 
