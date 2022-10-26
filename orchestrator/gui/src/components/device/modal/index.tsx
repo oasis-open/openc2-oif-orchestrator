@@ -255,7 +255,7 @@ class DeviceModal extends Component<DeviceModalConnectedProps, DeviceModalState>
 
     return (
       <div className={ `d-inline-block ${className}` }>
-        <Button color="primary" size="sm" onClick={ this.toggleModal } >
+        <Button color="primary" size="sm" className="mr-2" onClick={ this.toggleModal } >
           { register ? 'Register' : 'Edit' }
         </Button>
 
