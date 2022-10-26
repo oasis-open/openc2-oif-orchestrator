@@ -249,10 +249,10 @@ The process for registering an actuator is:
    `Upload Schema` button at the bottom right opens a
    selection dialog to choose the appropriate schema file.
    1. Examples (Found under `/docs/schemas` in the openc2-oif-orchestrator repository)
-      1. [OpenC2 SLPF Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_slpf-v1.0.1.json)
-         2. [About the Stateless Packet Filtering Actuator Profile and it's capabilities](https://docs.oasis-open.org/openc2/oc2slpf/v1.0/cs01/oc2slpf-v1.0-cs01.html) 
-      1. [OpenC2 Language Spec Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_lang-v1.0.1.json)
-         2. Provided to allow the user to create their own Actuator Profile
+      - [OpenC2 SLPF Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_slpf-v1.0.1.json)
+         - [About the Stateless Packet Filtering Actuator Profile and it's capabilities](https://docs.oasis-open.org/openc2/oc2slpf/v1.0/cs01/oc2slpf-v1.0-cs01.html) 
+      - [OpenC2 Language Spec Schema](https://github.com/ScreamBun/openc2-oif-orchestrator/blob/master/docs/schemas/openc2_lang-v1.0.1.json)
+         - Provided to allow the user to create their own Actuator Profile
    2. Experimental Examples - Coming Soon
       1. SBOM 
       2. OSQuery
