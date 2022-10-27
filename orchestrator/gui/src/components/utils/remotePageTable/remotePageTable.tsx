@@ -77,11 +77,17 @@ type RemotePageTableConnectedProps = RemotePageTableProps & ConnectorProps;
 
 // Component
 class RemotePageTable extends Component<RemotePageTableConnectedProps, RemotePageTableState> {
+  // eslint-disable-next-line react/static-property-placement
+  static defaultProps = {
+    editOptions: {},
+    navigate: (_url: string) => {}
+  };
+
   // Component Vars
   editable: boolean;
   keyField: string;
   // filler typing, not actually used; from columns
-  // eslint-disable-next-line react/sort-comp, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line react/sort-comp, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, class-methods-use-this
   deleteConfirm = (_f: (key: any) => void, _k: string) => {};
   options?: {
     modal?: ({key, data}: {key: number, data: Data}) => JSX.Element;
@@ -172,6 +178,7 @@ class RemotePageTable extends Component<RemotePageTableConnectedProps, RemotePag
     });
   }
 
+  // eslint-disable-next-line react/sort-comp
   handleTableChange<T>(type: TableChangeType, newState: TableChangeState<T>) {
     switch (type) {
       case 'filter':

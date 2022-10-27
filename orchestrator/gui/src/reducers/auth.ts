@@ -16,6 +16,7 @@ export interface AuthState {
     token: string;
   };
   refresh: boolean;
+  refresh_token: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: Record<string, any>;
 }
@@ -24,6 +25,7 @@ export const tokenCookie = 'JWT';
 const initialState: AuthState = {
   access: undefined,
   refresh: false,
+  refresh_token: '',
   errors: {}
 };
 
@@ -31,17 +33,18 @@ export default (state=initialState, action: Auth.AuthActions): AuthState => {
   let access: DecodedJWT;
   switch (action.type) {
     case Auth.LOGIN_SUCCESS:
-      access = jwtDecode<DecodedJWT>(action.payload.token);
-      Cookies.set(tokenCookie, action.payload.token, {
+      access = jwtDecode<DecodedJWT>(action.payload.access);
+      Cookies.set(tokenCookie, action.payload.access, {
         expires: fromUnixTime(access.exp),
         sameSite: 'strict'
       });
       return {
         ...state,
         access: {
-          token: action.payload.token,
+          token: action.payload.access,
           ...access
         },
+        refresh_token: action.payload.refresh,
         errors: {}
       };
 
@@ -50,6 +53,7 @@ export default (state=initialState, action: Auth.AuthActions): AuthState => {
       return {
         ...state,
         access: undefined,
+        refresh_token: '',
         errors: {}
       };
 
@@ -60,15 +64,15 @@ export default (state=initialState, action: Auth.AuthActions): AuthState => {
       };
 
     case Auth.TOKEN_REFRESHED:
-      access = jwtDecode<DecodedJWT>(action.payload.token);
-      Cookies.set(tokenCookie, action.payload.token, {
+      access = jwtDecode<DecodedJWT>(action.payload.access);
+      Cookies.set(tokenCookie, action.payload.access, {
         expires: fromUnixTime(access.exp),
         sameSite: 'strict'
       });
       return {
         ...state,
         access: {
-          token: action.payload.token,
+          token: action.payload.access,
           ...access
         },
         errors: {},
@@ -81,17 +85,18 @@ export default (state=initialState, action: Auth.AuthActions): AuthState => {
       return {
         ...state,
         access: undefined,
+        refresh_token: '',
         errors: action.payload.response || {'non_field_errors': action.payload.statusText}
       };
 
     default:
       if (state.access) {
-        const origIat = fromUnixTime(state.access.orig_iat);
-        const diff = differenceInMinutes(fromUnixTime(state.access.exp), origIat);
+        const curr = new Date();
+        const diff = differenceInMinutes(fromUnixTime(state.access.exp), curr);
 
-        if (differenceInMinutes(new Date(), origIat) > (diff-5) && !state.refresh) {
+        if (diff <= 5 && !state.refresh) {
         // eslint-disable-next-line promise/no-callback-in-promise
-          action.asyncDispatch(Auth.refreshAccessToken(state.access.token));
+          action.asyncDispatch(Auth.refreshAccessToken(state.refresh_token));
           return {
             ...state,
             refresh: true

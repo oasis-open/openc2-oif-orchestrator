@@ -13,8 +13,7 @@ mkdir -p /opt/orchestrator/gui && \
 cp -r build/* /opt/orchestrator/gui
 
 # GUI Image
-FROM oif/alpine
-RUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*
+FROM screambunn/alpine:latest
 
 LABEL name="Orchestrator GUI" \
 vendor="OpenC2" \

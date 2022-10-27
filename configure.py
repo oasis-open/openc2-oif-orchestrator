@@ -61,7 +61,7 @@ CONFIG = FrozenDict(
         ("colorama", "colorama"),
         ("yaml", "pyyaml")
     ),
-    ImagePrefix="oif",
+    ImagePrefix="screambunn",
     Logging=FrozenDict(
         Default=(
             ("orchestrator", "-p orchestrator -f orchestrator-compose.yaml"),
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         name="base alpine python3",
         path="./base",
         dockerfile="./Dockerfile_alpine-python3",
-        tag=f"{CONFIG.ImagePrefix}/python3",
+        tag=f"{CONFIG.ImagePrefix}/alpine-python3",
         buildargs=dict(
             BASE_IMAGE=f"{CONFIG.ImagePrefix}/alpine"
         ),

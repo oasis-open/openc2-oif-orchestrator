@@ -1,11 +1,11 @@
 import re
 import pymysql
 import os
-import datetime
 import base64
 import etcd
 
 from cryptography.fernet import Fernet
+from datetime import timedelta
 from utils import MessageQueue
 from sb_utils import safe_cast
 from .config import Config
@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     # REST API
     "rest_framework",
     "rest_framework.authtoken",
+    "rest_framework_simplejwt",
     # Swagger REST API View
     "rest_framework_swagger",
     # DataTables AJAX Addin
@@ -192,39 +193,40 @@ DYNAMIC_PREFERENCES = {
 }
 
 # JWT
-JWT_AUTH = {
-    "JWT_SECRET_KEY": SECRET_KEY,
-    "JWT_GET_USER_SECRET_KEY": None,
-    "JWT_PUBLIC_KEY": None,
-    "JWT_PRIVATE_KEY": None,
-    "JWT_ALGORITHM": "HS512",
-    "JWT_VERIFY": True,
-    "JWT_VERIFY_EXPIRATION": True,
-    "JWT_LEEWAY": 0,
-    "JWT_EXPIRATION_DELTA": datetime.timedelta(minutes=30),
-    "JWT_AUDIENCE": None,
-    "JWT_ISSUER": None,
-    "JWT_ALLOW_REFRESH": True,
-    "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=7),
-    # "JWT_PAYLOAD_HANDLER": "rest_framework_jwt.utils.jwt_payload_handler", # Original
-    "JWT_PAYLOAD_HANDLER": "orchestrator.jwt_handlers.jwt_payload_handler",  # Custom
-    "JWT_PAYLOAD_GET_USER_ID_HANDLER": "rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler",
-    "JWT_PAYLOAD_GET_USERNAME_HANDLER": "rest_framework_jwt.utils.jwt_get_username_from_payload_handler",
-    "JWT_RESPONSE_PAYLOAD_HANDLER": "rest_framework_jwt.utils.jwt_response_payload_handler",  # Original
-    # "JWT_RESPONSE_PAYLOAD_HANDLER": "orchestrator.jwt_handlers.jwt_response_payload_handler",  # Custom
-    "JWT_AUTH_HEADER_PREFIX": "JWT",
-    "JWT_AUTH_COOKIE": "JWT",
-    # Not listed in docs, but in example.....
-    "JWT_ENCODE_HANDLER": "rest_framework_jwt.utils.jwt_encode_handler",
-    "JWT_DECODE_HANDLER": "rest_framework_jwt.utils.jwt_decode_handler",
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+    "ALGORITHM": "HS512",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_HEADER_TYPES": ("JWT",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=30),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(hours=1)
 }
+
 
 # Rest API
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.TokenAuthentication",
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication"
     ),
     "DEFAULT_PARSER_CLASSES": [

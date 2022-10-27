@@ -1,6 +1,7 @@
 # OASIS TC Open: oif-orchestrator-gui
 
 ## Server
+
 ### About this Image
 - Work in progress Not available as of yet
 
@@ -8,6 +9,7 @@
 - Work in progress Not available as of yet
 
 ## GUI
+
 ### About this Image
 - This image is Alpine 3.10 with a simple GUI for use with the GUI Server
 - UI port - 80
@@ -25,10 +27,10 @@ Note: Pulling an images requires using a specific tag (server or gui), the lates
 
 Environment Variables
 
-| Variable | Type | Description | Default|
-| ----------- | ----------- | ----------- | ----------- |
-| ORC_HOST | String | Hostname/IP address of the system running the Orchestrator Core | None |
-| ORC_PORT | Integer | Port the Orchestrator Core is running the API on | None |
+| Variable | Type    | Description                                                     | Default |
+|----------|---------|-----------------------------------------------------------------|---------|
+| ORC_HOST | String  | Hostname/IP address of the system running the Orchestrator Core | None    |
+| ORC_PORT | Integer | Port the Orchestrator Core is running the API on                | None    |
 
 ### Resources
 - General
@@ -70,12 +72,12 @@ Environment Variables
 	- [vkBeautify](https://www.npmjs.com/package/vkbeautify) - JSON, XML, CSS, SQL pretty/minify
 	- [Warning](https://www.npmjs.com/package/warning)
 
-- Developement
+- Development
 	- [CSSO](https://www.npmjs.com/package/csso) - CSS Optimizer
 	- [fs-extra](https://www.npmjs.com/package/fs-extra) - File system methods
 	- [File Download](https://www.npmjs.com/package/download-file) - File Downloads
 	- [Named Regex Groups](https://www.npmjs.com/package/named-regexp-groups) - Named group extraction
-	- [Strinct URI Encode](https://www.npmjs.com/package/strict-uri-encode)
+	- [Strict URI Encode](https://www.npmjs.com/package/strict-uri-encode)
 	- [Sync Requests](https://www.npmjs.com/package/sync-requests) - Synchronous HTTP requests
 	- [WebPack](https://www.npmjs.com/package/webpack) - Module bundler and builder
 		- [Bundle Tracker](https://www.npmjs.com/package/webpack-bundle-tracker)
@@ -98,7 +100,7 @@ Environment Variables
 		- [Plugins](https://webpack.js.org/plugins) - Plugin Info
 			- [Clean](https://www.npmjs.com/package/clean-webpack-plugin)
 			- [Copy](https://www.npmjs.com/package/copy-webpack-plugin)
-			- [Deadcode](https://www.npmjs.com/package/webpack-deadcode-plugin) - Find and notify of unused code
+			- [Dead-code](https://www.npmjs.com/package/webpack-deadcode-plugin) - Find and notify of unused code
 			- [Favicons](https://www.npmjs.com/package/favicons-webpack-plugin)
 			- [HTML](https://www.npmjs.com/package/html-webpack-plugin)
 			- [Mini CSS](https://www.npmjs.com/package/mini-css-extract-plugin)

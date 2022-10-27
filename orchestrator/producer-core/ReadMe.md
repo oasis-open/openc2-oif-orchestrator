@@ -38,7 +38,7 @@
 - Handles all endpoints related to logs
 
 ##### Admin GUI - /admin/<admin_urls>
-- Administration GUI, prebuild and preconfigured from Django
+- Administration GUI, prebuilt and preconfigured from Django
 
 
 ### How to use this image
@@ -46,20 +46,20 @@
 
 Environment Variables
 
-| Variable | Type | Description | Default |
-| ----------- | ----------- | ----------- | ----------- |
-| DATABASE_NAME | String | Name of the database to use, create if not created | orchestrator |
-| DATABASE_HOST | String | Hostname/IP address of the system runnig the MySQL Database | localhost |
-| DATABASE_PORT | Integer | Port the database has available for connections | 3306 |
-| DATABASE_USER | String | User to connect to the database | orc_root |
-| DATABASE_PASSWORD | String | Password of the connection user | 0Rch35Tr@t0r | 
-| QUEUE_HOST | String | Hostname/IP address of the system running the AMQP capable queue | localhost |
-| QUEUE_PORT | Integer | Port the queue has available for connections | 5672 |
-| QUEUE_USER | String | User to connect to the queue | guest |
-| QUEUE_PASSWORD | String | Password of the connection user | guest |
-| ETCD_HOST | String | Hostname/IP address of the system running ETCd | etcd |
-| ETCD_PORT | String | Port ETCd has available for connections | 2379
-| TRANSPORT_SECRET | String | Password secure storage of transport info in ETCd | N1OIzxNETDM_s3X_eMM-kbaQPgvujDjHGWEKU2yLsGo= |
+| Variable          | Type    | Description                                                      | Default                                      |
+|-------------------|---------|------------------------------------------------------------------|----------------------------------------------|
+| DATABASE_NAME     | String  | Name of the database to use, create if not created               | orchestrator                                 |
+| DATABASE_HOST     | String  | Hostname/IP address of the system running the MySQL Database     | localhost                                    |
+| DATABASE_PORT     | Integer | Port the database has available for connections                  | 3306                                         |
+| DATABASE_USER     | String  | User to connect to the database                                  | orc_root                                     |
+| DATABASE_PASSWORD | String  | Password of the connection user                                  | 0Rch35Tr@t0r                                 | 
+| QUEUE_HOST        | String  | Hostname/IP address of the system running the AMQP capable queue | localhost                                    |
+| QUEUE_PORT        | Integer | Port the queue has available for connections                     | 5672                                         |
+| QUEUE_USER        | String  | User to connect to the queue                                     | guest                                        |
+| QUEUE_PASSWORD    | String  | Password of the connection user                                  | guest                                        |
+| ETCD_HOST         | String  | Hostname/IP address of the system running ETCd                   | etcd                                         |
+| ETCD_PORT         | String  | Port ETCd has available for connections                          | 2379                                         |
+| TRANSPORT_SECRET  | String  | Password secure storage of transport info in ETCd                | N1OIzxNETDM_s3X_eMM-kbaQPgvujDjHGWEKU2yLsGo= |
 
  - Adding Certs
 	- Certificates are not necessary for the `Core` container as it does not directly connect to by the user
@@ -93,7 +93,7 @@ Environment Variables
     
 #### Interesting Modules
 - [REST MultiToken Auth](https://pypi.org/project/django-rest-multitokenauth/)
-- [JWT Asymetric Auth](https://pypi.org/project/asymmetric_jwt_auth/)
+- [JWT Asymmetric Auth](https://pypi.org/project/asymmetric_jwt_auth/)
 - [Central Authentication Server](https://hub.docker.com/r/apereo/cas/)
 - [CAS Auth](https://github.com/mingchen/django-cas-ng)
 - [User Agents](https://github.com/selwin/django-user_agents)

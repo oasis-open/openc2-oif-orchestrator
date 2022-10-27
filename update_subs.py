@@ -2,7 +2,6 @@
 
 import atexit
 import os
-import re
 import sys
 
 from datetime import datetime
@@ -13,7 +12,6 @@ from base.modules.script_utils import (
     # Functions
     checkRequiredArguments,
     install_pkg,
-    recursive_find,
     update_repo,
     # Classes
     ConsoleStyle,
@@ -64,11 +62,6 @@ CONFIG = FrozenDict(
         ('colorama', 'colorama')
     ),
     BaseRepo=f"{Base_URL}ScreamingBunny",
-    ImageReplace=(
-        ("base", r"ccoe-gitlab.*?docker:alpine( as.*)?", r"oif/alpine\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
-        ("python3_actuator", r"ccoe-gitlab.*plus:alpine-python3_actuator( as.*)?", fr"oif/python3_actuator\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
-        ("python3", r"ccoe-gitlab.*plus:alpine-python3( as.*)?", fr"oif/python3\g<1>\nRUN apk upgrade --update && apk add --no-cache dos2unix && rm /var/cache/apk/*"),
-    ),
     Repos=FrozenDict(
         Orchestrator=('Producer-Core', 'GUI'),
         Transport=('HTTPS', 'MQTT'),
@@ -144,20 +137,5 @@ if __name__ == '__main__':
     with Stage('Logger'):
         Stylize.h2("Updating Logger")
         update_repo(f"{CONFIG.BaseRepo}/Logger.git", 'logger', options.repo_branch)
-
-    # -------------------- Dockerfile -------------------- #
-    with Stage('Dockerfiles'):
-        for dockerfile in recursive_find(patterns=['Dockerfile']):
-            with open(dockerfile, 'r') as f:
-                tmpFile = f.read()
-
-            for (name, orig_img, repl_img) in CONFIG.ImageReplace:
-                if re.search(orig_img, tmpFile):
-                    Stylize.info(f'Updating {dockerfile}')
-                    Stylize.bold(f'- Found {name} image, updating for public repo\n')
-                    tmpFile = re.sub(orig_img, repl_img, tmpFile)
-                    with open(dockerfile, 'w') as f:
-                        f.write(tmpFile)
-                    break
 
     Stylize.info("Run `configure.py` from the public folder to create the base containers necessary to run the OIF Orchestrator")

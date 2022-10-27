@@ -18,7 +18,7 @@ export const history = createBrowserHistory();
 
 export default (his: History = history): OrchestratorStore => {
   const persistedFilter = createFilter(
-    'Auth', ['access']
+    'Auth', ['access', 'refresh_token']
   );
 
   const reducer = persistReducer(

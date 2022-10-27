@@ -61,6 +61,7 @@ type ActuatorModalConnectedProps = ActuatorModalProps & ConnectorProps;
 
 // Component
 class ActuatorModal extends Component<ActuatorModalConnectedProps, ActuatorModalState> {
+
   register: boolean;
   schemaUpload?: HTMLInputElement;
   defaultParent?: Device.Device;
@@ -287,7 +288,7 @@ class ActuatorModal extends Component<ActuatorModalConnectedProps, ActuatorModal
 
     return (
       <div className={ `d-inline-block ${className}` }>
-        <Button color="primary" size="sm" onClick={ this.toggleModal } >
+        <Button color="primary" size="sm" className="mr-2" onClick={ this.toggleModal } >
           { this.register ? 'Register' : 'Edit' }
         </Button>
 

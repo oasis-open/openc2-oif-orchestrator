@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve --hot --progress --config ./config/webpack.config.dev.babel.js",
@@ -189,5 +189,5 @@
       "./internals/scripts/CheckBuildsExist.js"
     ]
   },
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@3.2.2"
 }

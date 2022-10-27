@@ -28,8 +28,8 @@ export default (state=initialState, action: util.UtilActions) => {
   switch (action.type) {
     case util.INFO_SUCCESS:
       return {
-        site_title: titleCase(action.payload.name.toLowerCase() || 'Orchestrator'),
-        name: titleCase(action.payload.name || 'Orchestrator'),
+        site_title: action.payload.name || 'OpenC2 Orchestrator',
+        name: action.payload.name || 'OpenC2 Orchestrator',
         message: action.payload.message || 'MESSAGE',
         id: action.payload.id || '123456789',
         protocols: action.payload.protocols || [],
