@@ -5,7 +5,7 @@
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-yellow)](https://www.python.org/downloads/release/python-3100/)
 [![Docker 18.0+](https://img.shields.io/badge/Docker-18.0%2B-blue)](https://docs.docker.com/get-docker/)
 [![Docker Compose 1.20+](https://img.shields.io/badge/Docker%20Compose-1.20%2B-blue)](https://docs.docker.com/compose/install/)
-[![Open2C Lang Spec](https://img.shields.io/badge/Open2C%20Lang%20Spec-1.0-brightgreen)](https://github.com/dlemire60/openc2-oc2ls/releases/tag/v1.0-cs01)
+[![Open2C Lang Spec](https://img.shields.io/badge/Open2C%20Lang%20Spec-1.0-brightgreen)](https://openc2.org/specifications)
 
 ## <a name="installation"></a> Installation
 
@@ -64,46 +64,56 @@ meets the requirements set forth in OpenC2 specifications.
 
 ### <a name="devices"></a> Devices
 
-The first step to using OIF is establishing the connection with another Device.  
-Along the menu bar, you will see a tab labelled "Devices" that will bring you to the Orchestrator Devices viewer.  
-Using the Register button, you may register a Device, entering a Name, a Device UUID, and Connection and 
-connection Authentication information to the Device.  
-The Device will now appear on the Devices page for viewing and editing its connection information.  
+The first step to using OIF is establishing the connection with another Device. Along the menu bar, you will see a 
+tab labelled "Devices" that will bring you to the Orchestrator Devices viewer. Using the Register button, you may 
+register a Device, entering a Name, a Device UUID, and Connection and connection Authentication information 
+to the Device. The Device will now appear on the Devices page for viewing and editing its connection information.  
 
 ### <a name="actuators"></a> Actuators
 
-Once you have entered a Device, you can enter an Actuator with OpenC2 capabilities on that Device into OIF using the Actuators  
-tab of the menu bar. Actuators are given a Name, a UUID, a Parent Device, and a Schema defining its OpenC2 capabilities.   
-OIF accepts schemas in JSON schema format. These documents can be pasted in, or pulled using the "Upload Schema" option at the bottom of the text box.
+Once you have entered a Device, you can enter an Actuator with OpenC2 capabilities on that 
+Device into OIF using the Actuators tab of the menu bar. Actuators are given a Name, a UUID, 
+a Parent Device, and a Schema defining its OpenC2 capabilities. OIF accepts schemas in JSON schema 
+format. These documents can be pasted in, or pulled using the "Upload Schema" option at the bottom 
+of the text box.
 
 ### <a name="commands"></a> Commands
 
-The Command tab of the menu bar gives access to the Command Generator, OIF's tool for sending OpenC2 commands.  
-The left side of the page has a selection of all loaded Actuator schemas to choose from, and after making this selection the chosen schema will appear onscreen.  
-The right side of the screen has command generation tools available from the chosen schema, with Creator, Message, and Warning tabs.  
-The Creator tab houses the user options for command generation based on the chosen schema, with these utilities lying under the "OpenC2-Command" option.
-The structural elements of an OpenC2 command are all represented here, with form options valid for the input schema to generate a corresponding OpenC2 command.  
-In addition to the Creator tab, the Message and Warnings tabs are useful tools for viewing the text of the message to be sent  
-or any warnings or errors in the command.  
+The Command tab of the menu bar gives access to the Command Generator, OIF's tool for sending OpenC2 commands. 
+The left side of the page has a selection of all loaded Actuator schemas to choose from, and after making this 
+selection the chosen schema will appear onscreen. The right side of the screen has command generation tools 
+available from the chosen schema, with Creator, Message, and Warning tabs. The Creator tab houses the user options 
+for command generation based on the chosen schema, with these utilities lying under the "OpenC2-Command" option. The 
+structural elements of an OpenC2 command are all represented here, with form options valid for the input schema to 
+generate a corresponding OpenC2 command. In addition to the Creator tab, the Message and Warnings tabs are useful 
+tools for viewing the text of the message to be sent or any warnings or errors in the command.  
 
 ### <a name="responses"></a> Responses
 
-After sending a command, you can view its text, data, status or results with the Previous Commands option of the Command menu tab.  
-This view displays the historical command info, with an additional "Info" button to view the full command text as well as any responses received by OIF that are attributed to that command. 
+After sending a command, you can view its text, data, status or results with the Previous Commands option of the 
+Command menu tab. This view displays the historical command info, with an additional "Info" button to view the full 
+command text as well as any responses received by OIF that are attributed to that command. 
 
 ### <a name="user-features"></a> User Features
   
-On the far right of the menu bar is the access to user features, with a breakdown of all the user's site entries, command history, and authentication, as well as password and logout options.
+On the far right of the menu bar is the access to user features, with a breakdown of all the user's site entries, 
+command history, and authentication, as well as password and logout options.
 
 ## <a name="maintainers"></a> Maintainers
 
-TC Open Repository [Maintainers](https://www.oasis-open.org/resources/open-repositories/maintainers-guide) are responsible for oversight of this project's community development activities, including evaluation of GitHub [pull requests](https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/CONTRIBUTING.md#fork-and-pull-collaboration-model) and [preserving open source principles of openness and fairness](https://www.oasis-open.org/policies-guidelines/open-repositories#repositoryManagement). Maintainers are recognized and trusted experts who serve to implement community goals and consensus design preferences.
+TC Open Repository [Maintainers](https://www.oasis-open.org/resources/open-repositories/maintainers-guide) are 
+responsible for oversight of this project's community development activities, including evaluation of 
+GitHub [pull requests](https://github.com/oasis-open/openc2-oif-orchestrator/blob/master/CONTRIBUTING.md#fork-and-pull-collaboration-model) 
+and [preserving open source principles of openness and fairness](https://www.oasis-open.org/policies-guidelines/open-repositories#repositoryManagement). 
+Maintainers are recognized and trusted experts who serve to implement community goals and consensus design preferences.
 
-Initially, the associated TC members have designated one or more persons to serve as Maintainer(s); subsequently, participating community members may [select additional or substitute Maintainers](https://www.oasis-open.org/resources/open-repositories/maintainers-guide#additionalMaintainers).
+Initially, the associated TC members have designated one or more persons to serve as Maintainer(s); subsequently, 
+participating community members may 
+[select additional or substitute Maintainers](https://www.oasis-open.org/resources/open-repositories/maintainers-guide#additionalMaintainers).
 
 *Current Maintainers of this TC Open Repository*
 
-- David Lemire; GitHub ID: [https://github.com/dlemire60](https://github.com/dlemire60) WWW: National Security Agency
+- David Lemire; Email: david.lemire@hii-tsd.com 
 - The ScreamingBunny Development team; GitHub ID: [https://github.com/ScreamBun](https://github.com/ScreamBun)
 
 ## <a name="about-oasis-tc-open-repositories"></a> About OASIS TC Open Repositories
@@ -116,7 +126,11 @@ Initially, the associated TC members have designated one or more persons to serv
 
 ## <a name="feedback"></a> Feedback
 
-Questions or comments about this TC Open Repository's activities should be composed as GitHub issues or comments. If use of an issue/comment is not possible or appropriate, questions may be directed by email to the Maintainer(s) <a href="#currentMaintainers">listed above</a>. Please send general questions about TC Open Repository participation to OASIS Staff at repository-admin@oasis-open.org and any specific CLA-related questions to repository-cla@oasis-open.org.
+Questions or comments about this TC Open Repository's activities should be composed as GitHub issues or comments. 
+If use of an issue/comment is not possible or appropriate, questions may be directed by email to the 
+Maintainer(s) <a href="#currentMaintainers">listed above</a>. Please send general questions about TC Open 
+Repository participation to OASIS Staff at repository-admin@oasis-open.org and any specific CLA-related questions 
+to repository-cla@oasis-open.org.
 
 [Top of Page](#openc2-integration-framework-(oif)-orchestrator)
 
