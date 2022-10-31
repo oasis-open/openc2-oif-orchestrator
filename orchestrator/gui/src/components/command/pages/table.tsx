@@ -65,15 +65,15 @@ const CommandTable: FunctionComponent<CommandTableConnectedProps> = props => {
   };
 
   return (
-    <RemotePageTable
-      keyField='command_id'
-      dataKey='Command.commands'
-      dataGet={ getCommands }
-      columns={ tableColumns }
-      defaultSort={ defaultSort }
-      editRows
-      editOptions={ editOptions }
-    />
+      <RemotePageTable
+        keyField='command_id'
+        dataKey='Command.commands'
+        dataGet={ getCommands }
+        columns={ tableColumns }
+        defaultSort={ defaultSort }
+        editRows
+        editOptions={ editOptions }
+      />
   );
 };
 

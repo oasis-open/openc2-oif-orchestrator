@@ -5,6 +5,7 @@ import BootstrapTable, {
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
 // Interfaces
 type Sort = { dataField: string; order: SortOrder; }
@@ -56,20 +57,22 @@ const RemotePagination: FunctionComponent<RemotePaginationProps> = (props) => {
   }
 
   return (
-    <BootstrapTable
-      remote
-      hover
-      striped
-      condensed
-      bootstrap4
-      keyField={ keyField }
-      columns={ columns }
-      data={ data }
-      pagination={ pagination }
-      onTableChange={ onTableChange }
-      defaultSorted={ defSort }
-      defaultSortDirection='desc'
-    />
+    <div className='p-0'>
+      <BootstrapTable
+        remote
+        hover
+        striped
+        condensed
+        bootstrap4
+        keyField={ keyField }
+        columns={ columns }
+        data={ data }
+        pagination={ pagination }
+        onTableChange={ onTableChange }
+        defaultSorted={ defSort }
+        defaultSortDirection='desc'
+      />
+    </div>
   );
 };
 

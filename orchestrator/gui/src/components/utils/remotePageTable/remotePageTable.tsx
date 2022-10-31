@@ -274,16 +274,18 @@ class RemotePageTable extends Component<RemotePageTableConnectedProps, RemotePag
     const { columns, page, pageSize } = this.state;
 
     return (
-      <RemotePagination
-        keyField={ this.keyField }
-        columns={ columns }
-        data={ this.displayData() }
-        page={ page }
-        pageSize={ pageSize }
-        totalSize={ total }
-        defaultSort={ defaultSort }
-        onTableChange={ this.handleTableChange }
-      />
+      <span className="pt-0 pr-2 pb-2 pl-2">
+        <RemotePagination
+          keyField={ this.keyField }
+          columns={ columns }
+          data={ this.displayData() }
+          page={ page }
+          pageSize={ pageSize }
+          totalSize={ total }
+          defaultSort={ defaultSort }
+          onTableChange={ this.handleTableChange }
+        />
+      </span>
     );
   }
 }
