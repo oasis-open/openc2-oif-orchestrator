@@ -10,6 +10,7 @@ import NavItem from './navItem';
 import { safeGet } from '../../utils';
 import * as AuthActions from '../../../actions/auth';
 import { RootState } from '../../../reducers';
+import LogoOpenC2 from '../../../components/dependencies/img/openc2-favicon.png';
 
 // Const Vars
 const themeOptionStyles: CSSProperties = {
@@ -85,7 +86,10 @@ class DoubleNav extends Component<DoubleNavConnectedProps, DoubleNavState> {
     return (
       <nav className="navbar navbar-light bg-light border-0 fixed-top" ref={ elm => { this.topNav = elm; } } >
         <div className="container-fluid">
-          <a href="/" className="navbar-brand" onClick={ this.navigate }>{ siteTitle }</a>
+          <a href="/" className="navbar-brand" onClick={ this.navigate }>
+            <img src={ LogoOpenC2 } alt="OpenC2 Logo" width="30" height="30" class="d-inline-block align-text-top" />
+            { siteTitle }
+          </a>
           <div className="float-right m-0 p-0">
             <p className="navbar-text m-0 p-0">OpenC2 Orchestrator</p>
             <br />
