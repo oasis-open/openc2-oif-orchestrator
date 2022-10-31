@@ -118,11 +118,11 @@ class Actuators extends Component<ActuatorsConnectedProps, ActuatorsState> {
           <title>{ this.meta.title }</title>
           <link rel="canonical" href={ this.meta.canonical } />
         </Helmet>
-        <div className="card">
+        <div className="card p-2">
           <div className='row'>
-            <div className='col pt-2 pb-2'>
+            <div className='col'>
               { admin ? <ActuatorModal register className="float-right" /> : '' }
-              <h4 className='m-0 pl-2'>Actuators</h4>
+              <h4>Actuators</h4>
             </div>
           </div>
           <RemotePageTable

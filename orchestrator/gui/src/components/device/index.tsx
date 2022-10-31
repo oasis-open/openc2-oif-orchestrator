@@ -84,11 +84,11 @@ class Devices extends Component<DeviceConnectedProps, DeviceState> {
           <title>{ this.meta.title }</title>
           <link rel="canonical" href={ this.meta.canonical } />
         </Helmet>
-        <div className="card">
+        <div className="card p-2">
           <div className="row">
-            <div className="col pt-2 pb-2">
+            <div className="col">
               { admin ? <DeviceModal register className="float-right" /> : '' }
-              <h4 className='m-0 pl-2'>Devices</h4>
+              <h4>Devices</h4>
             </div>
           </div>
           <RemotePageTable

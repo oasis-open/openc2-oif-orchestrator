@@ -57,22 +57,20 @@ const RemotePagination: FunctionComponent<RemotePaginationProps> = (props) => {
   }
 
   return (
-    <div className='p-0'>
-      <BootstrapTable
-        remote
-        hover
-        striped
-        condensed
-        bootstrap4
-        keyField={ keyField }
-        columns={ columns }
-        data={ data }
-        pagination={ pagination }
-        onTableChange={ onTableChange }
-        defaultSorted={ defSort }
-        defaultSortDirection='desc'
-      />
-    </div>
+    <BootstrapTable
+      remote
+      hover
+      striped
+      condensed
+      bootstrap4
+      keyField={ keyField }
+      columns={ columns }
+      data={ data }
+      pagination={ pagination }
+      onTableChange={ onTableChange }
+      defaultSorted={ defSort }
+      defaultSortDirection='desc'
+    />
   );
 };
 
