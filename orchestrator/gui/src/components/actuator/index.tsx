@@ -113,7 +113,7 @@ class Actuators extends Component<ActuatorsConnectedProps, ActuatorsState> {
     }, 10);
 
     return (
-      <div className="row mx-auto">
+      <div className="mx-auto">
         <Helmet>
           <title>{ this.meta.title }</title>
           <link rel="canonical" href={ this.meta.canonical } />

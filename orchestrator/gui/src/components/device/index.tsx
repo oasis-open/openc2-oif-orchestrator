@@ -79,7 +79,7 @@ class Devices extends Component<DeviceConnectedProps, DeviceState> {
     const { admin, getDevices, orchestrator } = this.props;
 
     return (
-      <div className="row mx-auto">
+      <div className="mx-auto">
         <Helmet>
           <title>{ this.meta.title }</title>
           <link rel="canonical" href={ this.meta.canonical } />

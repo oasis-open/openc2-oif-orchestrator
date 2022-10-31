@@ -177,7 +177,7 @@ class Commands extends Component<CommandsConnectedProps, CommandsState> {
     };
 
     return (
-      <div className="row mx-auto">
+      <div className="mx-auto">
         <Helmet>
           <title>{ meta.title }</title>
           <link rel="canonical" href={ meta.canonical } />
