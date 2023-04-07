@@ -1,6 +1,4 @@
-FROM screambunn/alpine-python3
-
-MAINTAINER Screaming_Bunny
+FROM screambunn/alpine_python3
 
 LABEL name="HTTPS Transport Module" \
 vendor="OpenC2" \

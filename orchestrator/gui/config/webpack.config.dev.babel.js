@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import { merge } from 'webpack-merge';
 
 import DeadCodePlugin from 'webpack-deadcode-plugin';
-import CircularDependencyPlugin from 'circular-dependency-plugin';
+// import CircularDependencyPlugin from 'circular-dependency-plugin';
 
 import baseConfig from './webpack.config.base';
 
@@ -30,19 +30,19 @@ export default merge(baseConfig, {
         DEPEND_DIR
       ]
     }),
-    new CircularDependencyPlugin({
-      exclude: /node_modules/,
-      failOnError: false,
-      allowAsyncCycles: false,
-      cwd: ROOT_DIR
-    }),
+    // new CircularDependencyPlugin({
+    //   exclude: /node_modules/,
+    //   failOnError: false,
+    //   allowAsyncCycles: false,
+    //   cwd: ROOT_DIR
+    // }),
     new webpack.NoEmitOnErrorsPlugin()
   ],
   devServer: {
     compress: true,
     port: 3000,
     hot: true,
-    open: false,
+    open: true,
     historyApiFallback: true,
     proxy: {
       '/api': {

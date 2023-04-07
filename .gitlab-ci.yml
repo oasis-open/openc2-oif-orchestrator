@@ -31,14 +31,16 @@ before_script:
 Build:
   stage: build
   script:
+    - sh echo_info.sh
     - git checkout ${CI_COMMIT_REF_NAME:-develop}
     - python3 update_subs.py --verbose --url_base git@${REPO_BASE} --repo_branch ${CI_COMMIT_REF_NAME:-develop}
-    - git add --all
     - |
       CHANGES=$(git status --porcelain | wc -l)
       if [[ "${CHANGES}" -gt 0 ]]; then
-        echo "Committing ${CHANGES} updated files to git"
-        git commit -m "Update from repo ${TRIGGER_REPO:-"Commit"} - $(date -u +"%F %T %Z") [CI Skip]" && (echo "Pushing as $(git config --get user.name) - $(git config --get user.email)" && git push ${REPO_URL})
+        git add --all
+        git commit -m "Update from repo ${TRIGGER_REPO:-"Commit"}"
+        git remote show origin
+        git push https://gitlab-ci-token:${OPENC2_OIF_ORCH_ACCESS_TOKEN}@ccoe-gitlab.hii-tsd.com/screamingbunny/public/openc2-oif-orchestrator.git $CI_COMMIT_REF_NAME
       else
-        echo "Nothing to commit"
-      fi
+        echo "Relax... nothing to commit..."
+      fi 

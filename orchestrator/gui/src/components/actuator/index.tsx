@@ -113,17 +113,18 @@ class Actuators extends Component<ActuatorsConnectedProps, ActuatorsState> {
     }, 10);
 
     return (
-      <div className="row mx-auto">
+      <div className="mx-auto">
         <Helmet>
           <title>{ this.meta.title }</title>
           <link rel="canonical" href={ this.meta.canonical } />
         </Helmet>
-        <div className="col-12">
-          <div className="col-12">
-            { admin ? <ActuatorModal register className="float-right" /> : '' }
-            <h1>{ `${orchestrator.name} Actuators` }</h1>
+        <div className="card p-2">
+          <div className='row'>
+            <div className='col'>
+              { admin ? <ActuatorModal register className="float-right" /> : '' }
+              <h4>Actuators</h4>
+            </div>
           </div>
-
           <RemotePageTable
             keyField='actuator_id'
             dataKey='Actuator.actuators'

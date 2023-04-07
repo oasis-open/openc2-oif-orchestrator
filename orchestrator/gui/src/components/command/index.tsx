@@ -87,26 +87,30 @@ class Commands extends Component<CommandsConnectedProps, CommandsState> {
     switch (page) {
       case 'generate':
         content = [
-          <h3 key="header">Command Generator</h3>,
+          <h4 key="header">Command Generator</h4>,
           <GenerateCommands key="contents" />
         ];
         break;
       case 'info':
         content = [
-          <h3 key="header">{ `Command ${command} Info` }</h3>,
+          <h4 key="header">{ `Command ${command} Info` }</h4>,
           <CommandInfo key="contents" command_id={ command || '' } />
         ];
         break;
       default:
         content = [
-          <h3 key="header">Commands</h3>,
+          <h4 key="header">Previous Commands</h4>,
           <CommandTable key="contents" cmdInfo={ this.commandInfo } />
         ];
         break;
     }
     return (
-      <div className="col-12">
-        { content }
+      <div className="card p-2">
+        <div className='row'>
+          <div className="col">
+            { content }
+          </div>
+        </div>
       </div>
     );
   }
@@ -173,7 +177,7 @@ class Commands extends Component<CommandsConnectedProps, CommandsState> {
     };
 
     return (
-      <div className="row mx-auto">
+      <div className="mx-auto">
         <Helmet>
           <title>{ meta.title }</title>
           <link rel="canonical" href={ meta.canonical } />

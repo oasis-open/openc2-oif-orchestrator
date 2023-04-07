@@ -81,7 +81,7 @@ class Account extends Component<AccountConnectedProps, AccountState> {
         break;
       default:
         page = (
-          <div className="row mx-auto">
+          <div className="mx-auto">
             <h1>Account Options</h1>
             <p>Todo</p>
           </div>

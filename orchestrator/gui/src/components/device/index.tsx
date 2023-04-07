@@ -79,17 +79,18 @@ class Devices extends Component<DeviceConnectedProps, DeviceState> {
     const { admin, getDevices, orchestrator } = this.props;
 
     return (
-      <div className="row mx-auto">
+      <div className="mx-auto">
         <Helmet>
           <title>{ this.meta.title }</title>
           <link rel="canonical" href={ this.meta.canonical } />
         </Helmet>
-        <div className="col-12">
-          <div className="col-12">
-            { admin ? <DeviceModal register className="float-right" /> : '' }
-            <h1>{ `${orchestrator.name} Devices` }</h1>
+        <div className="card p-2">
+          <div className="row">
+            <div className="col">
+              { admin ? <DeviceModal register className="float-right" /> : '' }
+              <h4>Devices</h4>
+            </div>
           </div>
-
           <RemotePageTable
             keyField='device_id'
             dataKey='Device.devices'

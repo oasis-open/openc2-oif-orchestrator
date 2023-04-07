@@ -121,8 +121,8 @@ if __name__ == "__main__":
         console=Stylize,
         name="base alpine python3",
         path="./base",
-        dockerfile="./Dockerfile_alpine-python3",
-        tag=f"{CONFIG.ImagePrefix}/alpine-python3",
+        dockerfile="./Dockerfile_alpine_python3",
+        tag=f"{CONFIG.ImagePrefix}/alpine_python3",
         buildargs=dict(
             BASE_IMAGE=f"{CONFIG.ImagePrefix}/alpine"
         ),

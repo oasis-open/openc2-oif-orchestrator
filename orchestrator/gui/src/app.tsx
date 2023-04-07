@@ -52,14 +52,13 @@ class App extends Component<AppConnectedProps> {
     const { history } = this.props;
 
     return (
-      <div id='contents' className="container-fluid mt-3" >
+      <div id='contents' className="container-fluid mt-3 mb-10" >
         <Nav history={ history } />
 
         <ConnectedRouter history={ history }>
           <div className="row mx-auto">
-            <div className="col-12">
+            <div className="col">
               <Breadcrumbs navigate={ (path) => history.push(path) } />
-
               <Switch>
                 <Route path="/:prefix*/login/" component={ Login } />
                 <Route path="/:prefix*/logout/" component={ Logout } />
@@ -76,7 +75,7 @@ class App extends Component<AppConnectedProps> {
           </div>
         </ConnectedRouter>
 
-        <ToastContainer position={ toast.POSITION.BOTTOM_CENTER } autoClose={ 5000 } />
+        <ToastContainer position={ toast.POSITION.BOTTOM_RIGHT } autoClose={ false } />
       </div>
     );
   }
