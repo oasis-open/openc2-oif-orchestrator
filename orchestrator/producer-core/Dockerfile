@@ -1,6 +1,4 @@
-FROM screambunn/alpine-python3
-
-MAINTAINER Screaming_Bunny
+FROM screambunn/alpine_python
 
 LABEL name="Orchestrator Producer Core" \
 vendor="OpenC2" \

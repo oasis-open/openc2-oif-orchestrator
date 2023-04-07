@@ -30,4 +30,4 @@
 - Install requires Python 3.5+ and pip
 
 - Installing via requirements.txt
-    - Add `PACKAGE_NAME@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=PACKAGE` to the requirements file
+    - Add `PACKAGE_NAME@git+https://github.com/ScreamBun/SB_utils.git#subdirectory=PACKAGE` to the requirements file.

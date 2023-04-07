@@ -32,10 +32,10 @@ body {
       -moz-padding: 15px; /* firefox bug fix */
     }
 }
-nav > .container-fluid,
+/* nav > .container-fluid,
 #contents.container-fluid > .row {
 	max-width: $max-width;
-}
+} */
 .code, textarea {
 	font-family: 'Roboto Mono', Consolas, monaco, monospace;
 	font-size: 1em;
@@ -77,7 +77,7 @@ div {
 /* Pretty JSON Module theme */
 .json-pretty {
 	font-family: 'Roboto Mono', monaco, monospace;
-	font-size: 0.8zem;
+	font-size: 1em;
   	line-height: inherit;
 	color: #D4D4D4;
 	background-color: #FCFDFD;
@@ -101,6 +101,13 @@ div {
     }
 }
 
+.sticky {
+	position: relative;
+	position: -webkit-sticky;
+	position: sticky;
+	top: 175px;
+}
+
 // Extra small devices (portrait phones, less than 576px)
 // No media query since this is the default in Bootstrap
 
@@ -110,7 +117,7 @@ div {
 
 // Medium devices (tablets, 768px and up)
 @media (min-width: 768px) {
-	
+
 }
 
 // Large devices (desktops, 992px and up)

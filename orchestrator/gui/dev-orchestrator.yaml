@@ -1,0 +1,171 @@
+version: '3'
+
+volumes:
+  database:
+    labels:
+      com.screaming_bunny.container: 'MariaDB'
+      com.screaming_bunny.description: 'Persistent MariaDB Volume'
+
+  etcd:
+    labels:
+      com.screaming_bunny.container: 'Etcd'
+      com.screaming_bunny.description: 'Persistent Etcd Volume'
+
+  queue:
+    labels:
+      com.screaming_bunny.container: 'RabbitMQ'
+      com.screaming_bunny.description: 'Persistent RabbitMQ Volume'
+
+services:
+  producer-core:
+    hostname: producer-core
+    image: harbor.olympus.mtn/screamingbunny/orchestrator/producer-core
+    build:
+      context: ./Producer-Core
+      dockerfile: Dockerfile
+    env_file:
+      - ./Compose/environment/database.connect.env
+      - ./Compose/environment/queue.connect.env
+      - ./Compose/environment/etcd.connect.env
+      - ./Compose/environment/security.env
+    ports:
+      - 8081:8080
+    volumes:
+      - ./Producer-Core/producer_server:/opt/producer_server
+    external_links:
+      - database
+      - etcd
+      - queue
+    depends_on:
+      - database
+      - etcd
+      - queue
+    command: "python3 manage.py runserver 0.0.0.0:8080"
+    restart: on-failure:5
+
+  gui:
+    hostname: gui
+    image: harbor.olympus.mtn/screamingbunny/orchestrator/gui/gui
+    build:
+      context: ./GUI
+      dockerfile: Dockerfile
+    environment:
+      PRODUCER_HOST: producer-core
+      PRODUCER_PORT: 8080
+      CONSUMER_HOST: consumer-core
+      CONSUMER_PORT: 8080
+    ports:
+      - 8080:80
+    volumes:
+      - ./GUI/build:/opt/orchestrator/gui
+    external_links:
+      - producer-core
+    depends_on:
+      - producer-core
+    restart: on-failure:5
+
+  transport-producer-https:
+    hostname: transport-producer-https
+    image: harbor.olympus.mtn/screamingbunny/orchestrator/transport/https
+    build:
+      context: ./Transport/HTTPS
+      dockerfile: Dockerfile
+    env_file:
+      - ./Compose/environment/queue.connect.env
+      - ./Compose/environment/etcd.connect.env
+      - ./Compose/environment/security.env
+    volumes:
+      - ./Transport/HTTPS/HTTPS:/opt/transport/HTTPS
+    external_links:
+      - etcd
+      - queue
+    depends_on:
+      - etcd
+      - queue
+    restart: on-failure:5
+
+  transport-producer-mqtt:
+    hostname: transport-producer-mqtt
+    image: harbor.olympus.mtn/screamingbunny/orchestrator/transport/mqtt
+    build:
+      context: ./Transport/MQTT
+      dockerfile: Dockerfile
+    env_file:
+      - ./Compose/environment/queue.connect.env
+      - ./Compose/environment/etcd.connect.env
+      - ./Compose/environment/mqtt_transport.env
+      - ./Compose/environment/security.env
+    volumes:
+      - ./Transport/MQTT/MQTT:/opt/transport/MQTT
+    external_links:
+      - queue
+    depends_on:
+      - queue
+    restart: on-failure:5
+#
+#  transport-producer-opendxl:
+#    hostname: transport-producer-opendxl
+#    image: harbor.olympus.mtn/screamingbunny/orchestrator/transport/opendxl
+#    build:
+#      context: ./Transport/OpenDXL
+#      dockerfile: Dockerfile
+#    env_file:
+#      - ./Compose/environment/queue.connect.env
+#      - ./Compose/environment/etcd.connect.env
+#      - ./Compose/environment/security.env
+#    volumes:
+#      - ./Transport/OpenDXL/OpenDXL:/opt/transport/OpenDXL
+#    external_links:
+#      - queue
+#    depends_on:
+#      - queue
+#    restart: on-failure:5
+
+  queue:
+    hostname: rabbit
+    image: rabbitmq:management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - queue:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: on-failure:5
+
+  database:
+    hostname: database
+    image: mariadb
+    env_file:
+      - ./Compose/environment/database.env
+    ports:
+      - 3306:3306
+    volumes:
+      - database:/var/lib/mysql
+    restart: on-failure:5
+
+  etcd:
+    hostname: etcd
+    image: quay.io/coreos/etcd:v3.3.25
+    environment:
+      ALLOW_NONE_AUTHENTICATION: 'yes'
+      ETCD_DATA_DIR: '/data/etcd'
+    ports:
+      - 2379:2379
+    volumes:
+      - etcd:/data/etcd
+    command: sh -c 'etcd -listen-client-urls http://0.0.0.0:2379 -advertise-client-urls http://etcd:2379'
+    restart: on-failure:5
+
+  etcdkeeper:
+    hostname: "etcdkeeper"
+    image: evildecay/etcdkeeper
+    environment:
+      HOST: "0.0.0.0"
+    ports:
+      - 12000:8080
+    depends_on:
+      - etcd

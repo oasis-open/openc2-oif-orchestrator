@@ -75,7 +75,7 @@ class App extends Component<AppConnectedProps> {
           </div>
         </ConnectedRouter>
 
-        <ToastContainer position={ toast.POSITION.BOTTOM_CENTER } autoClose={ 5000 } />
+        <ToastContainer position={ toast.POSITION.BOTTOM_RIGHT } autoClose={ false } />
       </div>
     );
   }

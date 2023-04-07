@@ -117,7 +117,7 @@ class DoubleNav extends Component<DoubleNavConnectedProps, DoubleNavState> {
     const { active } = this.state;
 
     return (
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" ref={ elm => { this.bottomNav = elm; } }>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-primary fixed-top pt-2 pb-2" ref={ elm => { this.bottomNav = elm; } }>
         <div className="container-fluid">
           <button
             className="navbar-toggler"

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeSwitcher } from 'react-bootswatch-theme-switcher';
-import registerServiceWorker from './registerServiceWorker';
+// import registerServiceWorker from './registerServiceWorker';
 
 // Styles
 // import 'bootstrap';
@@ -19,11 +19,11 @@ import configureStore, { history } from './store';
 
 const store = configureStore(history);
 
-// Theme Options
-const validThemes = ['cyborg', 'darkly', 'flatly', 'litera', 'lumen', 'slate', 'solar', 'spacelab', 'yeti'];
+// Theme Options  test
+const validThemes = ['light', 'dark'];
 
 const Root = () => (
-  <ThemeSwitcher storeThemeKey="theme" defaultTheme="lumen" themeRoot="assets" themeOptions={ validThemes }>
+  <ThemeSwitcher storeThemeKey="theme" defaultTheme="light" themeRoot="assets" themeOptions={ validThemes }>
     <Provider store={ store } >
       <HelmetProvider>
         <App history={ history } />
@@ -33,4 +33,4 @@ const Root = () => (
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'));
-registerServiceWorker();
+// registerServiceWorker();
